@@ -6,7 +6,7 @@
 <link rel="apple-touch-icon" sizes="76x76" href="<?php echo base_url('assets/img/logo_pyk.png') ?>" />
   <link rel="icon" type="image/png" href="<?php echo base_url('assets/img/logo_pyk.png') ?>" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-  <title>SODAP | KOTA PAYAKUMBUH</title>
+  <title>SODAP | KOTA PAYAKUMBUH sumbar</title>
   <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
   <meta name="viewport" content="width=device-width" />
   <!-- Canonical SEO -->
@@ -37,7 +37,7 @@
 
   <!-- Ionicons -->
   <link rel="stylesheet" href="<?php echo base_url('assets/admin/bower_components/Ionicons/css/ionicons.min.css') ?>">
- 
+
   <!-- bootstrap datepicker -->
   <link rel="stylesheet" href="<?php echo base_url('assets/admin/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css') ?>">
 
@@ -46,21 +46,21 @@
 
   <!-- Select2 -->
   <link rel="stylesheet" href="<?php echo base_url('assets/admin/bower_components/select2/dist/css/select2.min.css') ?>">
-  
+
   <!-- Animation Css -->
   <link href="<?php echo base_url('assets/admin/plugins/animate-css/animate.css') ?>" rel="stylesheet" />
-  
+
   <!-- Pace style -->
   <link rel="stylesheet" href="<?php echo base_url('assets/admin/plugins/pace/pace.min.css') ?>">
 
   <!-- Sweetalert Css -->
   <link href="<?php echo base_url('assets/admin/plugins/sweetalert/sweetalert.css') ?>" rel="stylesheet" />
-  
+
   <!-- bootstrap wysihtml5 - text editor -->
   <link rel="stylesheet" href="<?php echo base_url('assets/admin/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css') ?>">
-  
+
   <!--  spinner js -->
-  
+
   <link rel="stylesheet" href="<?php echo base_url('assets/admin/plugins/jquery-spinner/dist/css/bootstrap-spinner.css') ?>">
 
   <!-- iCheck for checkboxes and radio inputs -->
@@ -68,7 +68,7 @@
 
   <!-- Theme style -->
   <link rel="stylesheet" href="<?php echo base_url('assets/admin/dist/css/AdminLTE.min.css') ?>">
-   
+
   <!-- AdminLTE Skins. Choose a skin from the css/skins
        folder instead of downloading all of them to reduce the load. -->
     <link rel="stylesheet" href="<?php echo base_url('assets/admin/dist/css/skins/_all-skins.min.css') ?>">
@@ -96,31 +96,31 @@
     -webkit-animation-duration: 2s;
     -webkit-animation-timing-function: linear;
     -webkit-animation-iteration-count: infinite;
-    
+
     -moz-animation-name: blinker;
     -moz-animation-duration: 2s;
     -moz-animation-timing-function: linear;
     -moz-animation-iteration-count: infinite;
-    
+
     animation-name: blinker;
     animation-duration: 2s;
     animation-timing-function: linear;
     animation-iteration-count: infinite;
 }
 
-@-moz-keyframes blinker {  
+@-moz-keyframes blinker {
     0% { opacity: 1.0; }
     50% { opacity: 0.0; }
     100% { opacity: 1.0; }
 }
 
-@-webkit-keyframes blinker {  
+@-webkit-keyframes blinker {
     0% { opacity: 1.0; }
     50% { opacity: 0.0; }
     100% { opacity: 1.0; }
 }
 
-@keyframes blinker {  
+@keyframes blinker {
     0% { opacity: 1.0; }
     50% { opacity: 0.0; }
     100% { opacity: 1.0; }
@@ -185,7 +185,7 @@ span.round-tab i{
 .wizard li.active span.round-tab {
     background: #fff;
     border: 2px solid #5bc0de;
-    
+
 }
 .wizard li.active span.round-tab i{
     color: #5bc0de;
@@ -281,7 +281,7 @@ span.round-tab:hover {
 
   <!-- Google Font -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
-  
+
   <!-- jQuery 3 -->
     <script src="<?php echo base_url('assets/admin/bower_components/jquery/dist/jquery.min.js')?>" type="text/javascript"></script>
     <script type="text/javascript" >
@@ -316,7 +316,7 @@ span.round-tab:hover {
         <ul class="nav navbar-nav">
           <!-- Messages: style can be found in dropdown.less-->
           <li class="dropdown messages-menu">
-           
+
             <ul class="dropdown-menu">
               <li class="header">You have 4 messages</li>
               <li>
@@ -362,7 +362,7 @@ span.round-tab:hover {
             </ul>
           </li>
           <!-- Tasks: style can be found in dropdown.less -->
-          
+
           <!-- User Account: style can be found in dropdown.less -->
           <li class="dropdown user user-menu">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
@@ -406,7 +406,7 @@ span.round-tab:hover {
             </ul>
           </li>
           <!-- Control Sidebar Toggle Button -->
-         
+
         </ul>
       </div>
     </nav>
@@ -429,7 +429,7 @@ span.round-tab:hover {
           <a><?php echo $this->ion_auth->user()->row()->username ?></a>
         </div> -->
       </div>
-    
+
 
       <!-- sidebar menu: : style can be found in sidebar.less -->
       <ul class="sidebar-menu" data-widget="tree">
@@ -437,9 +437,9 @@ span.round-tab:hover {
         <li class="treeview active">
           <a href="#">
             <i class="fa fa-dashboard"></i> <span>Dashboard</span>
-         
+
           </a>
-        
+
         </li>
       </ul>
     </section>
