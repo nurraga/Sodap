@@ -14,6 +14,20 @@ class Template {
 			$this->set('contents', $this->CI->load->view($view, $view_data, TRUE));			
 			return $this->CI->load->view($template, $this->template_data, $return);
 		}
+		function rupiah($angka){
+	
+		$hasil_rupiah = "Rp " . number_format($angka,2,',','.');
+		return $hasil_rupiah;
+ 
+		}
+		//???????????????????AgungAGUNGAUANAGUANAG
+		function nominal($angka){
+	
+		$hasil_rupiah = number_format($angka,2,',','.');
+		return $hasil_rupiah;
+ 
+		}
+		// AgungAGUNGAUANAGUANAG??????????????
 }
 
 /* End of file Template.php */

@@ -77,6 +77,7 @@ $db['default'] = array(
 	'dsn'	=> '',
 	'hostname' => 'localhost',
 	'username' => 'root',
+	//'password' => 'Datapluto17!&',
 	'password' => '',
 	'database' => 'db_sodap',
 	'dbdriver' => 'mysqli',

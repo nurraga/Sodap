@@ -5,260 +5,101 @@
     <div class="row">
         <div class="col-md-10 col-md-offset-1">
              <div class="card">
-			 <form method="get" action="#" class="form-horizontal">
+             
                <div class="card-header card-header-text" data-background-color="blue">
-                                        <h4 class="card-title">Form Entry data</h4>
-                                    </div>
+                                        <h4 class="card-title">Generate PPTK</h4>
+               </div>
+    
                 <div class="box-body">
-                    
-                           
-                <form class="form" id="form" method="post" action="store" enctype="multipart/form-data">
-                <div class="tab-content">
-                            <div class="tab-pane active" id="tab-1">
-                                <div class="row">
-                                   
-                                </div>
-                                <br>
-
-                                <div class="row">
+                  <form class="form" id="form" method="post" action="simpan" enctype="multipart/form-data">
+                     <div class="row">
                                     <div class="col-md-10">
                                         <div class="row">
                                             <div class="form-group">
-                                                <label for="Kegiatan" class="col-sm-3 col-md-4 control-label"
-                                                       style="text-align: right">Organisasi</label>
-                                                <div class="col-md-8">
-                                                    <select class="form-control select2"
-                                                            data-placeholder="nama Opd" style="width: 100%"
-                                                            name="id_opd">
-                                                        <option selected disabled>- Nama -</option>
-                                                         <?php foreach ($unit as $pn): ?>
-                                                            <option value="<?php echo $pn['unitkey'] ?>"><?php echo $pn['nmunit'] ?></option>
-                                                        <?php endforeach; ?>
-                                                    </select>
-                                                    
-                                                </div>
-                                            </div>
-                                        </div>
-								        </div>
-								</div>
-                                        <br>
-                                         <div class="col-md-10">
-                                         <div class="row">
-                                            <div class="form-group">
-                                                <label for="pelaksana" class="col-sm-3 col-md-4 control-label"
-                                                       style="text-align: right">
-                                                  Tahun Anggaran
-                                                </label>
-                                                <div class="col-md-8">
-                                                    <select class="form-control select2"
-                                                            data-placeholder="Pelakasana Perjalanan Dinas"
-                                                            style="width: 100%" name="pelaksana">
-                                                        <option selected disabled>- Pilih -</option>
-                                                        <?php foreach ($tahun as $pn): ?>
-                                                            <option value="<?php echo $pn['id_tahun'] ?>"><?php echo $pn['tahun'] ?></option>
-                                                        <?php endforeach; ?>
-                                                    </select>
-                                                </div>
-                                            </div>
-											
-                                        </div>
-                                        </div>
-                                       
-										 <br>
-										<br>
-                                        <br>
-										 <br>
-                                         <div class="col-md-10">
-                                           <div class="row">
-                                            <div class="form-group">
-                                                <label for="pelaksana" class="col-sm-3 col-md-4 control-label"
-                                                       style="text-align: right">
-                                                  Input Data PPK
-                                                </label>
-                                                <div class="col-md-8">
-                                                    <select class="form-control select2"
-                                                            data-placeholder="Pelakasana Perjalanan Dinas"
-                                                            style="width: 100%" name="pelaksana">
-                                                        <option selected disabled>- data ppk-</option>
-                                                        <?php foreach ($pns as $pn): ?>
-                                                            <option value="<?php echo $pn['id'] ?>"><?php echo $pn['nama'] ?></option>
-                                                        <?php endforeach; ?>
-                                                    </select>
-                                                </div>
-                                            </div>	
-                                        </div>
-                                        </div>
-										 <br>
-										<br>
-                                        <br>
-										 <br>
-                                         <div class="col-md-10">
-                                           <div class="row">
-                                            <div class="form-group">
-                                                <label for="pelaksana" class="col-sm-3 col-md-4 control-label"
-                                                       style="text-align: right">
-                                                  Input Data Kegiatan
-                                                </label>
-                                                <div class="col-md-8">
-                                                    <select class="form-control select2"
-                                                            data-placeholder="Pelakasana Perjalanan Dinas"
-                                                            style="width: 100%" name="pelaksana">
-                                                        <option selected disabled>- data kegiatan -</option>
-                                                        <?php foreach ($matangr as $pn): ?>
-                                                            <option value="<?php echo $pn['kdper'] ?>"><?php echo $pn['nmper'] ?></option>
-                                                        <?php endforeach; ?>
-                                                    </select>
-                                                </div>
-                                            </div>	
-                                        </div>
-                                        </div>
-										
-										<div class="col-md-12 col-sm-12 col-xs-12">
-                                            <br>
-                                            <div class="row">
-                                                <div class="form-group">
-                                                    <label class="col-sm-3 col-md-4 control-label"></label>
-                                                    <div class="col-md-8 col-sm-8 col-xs-8">
-                                                        <a onclick="tambahkegiatan()" href="#"><i
-                                                                    class="fa fa-plus-circle"> Tambah
-                                                                Kegiatan</i></a>
+                                                <label for="namaunit" class="col-sm-3 col-md-4 control-label"
+                                                       style="text-align: right" >Organisasi
+                                                </label>       
+                                                    <div class="col-md-6">
+                                                    <input type="hidden" name="namaunit"  class="form-control"  value="<?php echo $namaunit[0]['unitkey'];?>" readonly><?php echo $namaunit[0]['nmunit'] ?>                                             
                                                     </div>
-                                                </div>
                                             </div>
                                         </div>
-                                        <br>
-										<br>
-										<br>
-										<br>
-								<div class="col-md-10">
-                                <div class="row">
-                                    <div class="form-group">
-                                        <label for="persoalan" class="control-label col-md-4"
-                                               style="text-align: right">input target keuangan</label>
-                                        <div class="col-md-8">
-                                                <textarea id="editor1" class="form-control" rows="7" placeholder="..."
-                                                          name="persoalan"></textarea>
-                                            <span class="text-red"><?php echo form_error('input'); ?></span>
-                                        </div>
-                                    </div>
-                                </div>	
-								</div>									
-                                <br>
-                               
-								<br>
-								<br>
-								<br>
-								<br>
-									<div class="col-md-4">
-                                    <div class="form-group">
-                                        <label for="fakta" class="control-label col-md-10"
-                                               style="text-align: left"></label>
-                                        <div class="col-md-8">
-                                            <a href="#tab-2" data-toggle="tab" class="btn btn-primary btn-round"><i
-                                                        class="fa fa-arrow-circle-right text-green"></i> Selanjutnya</a>
-                                        </div>
-                                    </div>
-                                </div>
-                                <br>
+                                     </div>
+                    </div>
+                    <br>
+                    <div class="col-md-10">
+                        <div class="row">
+                            <div class="form-group">
+                                <label  class="col-sm-3 col-md-4 control-label"
+                                    style="text-align: right">Tahun Anggaran
+                                </label>
+                                      <div class="col-md-8">
+                                        <select name='tahun' class="form-control select2"
+                                                style="width: 100%" >
+                                                <option selected disabled>- Pilih -</option>
+                                                <?php foreach ($tahun as $pn): ?>
+                                                <option value="<?php echo $pn['tahun'] ?>"><?php echo $pn['tahun'] ?></option>                                                        <?php endforeach; ?>
+                                        </select>
+                                                
+                                      </div>
                             </div>
-                            <div class="tab-pane" id="tab-2">
-								<div class="row">
-										<div class="col-md-6">
-                                           <div class="row">
-                                            <div class="form-group">
-                                                <label for="pelaksana" class="col-sm-3 col-md-4 control-label"
-                                                       style="text-align: right">
-                                                  Input Data Targe Fisik
-                                                </label>
-                                                <div class="col-md-8">
-                                                    <select class="form-control select2"
-                                                            data-placeholder="Pelakasana Perjalanan Dinas"
-                                                            style="width: 100%" name="pelaksana">
-                                                        <option selected disabled>- data -</option>
-                                                        <?php foreach ($pns as $pn): ?>
-                                                            <option value="<?php echo $pn['id'] ?>"><?php echo $pn['nama'] ?></option>
-                                                        <?php endforeach; ?>
-                                                    </select>
-                                                </div>
-                                            </div>	
-                                        </div>
-                                        </div>
-								</div>
-							<br>
-							<br>
-							
-								<div class="row">
-										<div class="col-md-6">
-                                           <div class="row">
-                                            <div class="form-group">
-                                                <label for="pelaksana" class="col-sm-3 col-md-4 control-label"
-                                                       style="text-align: right">
-                                                  Input Data Realisasi Fisik
-                                                </label>
-                                                <div class="col-md-8">
-                                                    <select class="form-control select2"
-                                                            data-placeholder="Pelakasana Perjalanan Dinas"
-                                                            style="width: 100%" name="pelaksana">
-                                                        <option selected disabled>- data -</option>
-                                                        <?php foreach ($pns as $pn): ?>
-                                                            <option value="<?php echo $pn['id'] ?>"><?php echo $pn['nama'] ?></option>
-                                                        <?php endforeach; ?>
-                                                    </select>
-                                                </div>
-                                            </div>	
-                                        </div>
-                                        </div>
-								</div>
-							<br>
-							<br>
-							
-                                <div class="row">
-                                    <div class="col-md-6">
+                                            
+                        </div>
+                    </div>                      
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+                                        
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped table-hover">
+                                <thead>
+                                    <tr>    <th><b>No</b></th>
+                                            <th><b>Nama Kegiatan</b></th>
+                                            <th><b>Pagu Dana</b></th>
+                                            <th><b>PPTK</b></th>
+                                            <th><b>PPK</b></th>
+                                    </tr>
+                                </thead>
+                                        
 
-                                        <div class="form-group">
-                                            <label for="pelaksana" class="col-sm-3 col-md-4 control-label"
-                                                       style="text-align: right">
-                                                  Jadwal pelaksanaan
-                                                </label>
-                                            <div class="input-group date">
-                                                <div class="input-group-addon">
-                                                    <i class="fa fa-calendar"></i>
-                                                </div>
-												<div class="col-md-8">
-                                                <input name="jadwalpelaksanaan" type="text"
-                                                       class="form-control pull-right datepicker"
-                                                       id="jadwalpelaksana" placeholder="Tanggal"
-                                                      
-                                                <span class="text-red"><?php echo form_error('tanggal'); ?></span>
+                               <tbody>
+
+                                <?php for($i=0;$i<count($datakegunit);$i++){ ?>
+                                    <tr>
+                                        <td><?php echo $i+1 ?> </td>
+                                                    
+                                        <td>
+                                            <div class="form-control" name="kegiatan" id="kegiatan" >
+                                                <input type="hidden"class="form-control"  name="kegiatan[]" value="<?php echo $datakegunit[$i]['kdkegunit']; ?>"><?php echo $datakegunit[$i]['nmkegunit']; ?>
                                             </div>
-											 </div>
-                                        </div>
-                                    </div>
-                                    
-                                </div>
-								
-								
-								
-									<div class="row">
-										<div class="col-md-6">
-                                           <div class="row">
-                                            <div class="form-group">
-                                                <label for="pelaksana" class="col-sm-3 col-md-4 control-label"
-                                                       style="text-align: right">
-                                                  Input 
-                                                </label>
-                                                <div class="col-md-8">
-                                                <input type="text" class="form-control" placeholder="...">
-                                 </div>
-								 </div>
-								 </div>
-								  </div>
-								    </div>
-									
-                              
-                                <div class="row">
-                                     <div class="col-md-6">
-
+                                        </td>
+                                                    
+                                        <td> <input class="form-control"  name="nilai[]" value=" <?php echo $datakegunit1[$i]; ?>"> </td>
+                                                    
+                                        <td> <select class="form-control" name="pilihpnspptk[]" id="pilihpnspptk" >
+                                                <option value="">Pilih Pns</option>
+                                                <?php foreach ($kasi as $pn): ?>
+                                                <option value="<?php echo $pn['id'] ?>"><?php echo $pn['nama'] ?></option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </td>
+                                                    
+                                        <td> <select class="form-control" name="pilihpnsppk[]" id="pilihpnsppk" >
+                                                 <option value="">Pilih Pns</option>
+                                                    <?php foreach ($eselon as $pn): ?>
+                                                <option value="<?php echo $pn['id'] ?>"><?php echo $pn['nama'] ?></option>
+                                                <?php endforeach; ?>
+                                              </select>
+                                        </td>
+                                    </tr>
+                                <?php } ?>
+                                </tbody>
+                            </table>
+                        </div>
+                                        
+                                        <div class="row">
                                             <div class="form-group">
                                                 <label for="dokumenpendukung"
                                                        class="col-sm-3 col-md-4 control-label"
@@ -288,55 +129,42 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                    </div>
                                         </div>
-                                <div class="row" id="navigasi-tab2">
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <label class="control-label col-md-2" style="text-align: right">
-
-                                            </label>
-                                            <div class="col-md-8">
-                                                    <table>
+                </div>
+                <br>
+                <br>
+                <br>                    
+                                                                                                
+                                                <div class="col-md-8">
+                                                   
                                                         <tr>
                                                             <td>
-                                                                <a href="#tab-1" data-toggle="tab"
+                                                                <a href="Kasi" data-toggle="tab"
                                                                    class="btn btn-primary btn-danger"><i
                                                                             class="fa fa-arrow-circle-left text-grey"></i>
-                                                                    Kembali</a>
+                                                                    RESET</a>
                                                             </td>
                                                             <td style="width: 10px"></td>
                                                             <td>
                                                                 <button type="submit" class="btn btn-primary btn-success"><i
                                                                             class="fa fa-floppy-o text-blue"></i>
-                                                                    Simpan
+                                                                  Kirim Data
                                                                 </button>
                                                             </td>
-															
-														
                                                         </tr>
-                                                    </table>
                                                 </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <br>
-                            </div>
-									  
-                                    
-                                        
-                                        
-                            
-                                        
-                               
-                            </div>
-                        </div>
-                    </form>
-					</form>
-                </div>
-				
-            </div>
-        </div>
+                </form>
+            </div>      
+        </div>  
+</div>
+    
+              
+               
+               
+             
+                           
+                
+       
   
 </section>
 <!-- jQuery 3 -->
@@ -348,27 +176,80 @@
 <!-- Bootstrap WYSIHTML5 -->
 <script src="<?php echo base_url('assets/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js') ?>"></script>
 <script type="text/javascript">
-    $(function () {
-        // Replace the <textarea id="editor1"> with a CKEditor
-        // instance, using default configuration.
-        CKEDITOR.replace('editor1')
-        //bootstrap WYSIHTML5 - text editor
-    })
-    /*$('.btn-add-pengikut').on('click', function (f) {
-        f.preventDefault();
-        var opsi = '<select class="form-control select2" multiple="multiple" name="pengikut[]">' +
-            '<option selected disabled>- Pilihan Pengikut -</option>' +
-            '</select><br>';
-        $(this).before(opsi);
-    });*/
-
-     
+       
 
   $(function () {
-        $('#jadwalpelaksana').datepicker({
-            autoclose: true,
-            format: 'dd/mm/yyyy',
-            startDate: new Date()
-        })
+       
+     $('.btn-add-dokumen').on('click', function (f) {
+        f.preventDefault();
+        var template = '<input accept="image/jpeg,application/pdf" type="file" id="dokumenpendukung" name="dokumenpendukung[]"><br>';
+        $(this).before(template);
     });
+    $(document).ready($(document).on('change', '#unitkey', function () {
+      
+        var unitkey = $(this).val();
+        var input = '';
+        $.ajax({
+            url: 'getpns/' + unitkey,
+            type: 'get',
+            success: function (data) {
+                $('#username').val(JSON.parse(data).nip);
+            }
+
+        });
+   
+    
+        $.ajax({
+            url: 'getpns/' + unitkey,
+            type: 'get',
+            success: function (data) {
+                $('#nama').val(JSON.parse(data).nama);
+            }
+
+        });
+    }));
+    
+     $(document).ready(function() {
+        $('#datatables').DataTable({
+            "pagingType": "full_numbers",
+            "lengthMenu": [
+                [10, 25, 50, -1],
+                [10, 25, 50, "All"]
+            ],
+            responsive: true,
+            language: {
+                search: "_INPUT_",
+                searchPlaceholder: "Search records",
+            }
+
+        });
+
+
+        var table = $('#datatables').DataTable();
+
+        // Edit record
+        table.on('click', '.edit', function() {
+            $tr = $(this).closest('tr');
+
+            var data = table.row($tr).data();
+            alert('You press on Row: ' + data[0] + ' ' + data[1] + ' ' + data[2] + '\'s row.');
+        });
+
+        // Delete a record
+        table.on('click', '.remove', function(e) {
+            $tr = $(this).closest('tr');
+            table.row($tr).remove().draw();
+            e.preventDefault();
+        });
+
+        //Like record
+        table.on('click', '.like', function() {
+            alert('You clicked on Like button');
+        });
+
+        $('.card .material-datatables label').addClass('form-group');
+    });
+        
+
+    
 </script>

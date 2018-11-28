@@ -4,15 +4,15 @@
 
 <!-- Mirrored from demos.creative-tim.com/material-dashboard-pro/examples/pages/login.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 20 Mar 2017 21:32:19 GMT -->
 <head>
-<title>SODAP</title>
+
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-<!--===============================================================================================-->	
-    <link rel="apple-touch-icon" sizes="76x76" href="<?php echo base_url('assets/img/apple-icon.png') ?>">
-    <link rel="icon" type="image/png" href="<?php echo base_url('assets/img/favicon.png') ?>">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-    
+<!--===============================================================================================-->
+    <link rel="apple-touch-icon" sizes="76x76" href="<?php echo base_url('assets/img/logo_pyk.png') ?>" />
+  <link rel="icon" type="image/png" href="<?php echo base_url('assets/img/logo_pyk.png') ?>" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <title>SODAP | KOTA PAYAKUMBUH</title>
     <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
     <meta name="viewport" content="width=device-width" />
     <!-- Canonical SEO -->
@@ -31,7 +31,7 @@
     <meta name="twitter:description" content="Material Dashboard PRO is a Premium Material Bootstrap Admin with a fresh, new design inspired by Google's Material Design.">
     <meta name="twitter:creator" content="@creativetim">
     <meta name="twitter:image" content=<?php echo base_url('../../s3.amazonaws.com/creativetim_bucket/products/51/opt_mdp_thumbnail.jpg') ?>">
-   
+
     <!-- Bootstrap core CSS     -->
     <link href="<?php echo base_url('assets/css/bootstrap.min.css" rel="stylesheet') ?>">
     <!--  Material Dashboard CSS    -->
@@ -56,14 +56,14 @@
             </div>
             <div class="collapse navbar-collapse">
                 <ul class="nav navbar-nav navbar-right">
-                    
+
                 </ul>
             </div>
         </div>
     </nav>
     <div class="limiter">
-		
-        <div class="full-page login-page" filter-color="white" data-image=<?php echo base_url('assets/img/balai.jpg') ?>">
+
+        <div class="full-page login-page" filter-color="white" data-image=<?php echo base_url('assets/img/balaikota.jpg') ?>">
             <!--   you can change the color of the filter page using: data-color="blue | purple | green | orange | red | rose " -->
             <div class="content">
 			<?php echo form_open('Home/login', 'class="login100-form validate-form"');?>
@@ -75,14 +75,14 @@
                                     <div class="card-header text-center" data-background-color="blue">
                                         <h4 class="card-title">SODAP</h4>
                                         <div class="social-line">
-                                            
+
                                         </div>
                                     </div>
                                     <p class="category text-center">
-                                      
+
                                     </p>
                                     <div class="card-content">
-                                        <div class="input-group" type="text"> 
+                                        <div class="input-group" type="text">
                                             <span class="input-group-addon">
                                                 <i class="material-icons"><br><br>face</i>
                                             </span>
@@ -103,21 +103,21 @@
                                             </div>
                                         </div>
 										 </div>
-                                    
+
                                     <div class="footer text-center">
                                         <button type="submit" class="btn btn-rose btn-simple btn-wd btn-lg">Masuk</button>
                                     </div>
 									  <?php echo form_close();?>
                                 </div>
-								
-								
+
+
                             </form>
                         </div>
                     </div>
                 </div>
             </div>
-            	
-<!--===============================================================================================-->	
+
+<!--===============================================================================================-->
 	<script src="<?php echo base_url() ?>assets/login/vendor/jquery/jquery-3.2.1.min.js"></script>
 <!--===============================================================================================-->
 	<script src="<?php echo base_url() ?>assets/login/vendor/bootstrap/js/popper.js"></script>
@@ -132,7 +132,7 @@
 </body>
 <div class="fixed-plugin">
     <div class="dropdown show-dropdown">
-       
+
         <ul class="dropdown-menu">
             <li class="header-title">Background Style</li>
             <li class="adjustments-line">

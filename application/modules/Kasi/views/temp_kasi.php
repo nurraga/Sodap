@@ -67,12 +67,12 @@
             <div class="sidebar-wrapper">
                 <div class="user">
                     <div class="photo">
-                        <img src="<?php echo base_url('assets/img/faces/pk.png') ?>">
+                        <img src="<?php echo base_url('assets/img/default-avatar.png') ?>">
                     </div>
                     <div class="info">
                          <a href="#pablo" class="dropdown-toggle" data-toggle="dropdown">
                                    
-									<span class="hidden-xs"><?php echo $this->ion_auth->user()->row()->first_name ?></span>
+                                    <span class="hidden-xs"><?php echo $this->ion_auth->user()->row()->first_name ?></span>
                                 </a>
                     </div>
                 </div>
@@ -86,37 +86,40 @@
                     <li>
                         <a data-toggle="collapse" href="#pagesExamples">
                             <i class="material-icons">content_paste</i>
-                            <p>FORMS
+                            <p>FORM
                                 <b class="caret"></b>
                             </p>
                         </a>
                         <div class="collapse" id="pagesExamples">
+                            
                             <ul class="nav">
                                 <li>
-                                    <a href="<?php echo base_url('Kasi/entri'); ?>">ENTRI PPTK</a>
+                                    <a href="<?php echo base_url('Kasi/laporan_kegiatan'); ?>">Generate PPTK</a>
                                 </li>
                                 
-                            </ul>	
-							
+                            </ul>   
                         </div>
-                    </li>
-					
-					 <li>
-                        <a data-toggle="collapse" href="#tablesExamples">
-                            <i class="material-icons">grid_on</i>
-                            <p>Tables
-                                <b class="caret"></b>
-                            </p>
-                        </a>
-                        <div class="collapse" id="tablesExamples">
+
+                        <div class="collapse" id="pagesExamples">
                             <ul class="nav">
                                 <li>
-                                    <a href="<?php echo base_url('Kasi/list1'); ?>">LIST</a>
+                                    <a href="<?php echo base_url('Kasi'); ?>">Cek Target Keuangan</a>
                                 </li>
-                            </ul>
+                                
+                            </ul>   
+                            
+                        </div>
+                        <div class="collapse" id="pagesExamples">
+                            <ul class="nav">
+                                <li>
+                                    <a href="<?php echo base_url('Kasi'); ?>">Target Fisik</a>
+                                </li>
+                                
+                            </ul>   
+                            
                         </div>
                     </li>
-					 
+                    
                     
                 </ul>
             </div>
@@ -158,10 +161,10 @@
                                   
                                 </ul>
                             </li>
-							
+                            
                             <li>
                                 
-								 <li>
+                                 <li>
                         <a href="<?php echo base_url('Kasi/logout'); ?>"><i class="fa fa-sign-out fa-lg"></i> Keluar</a>
                     </li>
                             </li>
@@ -180,24 +183,24 @@
                     </div>
                 </div>
             </nav>
-			<br></br>
-			<br></br>
-			<br></br>
-			
-			<div class="content-wrapper">
+            <br></br>
+            <br></br>
+            <br></br>
+            
+            <div class="content-wrapper">
         <!-- Content Header (Page header) -->
         <?php
         echo $contents;
         ?>
         <!-- /.content -->
     </div>
-			
-			
+            
+            
           
     </div>
-	
-	
-	 
+    
+    
+     
 </body>
 <!--   Core JS Files   -->
 <script src="<?php echo base_url('assets/js/jquery-3.1.1.min.js" type="text/javascript') ?>"></script>
@@ -231,7 +234,7 @@
 <script src="<?php echo base_url('assets/js/jquery.datatables.js') ?>"></script>
 <!-- Sweet Alert 2 plugin -->
 <script src="<?php echo base_url('assets/js/sweetalert2.js') ?>"></script>
-<!--	Plugin for Fileupload, full documentation here: http://www.jasny.net/bootstrap/javascript/#fileinput -->
+<!--    Plugin for Fileupload, full documentation here: http://www.jasny.net/bootstrap/javascript/#fileinput -->
 <script src="<?php echo base_url('assets/js/jasny-bootstrap.min.js') ?>"></script>
 <!--  Full Calendar Plugin    -->
 <script src="<?php echo base_url('assets/js/fullcalendar.min.js') ?>"></script>
@@ -242,13 +245,156 @@
 <!-- Material Dashboard DEMO methods, don't include it in your project! -->
 <script src="<?php echo base_url('assets/js/demo.js') ?>"></script>
 <script type="text/javascript">
-    //$(document).ready(function() {
+   var csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
+    
+  $(document).ready(function () {
+        $.fn.dataTableExt.oApi.fnPagingInfo = function (oSettings) {
+            return {
+                "iStart": oSettings._iDisplayStart,
+                "iEnd": oSettings.fnDisplayEnd(),
+                "iLength": oSettings._iDisplayLength,
+                "iTotal": oSettings.fnRecordsTotal(),
+                "iFilteredTotal": oSettings.fnRecordsDisplay(),
+                "iPage": Math.ceil(oSettings._iDisplayStart / oSettings._iDisplayLength),
+                "iTotalPages": Math.ceil(oSettings.fnRecordsDisplay() / oSettings._iDisplayLength)
+            };
+        };
+        var t = $("#tablekegiatan").DataTable({
+            initComplete: function () {
+                var api = this.api();
+                $('#tablekegiatan_filter input')
+                    .off('.DT')
+                    .on('keyup.DT', function (e) {
+                        if (e.keyCode == 13) {
+                            api.search(this.value).draw();
+                        }
+                    });
+            },
+            "oLanguage": {
+                "sProcessing": "loading..."
+            },
+            "processing": true,
+            "serverSide": true,
+            "ajax": {
+            "url": "Kasi/json_view_kasikegiatan", 
+            "type": "POST",
+             "data": function ( data ) 
+                    {
+                      data.token = csrfHash;
+                    }
+                    },
 
-        // Javascript method's body can be found in assets/js/demos.js
-        //demo.initDashboardPageCharts();
+            "columnDefs": [
+                {
+                    "data": "idpptk",
+                },
+                
+                {
+                    "data": "nmkgeunit",
+                },
 
-        //demo.initVectorMap();
-    //});
+                {
+                    "data": "nilai",
+                    "render": $.fn.dataTable.render.number( '.', '.', 2, 'Rp.' )
+                },
+                {
+                    /*"data": "pelaksana",*/
+                   
+                    "render": function (data, type, row) {
+
+                             return row[6] == (null) ? '<div style="color: #f98022"><i>belum dientri</i></div>' : row[6]
+                    },
+                    "targets": 6
+
+
+                },
+                
+            ],
+
+            //rowsGroup: [0], //ini untuk colspan atau grouping
+            "order": [[1, 'asc']], //ini order berdasrkan index pertama
+
+            //ini untuk menambahkan kolom no di index 0
+            rowCallback: function (row, data, iDisplayIndex) {
+                var info = this.fnPagingInfo();
+                var page = info.iPage;
+                var length = info.iLength;
+                var index = page * length + (iDisplayIndex + 1);
+                $('td:eq(0)', row).html(index);
+            },
+
+        });
+
+
+              var t = $("#tablekeuangan").DataTable({
+            initComplete: function () {
+                var api = this.api();
+                $('#tablekeuangan_filter input')
+                    .off('.DT')
+                    .on('keyup.DT', function (e) {
+                        if (e.keyCode == 13) {
+                            api.search(this.value).draw();
+                        }
+                    });
+            },
+            "oLanguage": {
+                "sProcessing": "loading..."
+            },
+            "processing": true,
+            "serverSide": true,
+            "ajax": {
+            "url": "Kasi/json_view_keuangan", 
+            "type": "POST",
+             "data": function ( data ) 
+                    {
+                      data.token = csrfHash;
+                    }
+                    },
+
+            "columnDefs": [
+                {
+                    "data": "idpptk",
+                },
+                
+                {
+                    "data": "id_bulan",
+                },
+
+                {
+                    "data": "nilai",
+                },
+                {
+                    /*"data": "pelaksana",*/
+                    "render": function (data, type, row) {
+
+                        return row[3] == (null) ? '<div style="color: #f98022"><i>perlu konfirmasi ulang</i></div>' : row[3]
+                    },
+                    "targets": 3
+
+                },
+                
+            ],
+
+            //rowsGroup: [0], //ini untuk colspan atau grouping
+            "order": [[1, 'asc']], //ini order berdasrkan index pertama
+
+            //ini untuk menambahkan kolom no di index 0
+            rowCallback: function (row, data, iDisplayIndex) {
+                var info = this.fnPagingInfo();
+                var page = info.iPage;
+                var length = info.iLength;
+                var index = page * length + (iDisplayIndex + 1);
+                $('td:eq(0)', row).html(index);
+            },
+
+        });
+
+       
+
+    });      
+
+    
+    
 </script>
 
 

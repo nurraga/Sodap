@@ -5,34 +5,260 @@ if (!defined('BASEPATH'))
 
 class Cpanel_model extends CI_Model
 {
-  function __construct()
+  public $mopd        = 'daftunit';
+  public $mprogram    = 'mpgrm';
+  public $mkegiatan   = 'mkegiatan';
+  public $manggaran   = 'matangr';
+  public $tab_pns   = 'tab_pns';
+  function __construct() 
   {
       parent::__construct();
   }
+  /*baca*/
+    function baca($opd,$tahun){
+      $this->db->set('stat', '0');
+      $this->db->where('unitkey', $opd);
+       $this->db->where('tahun', $tahun);
+      return $this->db->update('tab_pptk_master'); 
+    }
+    function simpanentrikegiatan($id,$list,$list2){
+      $this->db->trans_start();
+      
+      $this->db->where('id', $id);
+      $this->db->update('tab_pptk_master', $list);
+
+      $this->db->where('id_pptk_master', $id);
+      $this->db->update('tab_pptk', $list2);
+      
+      $this->db->trans_complete(); 
+      if ($this->db->affected_rows() == '1') {
+        return TRUE;
+      }else{
+            // trans error?
+        if ($this->db->trans_status() === FALSE) {
+          return 0;
+        }
+          return 1;
+      }
+    }
+    function detailstatnol($id){
+
+     $this->db->select(' `mkegiatan`.`nmkegunit`
+    , `tab_pptk`.`nilai`
+    , `tab_pptk`.`idpnsppk`
+    , `tab_pptk`.`idpnspptk`
+    , `tab_pptk`.`status`');
+      $this->db->from('tab_pptk');
+      $this->db->join('mkegiatan', '`tab_pptk`.`kdkegunit` = `mkegiatan`.`kdkegunit`');
+      $this->db->where('`tab_pptk`.`id_pptk_master`', $id); 
+       $this->db->order_by('`mkegiatan`.`nmkegunit`', 'ASC');
+      return $this->db->get()->result();
+      
+    }
+    function getppkmaster($opd,$tahun){
+      
+      $this->db->select('`daftunit`.`nmunit`
+    , `tab_pptk_master`.`id`
+    , `tab_pptk_master`.`tahun`
+    , `tab_pns`.`nip`
+    , `tab_pns`.`nama`
+    , `tab_pptk_master`.`tgl_entri`
+    , `tab_pptk_master`.`stat`');
+      $this->db->from('tab_pptk_master');
+      $this->db->join('daftunit', '`tab_pptk_master`.`unitkey` = `daftunit`.`unitkey`');
+      $this->db->join('tab_pns', '`tab_pptk_master`.`admin_entri` = `tab_pns`.`nip`');
+      $this->db->where('`tab_pptk_master`.`unitkey`', $opd);
+      $this->db->where('`tab_pptk_master`.`tahun`', $tahun);
+      return $this->db->get()->row();
+
+    }
+  //get nama pns
+  function getpns($nip){
+      $this->db->where('nip', $nip);
+      return $this->db->get($this->tab_pns)->row();
+    }
+  /*struktur*/
+    function struktur($id){
+      $this->db->select('tab_struktur.id,parent,tab_struktur.nama as name,tab_pns.nama as title,ikon as className');
+      $this->db->from('tab_pns');
+      $this->db->join('tab_struktur', 'tab_pns.nip = tab_struktur.nip');
+      $this->db->where('tab_struktur.id_unit', $id);
+     
+     
+      return $this->db->get()->result_array();
+    }
+
+  /*all json Datatables*/
+  function opdentri_baru($thn){
+
+    $this->datatables->select('`daftunit`.`unitkey`
+    , `daftunit`.`nmunit`
+    , `tab_pptk_master`.`stat`');
+    $this->datatables->from('`db_sodap`.`tab_pptk_master`');
+    $this->datatables->join('`db_sodap`.`daftunit`', '`tab_pptk_master`.`unitkey` = `daftunit`.`unitkey` and `tab_pptk_master`.`tahun`="'.$thn.'"','right');
+    $this->datatables->where('`daftunit`.`tahun`', $thn);
+    $this->db->order_by('`daftunit`.`nmunit`', 'ASC');
+    $this->datatables->add_column('action', '<button class="entriact btn btn-social btn-fill btn-twitter">
+                                                <i class="fa fa-recycle"></i> Proses
+                                            <div class="ripple-container"></div></button>' );
+        
+    return $this->datatables->generate();
+  }
+  function jsonuserlist_by($opd) 
+    {
+        $this->datatables->select('`tab_pns`.`id`
+        , `tab_pns`.`nip`
+        , `tab_pns`.`nama`
+        , `tab_jabatan`.`nama_jabatan`
+        , `tab_eselon`.`nama_eselon`
+        , `tab_pangkat`.`nama_pangkat`
+        , `tab_pangkat`.`golongan`
+        , `users`.`active`');
+        $this->datatables->from('`db_sodap`.`users`');
+        $this->datatables->join('`db_sodap`.`tab_pns`', '`users`.`username` = `tab_pns`.`nip`','right');
+        $this->datatables->join('`db_sodap`.`tab_jabatan`', '`tab_pns`.`id_jabatan` = `tab_jabatan`.`id_jabatan`');
+        $this->datatables->join('`db_sodap`.`tab_eselon`', '`tab_jabatan`.`id_eselon` = `tab_eselon`.`id`');
+        $this->datatables->join('`db_sodap`.`tab_pangkat`', '`tab_pns`.`id_pangkat` = `tab_pangkat`.`id_pangkat`');
+        $this->datatables->where('`tab_pns`.`unitkey`', $opd);
+        $this->datatables->where('`tab_pns`.`status`', '1');
+        $this->datatables->where('`tab_pns`.`asn`', '1');
+        $this->db->order_by('`tab_eselon`.`nama_eselon`', 'ASC');
+        $this->datatables->add_column('action', '<button class="opduserpass btn btn-danger">Password<div class="ripple-container"></div></button> <button class="opduserinfo btn btn-info">Info<div class="ripple-container"></div></button>' );
+        
+        return $this->datatables->generate();
+
+
+       /* SELECT
+    `tab_pns`.`id`
+    , `tab_pns`.`nip`
+    , `tab_pns`.`nama`
+    , `tab_jabatan`.`nama_jabatan`
+    , `tab_eselon`.`nama_eselon`
+    , `tab_pangkat`.`nama_pangkat`
+    , `tab_pangkat`.`golongan`
+    , `users`.`active`
+FROM
+    `db_sodap`.`users`
+    RIGHT JOIN `db_sodap`.`tab_pns` 
+        ON (`users`.`username` = `tab_pns`.`nip`)
+    INNER JOIN `db_sodap`.`tab_jabatan` 
+        ON (`tab_pns`.`id_jabatan` = `tab_jabatan`.`id_jabatan`)
+    INNER JOIN `db_sodap`.`tab_eselon` 
+        ON (`tab_jabatan`.`id_eselon` = `tab_eselon`.`id`)
+    INNER JOIN `db_sodap`.`tab_pangkat` 
+        ON (`tab_pns`.`id_pangkat` = `tab_pangkat`.`id_pangkat`);*/
+    }
+  function jsonuseropd() 
+    {
+        $this->datatables->select('unitkey,nmunit');
+        $this->datatables->from($this->mopd);
+       $this->datatables->add_column('action', '<button type="button" rel="tooltip" class="btnopduser btn btn-info" data-original-title="" title=""><i class="material-icons">launch</i><div class="ripple-container"></div></button>' );
+        
+        return $this->datatables->generate();
+    }
+   function jsonopd() 
+    {
+        $this->datatables->select('unitkey,nmunit');
+        $this->datatables->from($this->mopd);
+       // $this->datatables->add_column('action', '<button type="button" rel="tooltip" class="btn btn-info" data-original-title="" title=""><i class="material-icons">launch</i><div class="ripple-container"></div></button>' );
+        
+        return $this->datatables->generate();
+    }
+    function jsonprogram() 
+    {
+        $this->datatables->select('IDPRGRM,NMPRGRM');
+        $this->datatables->from($this->mprogram);
+        $this->datatables->add_column('action', '<button type="button" rel="tooltip" class="btn btn-info" data-original-title="" title=""><i class="material-icons">launch</i><div class="ripple-container"></div></button>' );
+        
+        return $this->datatables->generate();
+    }
+    function jsonkegiatan() 
+    {
+        $this->datatables->select('NMPRGRM,kdkegunit,nmkegunit');
+        $this->datatables->from($this->mkegiatan);
+        $this->datatables->join('mpgrm', 'mpgrm.IDPRGRM = mkegiatan.idprgrm');
+        
+        return $this->datatables->generate();
+    }
+    function jsonanggaran() 
+    {
+        $this->datatables->select('mtgkey,kdper,nmper,tahun');
+        $this->datatables->from($this->manggaran);
+        
+        
+        return $this->datatables->generate();
+    }
+    function jsonopddpa() 
+    {
+        $this->datatables->select('unitkey,nmunit');
+        $this->datatables->from($this->mopd);
+       $this->datatables->add_column('action', '<button type="button" rel="tooltip" class="btndpa btn btn-info" data-original-title="" title=""><i class="material-icons">launch</i><div class="ripple-container"></div></button>' );
+        
+        return $this->datatables->generate();
+    }
+
+    /*Batas All JSON Datatables*/
+    
+
+    function detopd_dpa($thn,$id){
+      $this->db->select('dpa22.unitkey,nmunit,tahun');
+      $this->db->from('dpa22');
+      $this->db->join('daftunit', 'dpa22.unitkey = daftunit.unitkey');
+      $this->db->where('dpa22.tahun', $thn);
+      $this->db->where('dpa22.unitkey', $id);
+      $this->db->group_by('unitkey');
+      return $this->db->get()->row();
+    }
+    function detprogram_dpa($thn,$id){
+      $this->db->select('dpa22.kdkegunit,mpgrm.IDPRGRM,mpgrm.NMPRGRM');
+      $this->db->from('mkegiatan');
+      $this->db->join('mpgrm', 'mkegiatan.idprgrm = mpgrm.IDPRGRM');
+      $this->db->join('dpa22', 'dpa22.kdkegunit = mkegiatan.kdkegunit');
+      $this->db->where('dpa22.tahun', $thn);
+      $this->db->where('dpa22.unitkey', $id);
+      $this->db->group_by('mpgrm.IDPRGRM');
+      return $this->db->get()->result();
+
+//       SELECT
+//     `dpa22`.`kdkegunit`
+//     , `mpgrm`.`IDPRGRM`
+//     , `mpgrm`.`NMPRGRM`
+// FROM
+//     `db_sodap`.`mkegiatan`
+//     INNER JOIN `db_sodap`.`mpgrm` 
+//         ON (`mkegiatan`.`idprgrm` = `mpgrm`.`IDPRGRM`)
+//     INNER JOIN `db_sodap`.`dpa22` 
+//         ON (`dpa22`.`kdkegunit` = `mkegiatan`.`kdkegunit`) WHERE `dpa22`.`tahun`='2018' AND `dpa22`.`unitkey`='80_' GROUP BY `mpgrm`.`IDPRGRM`;
+    }
+
   function addprgrm(){
-    $json_string = 'http://192.168.10.5:8080/mpgrm/22384ee59631a5a61ce3386af63c094b/2018';
+    $thn='2018';
+    $json_string = 'http://192.168.10.5:8080/mpgrm/22384ee59631a5a61ce3386af63c094b/'.$thn;
 		$jsondata = file_get_contents($json_string);
 		$obj = json_decode($jsondata, true);
 		foreach ($obj['DATA'] as $row) {
 			$data[] = array(
 	                  "idprgrm"  =>  $row['IDPRGRM'],
-	                  "nmprgrm"    =>  $row['NMPRGRM']
+	                  "nmprgrm"    =>  $row['NMPRGRM'],
+                    "tahun" => $thn
 	          );
 		}
-    $this->db->trans_start();
+    $this->db->trans_start(); 
     $this->db->insert_batch('mpgrm', $data);
     $this->db->trans_complete();
     return ($this->db->affected_rows()!=1)?false:true;
-
+	
   }
   function adddaftunit(){
+    $thn='2018';
     $json_string = 'http://192.168.10.5:8080/daftunit/22384ee59631a5a61ce3386af63c094b/2018';
 		$jsondata = file_get_contents($json_string);
 		$obj = json_decode($jsondata, true);
 		foreach ($obj['DATA'] as $row) {
 			$data[] = array(
 	                  "unitkey"  =>  $row['UNITKEY'],
-	                  "nmunit"    =>  $row['NMUNIT']
+	                  "nmunit"    =>  $row['NMUNIT'],
+                    "tahun" => $thn
 	          );
 		}
     $this->db->trans_start();
@@ -41,14 +267,16 @@ class Cpanel_model extends CI_Model
     return ($this->db->affected_rows()!=1)?false:true;
   }
   function addmkegiatan(){
-    $json_string = 'http://192.168.10.5:8080/mkegiatan/22384ee59631a5a61ce3386af63c094b/2018';
+    $thn='2018';
+    $json_string = 'http://192.168.10.5:8080/mkegiatan/22384ee59631a5a61ce3386af63c094b/'.$thn;
 		$jsondata = file_get_contents($json_string);
 		$obj = json_decode($jsondata, true);
 		foreach ($obj['DATA'] as $row) {
 			$data[] = array(
 	                  "nmkegunit"  =>  $row['NMKEGUNIT'],
 	                  "kdkegunit"    =>  $row['KDKEGUNIT'],
-					  "idprgrm"    =>  $row['IDPRGRM']
+					          "idprgrm"    =>  $row['IDPRGRM'],
+                    "tahun" => $thn
 	          );
 		}
     $this->db->trans_start();
@@ -57,14 +285,16 @@ class Cpanel_model extends CI_Model
     return ($this->db->affected_rows()!=1)?false:true;
   }
   function adddpa21(){
-    $json_string = 'http://192.168.10.5:8080/dpa21/22384ee59631a5a61ce3386af63c094b/2018';
+    $thn='2018';
+    $json_string = 'http://192.168.10.5:8080/dpa21/22384ee59631a5a61ce3386af63c094b/'.$thn;
 		$jsondata = file_get_contents($json_string);
 		$obj = json_decode($jsondata, true);
 		foreach ($obj['DATA'] as $row) {
 			$data[] = array(
 	                  "nilai"  =>  $row['NILAI'],
 	                  "mtgkey"    =>  $row['MTGKEY'],
-					  "unitkey"    =>  $row['UNITKEY']
+					          "unitkey"    =>  $row['UNITKEY'],
+                    "tahun" => $thn
 	          );
 		}
     $this->db->trans_start();
@@ -73,16 +303,18 @@ class Cpanel_model extends CI_Model
     return ($this->db->affected_rows()!=1)?false:true;
   }
   function addmatangr(){
-    $json_string = 'http://192.168.10.5:8080/matangr/22384ee59631a5a61ce3386af63c094b/2018';
+    $thn='2018';
+    $json_string = 'http://192.168.10.5:8080/matangr/22384ee59631a5a61ce3386af63c094b/'.$thn;
 		$jsondata = file_get_contents($json_string);
 		$obj = json_decode($jsondata, true);
 		foreach ($obj['DATA'] as $row) {
 			$data[] = array(
 	                  "nmper"  =>  $row['NMPER'],
 	                  "kdper"    =>  $row['KDPER'],
-					  "mtgkey"    =>  $row['MTGKEY'],
-					  "mtglevel"    =>  $row['MTGLEVEL'],
-					  "type"    =>  $row['TYPE']
+					          "mtgkey"    =>  $row['MTGKEY'],
+					          "mtglevel"    =>  $row['MTGLEVEL'],
+					          "type"    =>  $row['TYPE'],
+                    "tahun" => $thn
 	          );
 		}
     $this->db->trans_start();
@@ -91,20 +323,22 @@ class Cpanel_model extends CI_Model
     return ($this->db->affected_rows()!=1)?false:true;
   }
   function adddpa211(){
-    $json_string = 'http://192.168.10.5:8080/dpa211/22384ee59631a5a61ce3386af63c094b/2018';
+    $thn='2018';
+    $json_string = 'http://192.168.10.5:8080/dpa211/22384ee59631a5a61ce3386af63c094b/'.$thn;
 		$jsondata = file_get_contents($json_string);
 		$obj = json_decode($jsondata, true);
 		foreach ($obj['DATA'] as $row) {
 			$data[] = array(
 	                  "satuan"  =>  $row['SATUAN'],
 	                  "subtotal"    =>  $row['SUBTOTAL'],
-					  "mtgkey"    =>  $row['MTGKEY'],
-					  "jumbyek"    =>  $row['JUMBYEK'],
-					  "unitkey"    =>  $row['UNITKEY'],
-					  "uraian"    =>  $row['URAIAN'],
-					  "tarif"    =>  $row['TARIF'],
-					  "kdjabar"    =>  $row['KDJABAR'],
-					  "type"    =>  $row['TYPE']
+					          "mtgkey"    =>  $row['MTGKEY'],
+					          "jumbyek"    =>  $row['JUMBYEK'],
+					          "unitkey"    =>  $row['UNITKEY'],
+					          "uraian"    =>  $row['URAIAN'],
+					          "tarif"    =>  $row['TARIF'],
+					          "kdjabar"    =>  $row['KDJABAR'],
+					          "type"    =>  $row['TYPE'],
+                    "tahun" => $thn
 	          );
 		}
     $this->db->trans_start();
@@ -113,7 +347,8 @@ class Cpanel_model extends CI_Model
     return ($this->db->affected_rows()!=1)?false:true;
   }
   function adddpa22(){
-    $json_string = 'http://192.168.10.5:8080/dpa22/22384ee59631a5a61ce3386af63c094b/2018';
+    $thn='2018';
+    $json_string = 'http://192.168.10.5:8080/dpa22/22384ee59631a5a61ce3386af63c094b/'.$thn;
 		$jsondata = file_get_contents($json_string);
 		$obj = json_decode($jsondata, true);
 		foreach ($obj['DATA'] as $row) {
@@ -121,8 +356,9 @@ class Cpanel_model extends CI_Model
 	                  "nilai"  =>  $row['NILAI'],
 	                  "kdkegunit"    =>  $row['KDKEGUNIT'],
 					  "mtgkey"    =>  $row['MTGKEY'],
-					  "unitkey"    =>  $row['UNITKEY']
-
+					  "unitkey"    =>  $row['UNITKEY'],
+             "tahun" => $thn
+					 
 	          );
 		}
     $this->db->trans_start();
@@ -130,34 +366,170 @@ class Cpanel_model extends CI_Model
     $this->db->trans_complete();
     return ($this->db->affected_rows()!=1)?false:true;
   }
-  public function jika_prgrm($idprgrm, $nmprgrm){
+  
+  function getdaftunit(){
+     $this->db->where('unitkey !=', '40_');
+      $this->db->where('unitkey !=', '98_');
+    return $this->db->get('daftunit')->result();
+  }
+  
+    function addangkas($key){
+    $thn='2018';
+    $json_string = 'http://192.168.10.5:8080/angkas/22384ee59631a5a61ce3386af63c094b/2018/'.$key;
+    $jsondata = file_get_contents($json_string);
+    $obj = json_decode($jsondata, true);
+    foreach ($obj['DATA'] as $row) {
+      $data[] = array(
+          "unitkey"     =>  $row['UNITKEY'],
+          "kdkegunit"   =>  $row['KDKEGUNIT'],
+          "kd_bulan"    =>  $row['KD_BULAN'],
+          "nilai"       =>  $row['NILAI'],
+          "mtgkey"      =>  $row['MTGKEY'],
+          "tahun"       =>  $thn
+            );
+    }
+    $this->db->trans_start();
+    $this->db->insert_batch('angkas', $data);
+    $this->db->trans_complete();
+    return ($this->db->affected_rows()!=1)?false:true;
+  }
+ 
 
+ function adddpa221($key){
+    $thn='2018';
+    $json_string = 'http://192.168.10.5:8080/dpa221/22384ee59631a5a61ce3386af63c094b/2018/'.$key;
+    $jsondata = file_get_contents($json_string);
+    $obj = json_decode($jsondata, true);
+    $data=array();
+    foreach ($obj['DATA'] as $row) {
+      $subtotal= (int)$row['TARIF'] * (int)$row['JUMBYEK'];
+      $data[] = array(
+           "satuan"    =>  $row['SATUAN'],
+             // "subtotal"  =>  $subtotal,
+           "subtotal"    =>  $row['SUBTOTAL'],
+            "kdkegunit" =>  $row['KDKEGUNIT'],
+            "mtgkey"    =>  $row['MTGKEY'],
+            "jumbyek"   =>  $row['JUMBYEK'],
+            "unitkey"   =>  $row['UNITKEY'],
+            "uraian"    =>  $row['URAIAN'],
+            "tarif"     =>  $row['TARIF'],
+            "kdjabar"   =>  $row['KDJABAR'],
+            "type"      =>  $row['TYPE'],         
+            "tahun"     =>  $thn
+           
+             );
+    } 
+    echo json_encode($data);
+   
+    // $this->db->trans_start();
+    // $this->db->insert_batch('dpa221', $data);
+    // $this->db->trans_complete();
+    // return ($this->db->affected_rows()!=1)?false:true;
+  }
+
+
+
+  public function jika_prgrm($idprgrm, $nmprgrm){
+        
         $data = $this->db->get_where('mpgrm', array('idprgrm' => $idprgrm, 'nmprgrm' => $nmprgrm))->row();
         return $data;
     }
 
   public function jika_daftunit($unitkey, $nmunit){
-
+        
         $data = $this->db->get_where('daftunit', array('unitkey' => $unitkey, 'nmunit' => $nmunit))->row();
         return $data;
-    }
-
+    }	
+  
   public function jika_kegiatan($nmkegunit, $kdkegunit, $idprgrm){
-
+        
         $data = $this->db->get_where('mkegiatan', array('nmkegunit' => $namakegunit, 'kdkegunit' => $kdkegunit, 'idprgrm' => $idprgrm))->row();
         return $data;
-    }
-
+    }	
+  
   public function jika_dpa21($nilai, $mtgkey, $unitkey){
-
+        
         $data = $this->db->get_where('dpa21', array('nilai' => $nilai, 'mtgkey' => $mtgkey, 'unitkey' => $unitkey))->row();
         return $data;
-    }
-
+    }	
+  
   public function jika_dpa22($nilai, $kdkegunit, $mtgkey, $unitkey){
-
+        
         $data = $this->db->get_where('dpa22', array('nilai' => $nilai, 'kdkegunit' => $kdkegunit, 'mtgkey' => $mtgkey, 'unitkey' => $unitkey))->row();
         return $data;
-    }
+    }	
+  public function jika_angkas($unitkey, $kdkegunit ,$kd_bulan, $nilai, $mtgkey){
+        
+        $data = $this->db->get_where('angkas', array('unitkey' => $unitkey, 'kdkegunit' => $kdkegunit, 'kd_bulan' => $kd_bulan, 'nilai' => $nilai, 'mtgkey' => $mtgkey, 'unitkey' => $unitkey))->row();
+        return $data;
+    } 
+  public function jika_dpa221($satuan, $subtotal ,$kdkegunit, $mtgkey, $jumbyek, $unitkey, $uraian, $tarif, $kdjabar, $type){
+        
+        $data = $this->db->get_where('dpa221', array('satuan' => $satuan, 'subtotal' => $subtotal, 'kdkegunit' => $kdkegunit, 'mtgkey' => $mtgkey, 'jumbyek' => $jumbyek, 'unitkey' => $unitkey, 'uraian' => $uraian, 'tarif' => $tarif, 'kdjabar' => $kdjabar, 'type' => $type))->row();
+        return $data;
+    }  
+  /*********Agung-Agung-Agung-Agung-Agung-Agung-Agung-Agung-*/
+  public function getkeuangan_sampai($bln){
+     $this->db->select("`angkas`.`id`
+                      , `angkas`.`unitkey`
+                      , daftunit.`nmunit`
+                      , `angkas`.`kdkegunit`
+                      , `angkas`.`kd_bulan`
+                      , `angkas`.`nilai`
+                      , `angkas`.`mtgkey`
+                      , `angkas`.`tahun`
+                      , SUM(`angkas`.`nilai`) AS pagu_dana
+                      , SUM(CASE WHEN `angkas`.kd_bulan <='$bln' THEN nilai ELSE 0 END) AS targetKeu
+                      , SUM(CASE WHEN `angkas`.kd_bulan <='$bln' THEN nilai ELSE 0 END) / SUM(`angkas`.`nilai`) * 100 AS persenTarKeu");
+      $this->db->from('`angkas`');
+      $this->db->join('daftunit', '`angkas`.`unitkey` = `daftunit`.`unitkey`');
+      $this->db->where('`angkas`.`kdkegunit` !=', '0_'); 
+       $this->db->group_by('`angkas`.unitkey');
+      return $this->db->get()->result();
+  }
+  public function getrealisasi(){
+    $this->db->select("daftunit.`unitkey`
+                      , `daftunit`.`nmunit`
+                      , `tab_pptk_master`.*
+                      ,SUM(tab_realisasi.`real_keuangan`) AS realisasi_keu
+                      ,SUM(tab_realisasi.`bobot_real`) AS realisasi_fis");
+      $this->db->from('`tab_pptk_master`');
+      $this->db->join('daftunit', '`tab_pptk_master`.`unitkey` = `daftunit`.`unitkey`', 'right');
+      $this->db->join('tab_pptk', '`tab_pptk`.`id_pptk_master` = `tab_pptk_master`.`id`', 'left');
+      $this->db->join('tab_realisasi', '`tab_realisasi`.`id_tabpptk` = `tab_pptk`.`id`', 'left');
+      $this->db->where("daftunit.`unitkey` NOT IN ('55_','40_','98_')"); 
+      $this->db->group_by('daftunit.`unitkey`');
+      return $this->db->get()->result();
+  }
+  public function getfisik($bulan){
+      
+      $arrbulan = array('jan','feb','mar','apr','mei','jun','jul','ags','sep','okt','nov','des');
+      $sum='sum(';
+      for($i=0;$i<$bulan;$i++){
+        if($i==0)
+        $sum.= 'length('.$arrbulan[$i].')';
+        else
+        $sum.= '+length('.$arrbulan[$i].')';
+      }
+      $sum.=')';
+      // var_dump($sum);exit();
+      $this->db->select("daftunit.`unitkey`
+                        ,daftunit.`nmunit`
+                        ,coalesce(($sum / SUM(LENGTH(jan)+LENGTH(feb)+LENGTH(mar)
+                        +LENGTH(apr)+LENGTH(mei)+LENGTH(jun)
+                        +LENGTH(jul)+LENGTH(ags)+LENGTH(sep)
+                        +LENGTH(okt)+LENGTH(nov)+LENGTH(des)) * 100),'0') as targetbulanini
+                      ,  `tab_schedule`.*
+                        ");
+      $this->db->from('tab_schedule');
+      $this->db->join('`tab_kak`', '`tab_schedule`.`id_tab_kak` = `tab_kak`.`id`');
+      $this->db->join('`tab_pptk`', '`tab_kak`.`idtab_pptk` = `tab_pptk`.`id`');
+      $this->db->join('`tab_pptk_master`', '`tab_pptk`.`id_pptk_master` = `tab_pptk_master`.`id`');
+      $this->db->join('`daftunit`', 'tab_pptk_master.`unitkey` = `daftunit`.`unitkey`','right');
+      $this->db->where("daftunit.`unitkey` NOT IN ('55_','40_','98_')"); 
+      $this->db->group_by('`daftunit`.`unitkey`');
+      return $this->db->get()->result();   
 
+  }
+  /*Agung-Agung-Agung-Agung-Agung-Agung-Agung-Agung-************/
 }

@@ -489,7 +489,22 @@ class Ion_auth
 
 		return $this->in_group($admin_group, $id);
 	}
+	public function is_kasubag($id=false)
+	{
+		$this->ion_auth_model->trigger_events('is_kasubag');
 
+		$kasubag_group = $this->config->item('kasubag_group', 'ion_auth');
+
+		return $this->in_group($kasubag_group, $id);
+	}
+	public function is_kasi($id=false)
+	{
+		$this->ion_auth_model->trigger_events('is_kasi');
+
+		$kasi_group = $this->config->item('kasi_group', 'ion_auth');
+
+		return $this->in_group($kasi_group, $id);
+	}
 	/**
 	 * @param int|string|array $check_group group(s) to check
 	 * @param int|string|bool  $id          user id
