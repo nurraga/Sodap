@@ -12,7 +12,7 @@
   <!-- Canonical SEO -->
   <link rel="canonical" href="http://sodap.payakumbuhkota.go.id" />
   <!--  Social tags      -->
-  ok
+
   <meta name="keywords" content="kota payakumbuh, aplikasi kota payakumbuh, goverment kota payakumbuh, kominfo kota payakumbuh, aplikasi kominfo payakumbuh, dinas kominfo kota payakumbuh, sodap kota payakumbuh, payakumbuh sumatra barat, pemerintah kota payakumbuh, sodap, smart city kota payakumbuh, payakumbuh go online,kominfo kota payakumbuh sumatra barat">
   <meta name="description" content="Aplikasi pemerintahan Kota Payakumbuh, yang di kembangkan Dinas Kominfo Kota Payakumbuh.">
   <!-- Schema.org markup for Google+ -->
