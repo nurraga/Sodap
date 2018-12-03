@@ -239,8 +239,7 @@
             row.find(".sisadana").val(totpagu);
             row.find(".harga-satuan").val(0);
             row.find(".harga-jumlah").val(0);
-               totperrek(rek);
-
+              totperrek(rek);
               totkeu();
               totsisadana();
              return false;
@@ -1114,14 +1113,14 @@ $(function () {
                       <td style="text-align:right"><b>'.$this->template->rupiah($nltahun->nilai).'</b></td>
 
                       <td class="totpagubln'.$clasrek.'" style="display:none;">'.$hrow['nilai'].'</td>
-                        <td ><input type="text" class="form-control pg'.$clasrek.'"  readonly value='.$hrow['nilai'].'></td>
+                        <td style="display:none;"><input type="text" class="form-control pg'.$clasrek.'"  readonly value='.$hrow['nilai'].'></td>
                       <td style="text-align:right"><b>'.$this->template->rupiah($hrow['nilai']).'</b></td>
-                      <td ><input type="text" class="form-control nsisadana sisadana'.$clasrek.'"  readonly value='.$hrow['nilai'].'></td>
+                      <td style="display:none;"><input type="text" class="form-control nsisadana sisadana'.$clasrek.'"  readonly value='.$hrow['nilai'].'></td>
                       <td colspan="3"></td>
                       <td colspan="2" style="vertical-align : middle;text-align:center;"><button type="button" class="btnrealfisik btn bg-blue btn-flat bm'.$clasrek.'">Entri Belanja Modal<div class="ripple-container"></div></button></td>
                       </tr>';
-                        $thn='2018';
-                        $this->db->where('`dpa221`.`tahun`', $thn);
+
+                        $this->db->where('`dpa221`.`tahun`', $tahun);
                         $this->db->where('`dpa221`.`unitkey`', $unitkey);
                         $this->db->where('`dpa221`.`kdkegunit`', $kdkegunit);
                         $this->db->where('`dpa221`.`mtgkey`', $mtgkey);
@@ -1175,15 +1174,15 @@ $(function () {
                       <td colspan="3"></td>
                       <td style="text-align:right"><b>'.$this->template->rupiah($nltahun->nilai).'</b></td>
                       <td class="totpagubln'.$clasrek.'" style="display:none;">'.$hrow['nilai'].'</td>
-                      <td ><input type="text" class="form-control pg'.$clasrek.'"  readonly value='.$hrow['nilai'].'></td>
+                      <td style="display:none;"><input type="text" class="form-control pg'.$clasrek.'"  readonly value='.$hrow['nilai'].'></td>
                       <td style="text-align:right"><b>'.$this->template->rupiah($hrow['nilai']).'</b></td>
-                      <td ><input type="text" class="form-control nsisadana sisadana'.$clasrek.'"  readonly value='.$hrow['nilai'].'></td>
+                      <td style="display:none;"><input type="text" class="form-control nsisadana sisadana'.$clasrek.'"  readonly value='.$hrow['nilai'].'></td>
                       <td colspan="3"></td>
                      <td><input type="text" class="form-control hr harga-rek'.$clasrek.'" readonly name="jumperrek[]"></td>
                       <td ></td>
                       </tr>';
-                        $thn='2018';
-                        $this->db->where('`dpa221`.`tahun`', $thn);
+
+                        $this->db->where('`dpa221`.`tahun`', $tahun);
                         $this->db->where('`dpa221`.`unitkey`', $unitkey);
                         $this->db->where('`dpa221`.`kdkegunit`', $kdkegunit);
                         $this->db->where('`dpa221`.`mtgkey`', $mtgkey);
@@ -1199,9 +1198,11 @@ $(function () {
                              $class='';
                           }
                           echo'<tr class ="'.$class.'">
-                           <td class="totpagubln'.$clasrek.'" style="display:none;">'.$hrow['nilai'].'</td>
+                              <td class="totpagubln'.$clasrek.'" style="display:none;">'.$hrow['nilai'].'</td>
+                              <td style="display:none;"><input type="hidden" class="form-control" readonly name="detpgblnskr[]"  value='.$hrow['nilai'].'></td>
                               <td><input type="hidden" class="form-control rek" readonly name="kdrek[]"  value='.$hrow['kdper'].'></td>
                               <td style="display:none;"><input type="hidden" class="form-control" readonly name="iddpa[]"  value='.$row['id'].'></td>
+                              <td style="display:none;"><input type="hidden" class="form-control" readonly name="mtgkey[]"  value='.$mtgkey.'></td>
                               <td class="tarif" style="display:none;">'.$tarif.'</td>
                               <td class"text-muted"> - '.$row['uraian'].'</td>
                               <td class="jumy" style="display:none;">'.$jumyek.'</td>
