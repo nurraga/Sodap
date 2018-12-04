@@ -7,8 +7,8 @@ var tb_kegiatan;
 var tb_anggaran;
 var tb_list_opd_entri;
 
- 
-function myajax() 
+
+function myajax()
         {
             if (window.XMLHttpRequest)
                 {
@@ -23,7 +23,7 @@ function myajax()
 var ajaxku=myajax();
 function ajaxgroup(){
   var url=base_url+"Cpanel/getnama_group/"+Math.random();
- 
+
   ajaxku.onreadystatechange=ajaxgroupstate;
   ajaxku.open("GET",url,true);
   ajaxku.send(null);
@@ -50,7 +50,7 @@ function ajaxtokenstate(){
   if (ajaxku.readyState==4){
     data=ajaxku.responseText;
     if(data.length>=0){
-            
+
       localStorage.setItem("token", data);
     }else{
       localStorage.setItem("token", "tokentidakvalid");
@@ -58,11 +58,11 @@ function ajaxtokenstate(){
   }
 }
 
-/*Datatable core*/ 
+/*Datatable core*/
 $(document).ready(function(){
   $(function () {
     //Initialize Select2 Elements
-  
+
   $(".select2").select2();
 });
   $.fn.dataTableExt.oApi.fnPagingInfo = function(oSettings){
@@ -76,7 +76,7 @@ $(document).ready(function(){
       "iTotalPages": Math.ceil(oSettings.fnRecordsDisplay() / oSettings._iDisplayLength)
     };
   };
-  /*Data table untuk opd*/ 
+  /*Data table untuk opd*/
 
   tb_opd = $('#tb-opd').DataTable({
     initComplete: function() {
@@ -98,7 +98,7 @@ $(document).ready(function(){
     processing: true,
     serverSide: true,
     ajax: {
-      
+
       "url": base_url+"Cpanel/jsonopd",
       "type": "POST"
     },
@@ -108,12 +108,12 @@ $(document).ready(function(){
         "orderable": false
       },
       {
-        "data": "nmunit",  
+        "data": "nmunit",
       }
 
     ],
     //rowsGroup: [0], //ini untuk colspan atau grouping
-    order: [[1, 'asc']], 
+    order: [[1, 'asc']],
     displayLength: 50,
     //ini untuk menambahkan kolom no di index 0
     rowCallback: function(row, data, iDisplayIndex) {
@@ -122,7 +122,7 @@ $(document).ready(function(){
       var length = info.iLength;
       var index = page * length + (iDisplayIndex + 1);
       $('td:eq(0)', row).html(index);
-    }          
+    }
   });
 
  /*Data table untuk Master program*/
@@ -146,7 +146,7 @@ tb_program = $('#tb-program').DataTable({
     processing: true,
     serverSide: true,
     ajax: {
-      
+
       "url": base_url+"Cpanel/jsonprogram",
       "type": "POST"
     },
@@ -156,7 +156,7 @@ tb_program = $('#tb-program').DataTable({
         "orderable": false
       },
       {
-        "data": "NMPRGRM",  
+        "data": "NMPRGRM",
       },
       {
         "data" : "action",
@@ -165,7 +165,7 @@ tb_program = $('#tb-program').DataTable({
       }
     ],
     //rowsGroup: [0], //ini untuk colspan atau grouping
-    order: [[1, 'asc']], 
+    order: [[1, 'asc']],
     displayLength: 50,
     //ini untuk menambahkan kolom no di index 0
     rowCallback: function(row, data, iDisplayIndex) {
@@ -174,10 +174,10 @@ tb_program = $('#tb-program').DataTable({
       var length = info.iLength;
       var index = page * length + (iDisplayIndex + 1);
       $('td:eq(0)', row).html(index);
-    }          
+    }
   });
 
- /*Data table untuk kegiatan*/ 
+ /*Data table untuk kegiatan*/
 
   tb_kegiatan = $('#tb-kegiatan').DataTable({
     initComplete: function() {
@@ -199,7 +199,7 @@ tb_program = $('#tb-program').DataTable({
     processing: true,
     serverSide: true,
     ajax: {
-      
+
       "url": base_url+"Cpanel/jsonkegiatan",
       "type": "POST"
     },
@@ -211,14 +211,14 @@ tb_program = $('#tb-program').DataTable({
       {
         "data": "NMPRGRM",
         "visible": false, "targets": 1
-        
+
       },
       {
-        "data": "nmkegunit",  
+        "data": "nmkegunit",
       }
     ],
     //rowsGroup: [0], //ini untuk colspan atau grouping
-    order: [[2, 'asc']], 
+    order: [[2, 'asc']],
     displayLength: 50,
     //ini untuk menambahkan kolom no di index 0
     rowCallback: function(row, data, iDisplayIndex) {
@@ -240,10 +240,10 @@ tb_program = $('#tb-program').DataTable({
           last = group;
         }
       } );
-    }             
+    }
   });
- 
- /*Data table untuk anggaran*/ 
+
+ /*Data table untuk anggaran*/
 
   tb_anggaran = $('#tb-anggaran').DataTable({
     initComplete: function() {
@@ -265,7 +265,7 @@ tb_program = $('#tb-program').DataTable({
     processing: true,
     serverSide: true,
     ajax: {
-      
+
       "url": base_url+"Cpanel/jsonanggaran",
       "type": "POST"
     },
@@ -277,17 +277,17 @@ tb_program = $('#tb-program').DataTable({
       {
         "data": "tahun",
         "visible": false, "targets": 1
-        
+
       },
       {
-        "data": "kdper",  
+        "data": "kdper",
       },
       {
-        "data": "nmper",  
+        "data": "nmper",
       }
     ],
     //rowsGroup: [0], //ini untuk colspan atau grouping
-    order: [[2, 'asc']], 
+    order: [[2, 'asc']],
     displayLength: 50,
     //ini untuk menambahkan kolom no di index 0
     rowCallback: function(row, data, iDisplayIndex) {
@@ -309,9 +309,9 @@ tb_program = $('#tb-program').DataTable({
           last = group;
         }
       } );
-    }             
+    }
   });
-  /*Data table untuk OPD pada DPA 2.2*/ 
+  /*Data table untuk OPD pada DPA 2.2*/
 tb_opd_dpa = $('#tb-opd-dpa').DataTable({
     initComplete: function() {
       var api = this.api();
@@ -332,7 +332,7 @@ tb_opd_dpa = $('#tb-opd-dpa').DataTable({
     processing: true,
     serverSide: true,
     ajax: {
-      
+
       "url": base_url+"Cpanel/jsonopddpa",
       "type": "POST"
     },
@@ -342,7 +342,7 @@ tb_opd_dpa = $('#tb-opd-dpa').DataTable({
         "orderable": false
       },
       {
-        "data": "nmunit",  
+        "data": "nmunit",
       },
       {
         "data" : "action",
@@ -351,7 +351,7 @@ tb_opd_dpa = $('#tb-opd-dpa').DataTable({
       }
     ],
     //rowsGroup: [0], //ini untuk colspan atau grouping
-    order: [[1, 'asc']], 
+    order: [[1, 'asc']],
     displayLength: 50,
     //ini untuk menambahkan kolom no di index 0
     rowCallback: function(row, data, iDisplayIndex) {
@@ -360,7 +360,7 @@ tb_opd_dpa = $('#tb-opd-dpa').DataTable({
       var length = info.iLength;
       var index = page * length + (iDisplayIndex + 1);
       $('td:eq(0)', row).html(index);
-    }          
+    }
   });
 
 /*Datatable untuk User Per OPD*/
@@ -384,11 +384,11 @@ tb_opd_dpa = $('#tb-opd-dpa').DataTable({
     processing: true,
     serverSide: true,
     ajax: {
-      
+
       "url": base_url+"Cpanel/jsonuseropd",
       "type": "POST"
 
-                      
+
     },
     columns: [
       {
@@ -396,7 +396,7 @@ tb_opd_dpa = $('#tb-opd-dpa').DataTable({
         "orderable": false
       },
       {
-        "data": "nmunit",  
+        "data": "nmunit",
       },
       {
         "data" : "action",
@@ -406,7 +406,7 @@ tb_opd_dpa = $('#tb-opd-dpa').DataTable({
 
     ],
     //rowsGroup: [0], //ini untuk colspan atau grouping
-    order: [[1, 'asc']], 
+    order: [[1, 'asc']],
     displayLength: 50,
     //ini untuk menambahkan kolom no di index 0
     rowCallback: function(row, data, iDisplayIndex) {
@@ -415,7 +415,7 @@ tb_opd_dpa = $('#tb-opd-dpa').DataTable({
       var length = info.iLength;
       var index = page * length + (iDisplayIndex + 1);
       $('td:eq(0)', row).html(index);
-    }          
+    }
   });
 
 /*Datatable untuk dashboard */
@@ -439,11 +439,11 @@ tb_opd_dpa = $('#tb-opd-dpa').DataTable({
     processing: true,
     serverSide: true,
     ajax: {
-      
+
       "url": base_url+"Cpanel/jsonopdentribaru",
       "type": "POST"
 
-                      
+
     },
     columns: [
       {
@@ -451,12 +451,12 @@ tb_opd_dpa = $('#tb-opd-dpa').DataTable({
         "orderable": false
       },
       {
-        "data": "nmunit",  
+        "data": "nmunit",
         "orderable": false
       },
        {
-        "data": "stat",  
-        "orderable": false, 
+        "data": "stat",
+        "orderable": false,
          render : function (data, type, row) {
                      return data == '3' ? '<span class="label label-danger">Ditolak</span>' :data == '2' ? '<span class="label label-info"><i class="fa fa-flag-o"></i> Belum Konfirmasi</span>' : data == '1' ? '<span class="label label-success">Konfirmasi</span>' : data == '0' ? '<span class="label label-info">Belum Konfirmasi</span>' : '<span class="label label-primary">Belum Ada</span>'
         },
@@ -470,7 +470,7 @@ tb_opd_dpa = $('#tb-opd-dpa').DataTable({
 
     ],
     //rowsGroup: [0], //ini untuk colspan atau grouping
-    order: [[1, 'asc']], 
+    order: [[1, 'asc']],
     displayLength: 10,
     //ini untuk menambahkan kolom no di index 0
     rowCallback: function(row, data, iDisplayIndex) {
@@ -479,12 +479,12 @@ tb_opd_dpa = $('#tb-opd-dpa').DataTable({
       var length = info.iLength;
       var index = page * length + (iDisplayIndex + 1);
       $('td:eq(0)', row).html(index);
-    }          
+    }
   });
 $('#datepicker').datetimepicker( {
-  
-    format: "YYYY", 
-   
+
+    format: "YYYY",
+
     icons: {
                 time: "fa fa-clock-o",
                 date: "fa fa-calendar",
@@ -497,9 +497,9 @@ $('#datepicker').datetimepicker( {
                 close: 'fa fa-remove',
                 inline: true
             }
-    
+
     });
- 
+
 });
 
 $('#list-opd-entri').on( 'click', 'button.entriact', function (){
@@ -508,26 +508,26 @@ $('#list-opd-entri').on( 'click', 'button.entriact', function (){
     row = row.prev();
   }
   ajaxtoken();
-  var kolom = tb_list_opd_entri.row( row ).data(); 
-  Pace.restart (); 
+  var kolom = tb_list_opd_entri.row( row ).data();
+  Pace.restart ();
   Pace.track (function (){
     var idunit = kolom['unitkey'];
     var stat    = kolom['stat'];
     var namaunit    = kolom['nmunit'];
-  
+
     if(stat=='0'){
-      // 0 = baru masuk dan belum di komfirmasi admin dalbang -> lanjut untuk acc atau tolak    
+      // 0 = baru masuk dan belum di komfirmasi admin dalbang -> lanjut untuk acc atau tolak
       var token = localStorage.getItem("token");
       $.ajax ({
         url: base_url+"Cpanel/statnol/"+Math.random(),
         type: "POST",
         data: {
           opd : idunit,
-          token :token 
+          token :token
         },
         dataType: "JSON",
         complete: function(data){
-        var jsonData = JSON.parse(data.responseText);  
+        var jsonData = JSON.parse(data.responseText);
           if (jsonData.data[0].status == "false"){
             swal(
               'info',
@@ -557,7 +557,7 @@ $('#list-opd-entri').on( 'click', 'button.entriact', function (){
             keg  =jsonData.data[0].detail[x].keg;
             pptk =jsonData.data[0].detail[x].pptk;
             ppk  =jsonData.data[0].detail[x].ppk;
-           
+
               html += "<tr>\
                       <th class='text-left'>"+ keg +"</th>\
                       <td class='text-left info'>"+ pptk +"</th>\
@@ -581,7 +581,7 @@ $('#list-opd-entri').on( 'click', 'button.entriact', function (){
                   id    : 'btn-entri-tolak',
                   css   : 'btn-danger btn-raised btn-flat btn-bitbucket',
                   label : 'Tolak'
-                }  
+                }
               },
               title: 'Form Konfirmasi',
               id : id,
@@ -591,7 +591,7 @@ $('#list-opd-entri').on( 'click', 'button.entriact', function (){
               stat : stat,
               html : html
 
-            }); 
+            });
           }
         },
       error: function(jqXHR, textStatus, errorThrown){
@@ -602,7 +602,7 @@ $('#list-opd-entri').on( 'click', 'button.entriact', function (){
         )
       }
     });
-     
+
     }else if(stat=='1'){
       // 1 = sudah konfirmasi dan ok , kemudian semua user sudah di acc per opd dan per tahun
      swal(
@@ -624,7 +624,7 @@ $('#list-opd-entri').on( 'click', 'button.entriact', function (){
             'Ditolak !!!',
             'info'
           );
-    }else{    
+    }else{
     swal(
             'info',
             'Unit OPD Tekait Belum Entri !!!',
@@ -632,7 +632,7 @@ $('#list-opd-entri').on( 'click', 'button.entriact', function (){
           );
     }
 
-  });  
+  });
 
 });
 
@@ -643,15 +643,15 @@ $('#tb-opd-user').on( 'click', 'button.btnopduser', function (){
     row = row.prev();
   }
   var kolom = tb_opd_user.row( row ).data();
-  
-  Pace.restart (); 
+
+  Pace.restart ();
   Pace.track (function (){
    var idunit    = kolom['unitkey'];
    localStorage.setItem("id_unit", idunit);
    ajaxtoken();
-   window.location.href = base_url+"Cpanel/listuserperopd/"+idunit; 
+   window.location.href = base_url+"Cpanel/listuserperopd/"+idunit;
 
-  });  
+  });
 
 });
 $('#tb-opd-user-detail').on( 'click', 'button.opduserpass', function (){
@@ -659,8 +659,8 @@ $('#tb-opd-user-detail').on( 'click', 'button.opduserpass', function (){
   if ( row.hasClass('child') ) {
     row = row.prev();
   }
-  var kolom = tb_opd_user_detail.row( row ).data(); 
-  Pace.restart (); 
+  var kolom = tb_opd_user_detail.row( row ).data();
+  Pace.restart ();
   Pace.track (function (){
     ajaxtoken();
     var nip    = kolom['nip'];
@@ -668,7 +668,7 @@ $('#tb-opd-user-detail').on( 'click', 'button.opduserpass', function (){
     var jabatan  = kolom['nama_jabatan'];
     var stat    = kolom['active'];
     //generete atau reset
-  
+
     if(stat=='0'){
       modalcpanelopduser({
         buttons: {
@@ -688,11 +688,11 @@ $('#tb-opd-user-detail').on( 'click', 'button.opduserpass', function (){
             label : 'Aktifkan User'
           }
         },
-        title: 'Reset Password / Aktifkan User', 
+        title: 'Reset Password / Aktifkan User',
         gennip: nip,
         gennama: nama,
-        genjabatan: jabatan                   
-      }); 
+        genjabatan: jabatan
+      });
     }else if(stat=='1'){
       modalcpanelopduser({
         buttons: {
@@ -712,12 +712,12 @@ $('#tb-opd-user-detail').on( 'click', 'button.opduserpass', function (){
             label : 'Non Aktifkan User'
           }
         },
-        title: 'Reset Password / Non Aktifkan User', 
+        title: 'Reset Password / Non Aktifkan User',
         gennip: nip,
         gennama: nama,
-        genjabatan: jabatan               
-      });  
-  }else{    
+        genjabatan: jabatan
+      });
+  }else{
       modalcpanelopduser({
       buttons: {
          batal: {
@@ -729,15 +729,15 @@ $('#tb-opd-user-detail').on( 'click', 'button.opduserpass', function (){
           id    : 'btn-generate-user',
           css   : 'btn-danger btn-raised btn-flat btn-bitbucket',
           label : 'Generate User Baru'
-        }  
+        }
       },
-      title: 'Generate Username dan Password',  
+      title: 'Generate Username dan Password',
       gennip: nip,
       gennama: nama,
-      genjabatan: jabatan                   
-    }); 
+      genjabatan: jabatan
+    });
   }
-  });  
+  });
 });
 
 $('#tb-opd-user-detail').on( 'click', 'button.opduserinfo', function (){
@@ -746,13 +746,13 @@ $('#tb-opd-user-detail').on( 'click', 'button.opduserinfo', function (){
     row = row.prev();
   }
   var kolom = tb_opd_user_detail.row( row ).data();
-  
-  Pace.restart (); 
+
+  Pace.restart ();
   Pace.track (function (){
   var nip    = kolom['nip'];
   alert(nip+" Info");
 
-  });  
+  });
 
 });
 
@@ -763,7 +763,7 @@ $('#tb-opd-dpa').on( 'click', 'button.btndpa', function (){
   }
   var kolom = tb_opd_dpa.row( row ).data();
   ajaxtoken();
-  Pace.restart (); 
+  Pace.restart ();
   Pace.track (function (){
     modal({
       buttons: {
@@ -773,14 +773,14 @@ $('#tb-opd-dpa').on( 'click', 'button.btndpa', function (){
           label : 'Filter'
         }
       },
-      title: 'Pilih Tahun Anggaran', 
-      idunit    : kolom['unitkey'],                
-    });  
-  });  
+      title: 'Pilih Tahun Anggaran',
+      idunit    : kolom['unitkey'],
+    });
+  });
 });
 
 function modal(data) {
-  
+
   // Set modal title
   $('.modal-title').html(data.title);
   // Clear buttons except Batal
@@ -802,15 +802,15 @@ function modalcpanelopduser(data) {
   $('#gennip').html(data.gennip);
   $('#gennama').html(data.gennama);
   $('#genjabatan').html(data.genjabatan);
-  
+
   // Clear buttons except Cancel
   $('.modal-footer button:not(".btn-default")').remove();
-  
+
   // Create Butttons
   $.each(data.buttons, function(index, button){
     $('.modal-footer').prepend('<button type="button" id="' + button.id  + '" class="btn ' + button.css + '">' + button.label + '</button>')
   })
-  
+
   //Show Modal
   $('#passwordmodal').modal('show');
 
@@ -828,21 +828,21 @@ function modaldashboard(data) {
   // document.getElementById("listmsn").innerHTML = data.html;
   // Clear buttons except Cancel
   $('.modal-footer-tombol button:not(".btn-default")').remove();
-  
+
   // Create Butttons
   $.each(data.buttons, function(index, button){
     $('.modal-footer-tombol').prepend('<button type="button" id="' + button.id  + '" class="btn ' + button.css + '">' + button.label + '</button>')
   })
-  
+
   //Show Modal
   $('#dashboardmodal').modal('show');
 
 }
 
 $('.modal').on('click', '#btn-filter-dpa',  function(e){
- 
   // var idtoken= $('#csrf').val();
   //   alert(csrfHash+"dan"+idtoken);
+
   if(validator(['datepicker'])) {
   Pace.restart ();
   Pace.track (function (){
@@ -852,18 +852,17 @@ $('.modal').on('click', '#btn-filter-dpa',  function(e){
     $.ajax ({
       url: base_url+"Cpanel/cekopddpadetail/"+Math.random(),
       type: "POST",
-   
+
       data: {
         thn : tahun,
         idunt : idunit,
         token : idtoken
-       
+
 
       },
       dataType: "JSON",
       complete: function(data){
         var jsonData = JSON.parse(data.responseText);
-        
         if (jsonData.data[0].status == "false"){
           swal(
             'info',
@@ -872,12 +871,13 @@ $('.modal').on('click', '#btn-filter-dpa',  function(e){
           );
           ajaxtoken();
         }else{
-           window.location.href = base_url+"Cpanel/opddpadetail/"+tahun+"/"+idunit; 
-        
+           window.location.href = base_url+"Cpanel/opddpadetail/"+tahun+"/"+idunit;
+
         }
 
       },
       error: function(jqXHR, textStatus, errorThrown){
+        console.log(jqXHR.responseText);
         swal(
             'error',
             'Terjadi Kesalahan, Coba Lagi Nanti',
@@ -893,7 +893,7 @@ $('.modal').on('click', '#btn-filter-dpa',  function(e){
 
 $('#dashboardmodal').on('hidden.bs.modal',  function(){
   ajaxtoken();
- tb_list_opd_entri.ajax.reload(); 
+ tb_list_opd_entri.ajax.reload();
 });
 
 $('#dashboardmodal').on('click', '#btn-entri-batal',  function(e){
@@ -924,9 +924,9 @@ $('#dashboardmodal').on('click', '#btn-entri-konfirmasi',  function(e){
       type: "POST",
       data: {
         id : id,
-        token :token 
+        token :token
       },
-      dataType: "JSON",     
+      dataType: "JSON",
       success: function(result){
         swal({
           title: 'Tersimpan!',
@@ -950,13 +950,13 @@ $('#dashboardmodal').on('click', '#btn-entri-konfirmasi',  function(e){
       }
     });
   });
-  }); 
+  });
 });
 
 $('#dashboardmodal').on('click', '#btn-entri-tolak',  function(e){
- 
+
   $('#modaltolak').modal('show');
-  
+
 });
 
 $('#passwordmodal').on('click', '#btn-generate-batal',  function(e){
@@ -969,10 +969,10 @@ $('#passwordmodal').on('click', '#btn-generate-user',  function(e){
   Pace.restart ();
   Pace.track (function (){
     var nip=$('#gennip').html();
-    
+
     var token = localStorage.getItem("token");
     var formData = new FormData($('#form-generate')[0]);
-    //tambah field ke formData 
+    //tambah field ke formData
     formData.append("nip",nip);
     formData.append("token",token);
     $.ajax({
@@ -986,8 +986,8 @@ $('#passwordmodal').on('click', '#btn-generate-user',  function(e){
       success: function(result){
           ajaxtoken();
           $('#passwordmodal').modal('hide');
-          tb_opd_user_detail.ajax.reload(); 
-          $('#form-generate')[0].reset(); 
+          tb_opd_user_detail.ajax.reload();
+          $('#form-generate')[0].reset();
           $("#idgroup").select2({
             allowClear: true
           });
@@ -997,12 +997,12 @@ $('#passwordmodal').on('click', '#btn-generate-user',  function(e){
         alert('Error adding / update data');
       }
     });
-    
-   
+
+
     });
 });
 $('#passwordmodal').on('hidden.bs.modal', function () {
-  
+
 })
 function hide_notify()
     {
@@ -1035,17 +1035,16 @@ function validator(elements) {
 
 /*Button kembali atau back pada browser*/
 
-$('#btn-kembali').click(function(){ 
-  
+$('#btn-kembali').click(function(){
+
     window.history.back();
-    
+
 });
 
 //add user baru
-$('#add-users').click(function(){ 
-  Pace.restart (); 
+$('#add-users').click(function(){
+  Pace.restart ();
   Pace.track (function (){
-      window.location.href = base_url+"Cpanel/create"; 
-    });  
+      window.location.href = base_url+"Cpanel/create";
+    });
 });
-

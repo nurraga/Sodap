@@ -209,8 +209,9 @@ FROM
       $this->db->group_by('unitkey');
       return $this->db->get()->row();
     }
+    //$^%&&*_agung
     function detprogram_dpa($thn,$id){
-      $this->db->select('dpa22.kdkegunit,mpgrm.IDPRGRM,mpgrm.NMPRGRM');
+      $this->db->select('dpa22.kdkegunit,mpgrm.IDPRGRM,mpgrm.NMPRGRM, SUM(nilai) AS nilai_prgrm');
       $this->db->from('mkegiatan');
       $this->db->join('mpgrm', 'mkegiatan.idprgrm = mpgrm.IDPRGRM');
       $this->db->join('dpa22', 'dpa22.kdkegunit = mkegiatan.kdkegunit');
@@ -218,7 +219,7 @@ FROM
       $this->db->where('dpa22.unitkey', $id);
       $this->db->group_by('mpgrm.IDPRGRM');
       return $this->db->get()->result();
-
+      //agungagung!@$%&^!%
 //       SELECT
 //     `dpa22`.`kdkegunit`
 //     , `mpgrm`.`IDPRGRM`
@@ -485,6 +486,7 @@ FROM
       $this->db->join('daftunit', '`angkas`.`unitkey` = `daftunit`.`unitkey`');
       $this->db->where('`angkas`.`kdkegunit` !=', '0_');
        $this->db->group_by('`angkas`.unitkey');
+       $this->db->order_by('daftunit.`nmunit`');
       return $this->db->get()->result();
   }
   public function getrealisasi(){
@@ -499,6 +501,7 @@ FROM
       $this->db->join('tab_realisasi', '`tab_realisasi`.`id_tabpptk` = `tab_pptk`.`id`', 'left');
       $this->db->where("daftunit.`unitkey` NOT IN ('55_','40_','98_')");
       $this->db->group_by('daftunit.`unitkey`');
+      $this->db->order_by('daftunit.`nmunit`');
       return $this->db->get()->result();
   }
   public function getfisik($bulan){
@@ -528,8 +531,89 @@ FROM
       $this->db->join('`daftunit`', 'tab_pptk_master.`unitkey` = `daftunit`.`unitkey`','right');
       $this->db->where("daftunit.`unitkey` NOT IN ('55_','40_','98_')");
       $this->db->group_by('`daftunit`.`unitkey`');
+
+      $this->db->order_by('daftunit.`nmunit`');
+
       return $this->db->get()->result();
 
   }
   /*Agung-Agung-Agung-Agung-Agung-Agung-Agung-Agung-************/
+
+  /*///////// Agung 29-11-2018Agung 29-11-2018Agung 29-11-2018Agung 29-11-2018Agung 29-11-2018*/
+  //rekap belanja modal per opd
+  function getkeuangan_bModal_smpai($bln){
+    $this->db->select("
+    `daftunit`.`unitkey`
+    , `daftunit`.`nmunit`
+    , `matangr`.`mtgkey`
+    , `matangr`.`nmper`
+    , `matangr`.`kdper`
+    , `angkas`.`kd_bulan`
+    , `angkas`.`nilai`
+    , `angkas`.`kdkegunit`
+    , SUM(`angkas`.`nilai`) AS pagu_b_modal
+    , SUM(CASE WHEN `angkas`.kd_bulan <='$bln' THEN nilai ELSE 0 END) AS targetKeu
+    , SUM(CASE WHEN `angkas`.kd_bulan <='$bln' THEN nilai ELSE 0 END) / SUM(`angkas`.`nilai`) * 100 AS persenTarKeu
+    ");
+    $this->db->from('matangr');
+    $this->db->join('`angkas`', '`matangr`.`mtgkey` = `angkas`.`mtgkey`');
+    $this->db->join('`daftunit`', '`daftunit`.`unitkey` = `angkas`.`unitkey`');
+    $this->db->where("`matangr`.`kdper` LIKE '%5.2.3.%'");
+    $this->db->group_by('`daftunit`.`unitkey`');
+    $this->db->order_by('daftunit.`nmunit`');
+    return $this->db->get()->result();
+  }
+  function getrealisasi_bModal(){
+    $this->db->select("
+    daftunit.`unitkey`
+      , `daftunit`.`nmunit`
+      , `tab_pptk_master`.*
+      ,COALESCE((SUM(tab_realisasi_bmodal.`nilai_ktrk`)),0) AS realisasi_keu
+      ,COALESCE((SUM(tab_realisasi_bmodal_det.`realfisik_bljmodal`) / COUNT(tab_realisasi_bmodal_det.`realfisik_bljmodal`)),0) AS realisasi_fis
+    ");
+    $this->db->from('tab_pptk_master');
+    $this->db->join('`daftunit`', '`tab_pptk_master`.`unitkey` = `daftunit`.`unitkey`','right');
+    $this->db->join('`tab_pptk`', '`tab_pptk`.`id_pptk_master` = `tab_pptk_master`.`id`','left');
+    $this->db->join('`tab_realisasi_bmodal`', '`tab_realisasi_bmodal`.`id_tab_pptk` = `tab_pptk`.`id`','left');
+    $this->db->join('`tab_realisasi_bmodal_det`', 'tab_realisasi_bmodal_det.id_tab_real_bmodal = tab_realisasi_bmodal.id','left');
+    $this->db->where("daftunit.`unitkey` NOT IN ('50_','55_','40_','86_','98_')");
+    $this->db->group_by('daftunit.`unitkey`');
+    $this->db->order_by('daftunit.`nmunit`');
+    return $this->db->get()->result();
+  }
+  public function getfisik_bmodal($bulan){
+
+      $arrbulan = array('jan','feb','mar','apr','mei','jun','jul','ags','sep','okt','nov','des');
+      $sum='(';
+
+      for($i=0;$i<$bulan;$i++){
+        if($i==0)
+        $sum.= 'sum('.$arrbulan[$i].')';
+        else
+        $sum.= '+sum('.$arrbulan[$i].')';
+      }
+      $sum.=')';
+      // var_dump($sum);exit();
+      $this->db->select("`daftunit`.`unitkey`
+                        , `daftunit`.`nmunit`
+                        , `tab_schedule_blnj_mdl`.id AS id_schedule
+                        , `tab_schedule_blnj_mdl`.`id_tab_target`
+                        ,coalesce((($sum /
+                        (COALESCE((SUM(jan)),0)+COALESCE((SUM(feb)),0)+COALESCE((SUM(mar)),0)
+                        +COALESCE((SUM(apr)),0)+COALESCE((SUM(mei)),0)+COALESCE((SUM(jun)),0)
+                        +COALESCE((SUM(jul)),0)+COALESCE((SUM(ags)),0)+COALESCE((SUM(sep)),0)
+                        +COALESCE((SUM(okt)),0)+COALESCE((SUM(nov)),0)+COALESCE((SUM(des)),0))) * 100),'0') as targetfis
+                        ");
+      $this->db->from('tab_pptk');
+      $this->db->join('`tab_target_blnj_modal`', '`tab_pptk`.`id` = `tab_target_blnj_modal`.`idtab_pptk`');
+      $this->db->join('`tab_schedule_blnj_mdl`', '`tab_schedule_blnj_mdl`.`id_tab_target` = `tab_target_blnj_modal`.`id`');
+      $this->db->join('`tab_pptk_master`', '`tab_pptk_master`.`id` = `tab_pptk`.`id_pptk_master`');
+      $this->db->join('`daftunit`', '`daftunit`.`unitkey` = `tab_pptk_master`.`unitkey`','right');
+      $this->db->where("daftunit.`unitkey` NOT IN ('50_','55_','40_','86_','98_')");
+      $this->db->group_by('`daftunit`.`unitkey`');
+      $this->db->order_by('daftunit.`nmunit`');
+      return $this->db->get()->result();
+
+  }
+  /* Agung 29-11-2018Agung 29-11-2018Agung 29-11-2018Agung 29-11-2018Agung 29-11-2018//////////////*/
 }
