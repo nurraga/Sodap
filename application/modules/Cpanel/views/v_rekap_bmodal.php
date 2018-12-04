@@ -1,59 +1,7 @@
 <script type="text/javascript" >
 
 var csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
-$(document).ready(function(){
-  ajaxtoken();
-  $('.btn-detail-opd').click(function(){
 
-      var row = $(this).closest("tr");    // Find the row
-      var dt = new Date();
-
-      Pace.restart ();
-      Pace.track (function (){
-        var unitkey = row.find(".unitkey").text(); // Find the text
-        var tahun = dt.getFullYear();
-        console.log(tahun)
-        var idtoken= localStorage.getItem("token");
-        $.ajax ({
-          url: base_url+"Cpanel/cekopddpadetail/"+Math.random(),
-          type: "POST",
-
-          data: {
-            thn : tahun,
-            idunt : unitkey,
-            token : idtoken
-
-
-          },
-          dataType: "JSON",
-          complete: function(data){
-            var jsonData = JSON.parse(data.responseText);
-            if (jsonData.data[0].status == "false"){
-              swal(
-                'info',
-                'Tidak ada Data di Tahun '+tahun+' !!!',
-                'info'
-              );
-              ajaxtoken();
-            }else{
-               window.location.href = base_url+"Cpanel/opddetailprgrm/"+tahun+"/"+unitkey;
-
-            }
-
-          },
-          error: function(jqXHR, textStatus, errorThrown){
-            console.log(jqXHR.responseText);
-            swal(
-                'error',
-                'Terjadi Kesalahan, Coba Lagi Nanti',
-                'error'
-              )
-          }
-        });
-
-        });
-  });
-});
 </script>
 <div class="content">
 
@@ -78,7 +26,7 @@ $(document).ready(function(){
             <i class="material-icons">assignment</i>
           </div>
           <div class="card-content">
-            <h4 class="card-title">Rapor Bulanan</h4>
+            <h4 class="card-title">Rekap Belanja Modal Bulanan</h4>
             <div class="toolbar">
               <!--        Here you can write extra buttons/actions for the toolbar              -->
 
@@ -118,10 +66,9 @@ $(document).ready(function(){
 
                     ?>
                     <tr>
-
                       <td><?php echo $n++?></td>
                       <td><?php echo $key->nmunit ?></td>
-                      <td style="text-align: right;"><?php echo $this->template->nominal($key->pagu_dana) ?></td>
+                      <td style="text-align: right;"><?php echo $this->template->nominal($key->pagu_b_modal) ?></td>
                       <td style="text-align: center;">
                         <?php
 
@@ -147,8 +94,7 @@ $(document).ready(function(){
                       <td style="text-align: center;">
                         <button class="btn btn-warning">Lihat<div class="ripple-container"></div></button>
                       </td>
-                      <td style="text-align: center;"><button class="btn btn-info btn-detail-opd">Detail<div class="ripple-container"></div></td>
-                        <td class="unitkey" style="display:none;" ><?php echo $key->unitkey?></td>
+                      <td style="text-align: center;"><button class="btn btn-info">Detail<div class="ripple-container"></div></td>
                       </tr>
                       <?php
                     }

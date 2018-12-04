@@ -4,6 +4,7 @@
 
 <!-- Mirrored from demos.creative-tim.com/material-dashboard-pro/examples/dashboard.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 20 Mar 2017 21:29:18 GMT -->
 <head>
+
   <script>var base_url = '<?php echo base_url() ?>';</script>
   <meta charset="utf-8" />
   <link rel="apple-touch-icon" sizes="76x76" href="<?php echo base_url('assets/img/logo_pyk.png') ?>" />
@@ -46,6 +47,21 @@
    <link rel="stylesheet" href="<?php echo base_url('assets/orgchart/css/jquery.orgchart.css')?>">
   <link rel="stylesheet" href="<?php echo base_url('assets/orgchart/css/style.css')?>">
   <style type="text/css">
+  .row{
+    margin-top:40px;
+    padding: 0 10px;
+  }
+  .secondpanel {
+      margin-left: 45px
+  }
+  .clickable{
+    cursor: pointer;
+  }
+
+  .panel-heading span {
+    margin-top: -20px;
+    font-size: 15px;
+  }
   hr.style13 {
     height: 10px;
     border: 0;
@@ -53,10 +69,10 @@
 }
   .contentHolder {
     position:relative;
-    margin:0px auto; 
+    margin:0px auto;
     padding:0px;
     height: 555px;
-    overflow: hidden; 
+    overflow: hidden;
     border: 0px solid #CCC;
     }
   .has-error .select2-selection {
@@ -127,7 +143,7 @@
                         </a>
                         <div class="collapse" id="collapseExample">
                             <ul class="nav">
-                                
+
                                 <li>
                                     <a href="#">Edit Profile</a>
                                 </li>
@@ -149,6 +165,12 @@
                         <a href="<?php echo base_url('Cpanel/raporOpd');?>">
                             <i class="material-icons">timeline</i>
                             <p>Rapor Bulanan</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="<?php echo base_url('Cpanel/rekapBmodalOpd');?>">
+                            <i class="material-icons">library_add</i>
+                            <p>Rekap Belanja Modal</p>
                         </a>
                     </li>
                     <li>
@@ -180,7 +202,7 @@
                     </div>
                     <div class="collapse navbar-collapse">
                         <ul class="nav navbar-nav navbar-right">
-                          
+
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                     <i class="material-icons">notifications</i>
@@ -315,7 +337,7 @@
   <script type="text/javascript" src="<?php echo base_url('assets/orgchart/js/jquery.orgchart.js')?>"></script>
 <!-- <script type="text/javascript">
     $(document).ready(function() {
-    
+
         demo.initFormExtendedDatetimepickers();
     });
 </script> -->
