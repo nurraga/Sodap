@@ -3,12 +3,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Cpanel extends MX_Controller {
 	public $data;
+  public $blnskr;
 	public function __construct()
 	{
 		parent::__construct();
-
-		 $this->load->model(array('Cpanel_model'));
-		 $this->load->library(array('ion_auth', 'form_validation'));
+		$this->blnskr =date('m');
+		$this->load->model(array('Cpanel_model'));
+		$this->load->library(array('ion_auth', 'form_validation'));
 	}
 	public function index()
 	{
@@ -16,14 +17,15 @@ class Cpanel extends MX_Controller {
 				// redirect them to the login page
 				redirect('Home/login', 'refresh');
 		}	elseif ($this->ion_auth->is_admin()) {
+			// echo $this->blnskr;exit;
 			$this->template->load('template','dashboard');
 		} else {
 			redirect('Home', 'refresh');
-		} 
+		}
 
-	} 
+	}
 
-	function user(){ 
+	function user(){
 
 		if (!$this->ion_auth->logged_in()) {
 				// redirect them to the login page
@@ -50,7 +52,7 @@ class Cpanel extends MX_Controller {
 		        if ($element['parent'] == $parentId) {
 		            $children = $this->buildTree($elements, $element['id']);
 		            if ($children) {
-		                $element['children'] = $children;   
+		                $element['children'] = $children;
 		            }
 		            $branch[] = $element;
 		        }
@@ -88,7 +90,7 @@ class Cpanel extends MX_Controller {
 		}else{
 			$arr= $this->buildTree($items);
 		}
-		
+
 		$ok=$arr[0];
     	header('Content-Type: application/json');
     	echo json_encode($ok);
@@ -112,7 +114,7 @@ class Cpanel extends MX_Controller {
    //                                  </li>";
    //              }else{
    //                  echo "<li>" . anchor($m->link, "<i class='$m->icon'></i> <span>" . strtoupper($m->name)) . "</span></li>";
-   //              }           
+   //              }
    //          }
 
 
@@ -137,15 +139,15 @@ class Cpanel extends MX_Controller {
 			// $arr=array(
 		 //        'name' => 'Kadis',
 		 //        'title' => 'Ruslayeti',
-		      
+
    //      	);
-    	
+
     	header('Content-Type: application/json');
     	// minimal PHP 5.2
     	echo json_encode($arr);
 
 	}
-	
+
 
 	/*opd*/
 	function jsonopd(){
@@ -246,7 +248,7 @@ class Cpanel extends MX_Controller {
         	);
     	}else{
       		$arr['data'][]= array(
-        		'status' => 'false'  
+        		'status' => 'false'
         	);
     	}
     	header('Content-Type: application/json');
@@ -294,7 +296,7 @@ class Cpanel extends MX_Controller {
 		}
 
 	}
-	
+
 	function jsonuserlist_by($opd){
     	header('Content-Type: application/json');
     	echo $this->Cpanel_model->jsonuserlist_by($opd);
@@ -302,7 +304,7 @@ class Cpanel extends MX_Controller {
  //  	function jsonmastergroup(){
  //    	header('Content-Type: application/json');
  //    	$group= $this->ion_auth->groups()->result();
-    
+
  //    	if ($group){
 	// 	foreach($group as $row)
 	// 	{
@@ -312,7 +314,7 @@ class Cpanel extends MX_Controller {
 	// 			'id'			=>$row->id,
 	// 			'name'			=>$row->name,
 	// 			'description'	=>$row->description
-				
+
 	// 		);
 	// 	}
 	// 	echo json_encode($arr);
@@ -325,12 +327,12 @@ class Cpanel extends MX_Controller {
 	// 	echo json_encode($arr);
 	// }
  //    	// minimal PHP 5.2
-    	
-    	
+
+
  //  	}
   	public function getnama_group(){
     	$group= $this->ion_auth->groups()->result();
-    	
+
     	foreach ($group as $k) {
      		echo "<option value='{$k->id}'>{$k->name}</option>";
    		}
@@ -349,7 +351,7 @@ class Cpanel extends MX_Controller {
 
 	}
 
-	
+
 	function generateuser(){
 
 		if (!$this->ion_auth->logged_in()) {
@@ -366,13 +368,13 @@ class Cpanel extends MX_Controller {
       		$group_ids 	= $this->input->post('groups');
       		$additional_data = array(
 	        	'first_name' => $nama,
-	        	
-	        	
+
+
 
       		);
 
       		$this->ion_auth->register($username, $password, $email, $additional_data, $group_ids);
-			
+
 		} else {
 			redirect('Home', 'refresh');
 		}
@@ -385,7 +387,7 @@ class Cpanel extends MX_Controller {
   	}
 
 	function statnol(){
-	
+
 		$opd=$this->input->post('opd');
 		// $opd='80_';
 		$tahun    	= date('Y');
@@ -425,11 +427,11 @@ class Cpanel extends MX_Controller {
 			   	'time'=>$time,
 			  	'stat'=>$stat,
 			  	'detail'=>$detail
-			  	
+
         	);
     	}else{
       		$arr['data'][]= array(
-        		'status' => 'false'  
+        		'status' => 'false'
         	);
     	}
     	header('Content-Type: application/json');
@@ -443,8 +445,8 @@ class Cpanel extends MX_Controller {
         if (!$this->ion_auth->logged_in()){
             redirect('Home/login', 'refresh');
         }elseif ($this->ion_auth->is_admin()){
-           	$id = $this->input->post('id');  
-          	$admin = $this->ion_auth->user()->row()->username;  
+           	$id = $this->input->post('id');
+          	$admin = $this->ion_auth->user()->row()->username;
           	$tgl_entri      = date('Y/m/d h:i:sa');
 
             $list=array(
@@ -457,21 +459,21 @@ class Cpanel extends MX_Controller {
                'status'      		=> '1'
             );
 
-            
+
             $result=$this->Cpanel_model->simpanentrikegiatan($id,$list,$list2);
             if($result){
                 echo json_encode(array("status" => TRUE));
             }
         }else{
             redirect('User/general', 'refresh');
-        }   
+        }
     }
 
 	/*API Dari Keuangan*/
 	function tessum(){
 		 $this->db->select('nilai');
       	$this->db->from('angkas');
-     
+
       $tes= $this->db->get()->result();
       $nl=0;
       foreach ($tes as $key ) {
@@ -487,11 +489,11 @@ class Cpanel extends MX_Controller {
     $data = array();
     foreach ($obj['DATA'] as $row) {
       $data[] = array(
-          
+
           "kdkegunit"   =>  $row['KDKEGUNIT'],
           "nilai"    	=>  $row['NILAI'],
-         
-         
+
+
             );
     }
 		$array = array(
@@ -511,7 +513,7 @@ class Cpanel extends MX_Controller {
 		$new = array();
 		foreach($result as $key => $value) {
 		    $new[] = array(
-		    	'id' => $key, 
+		    	'id' => $key,
 		    	'quanity' => array_sum($value));
 		}
 		echo '<pre>';
@@ -578,9 +580,9 @@ class Cpanel extends MX_Controller {
 				redirect('Home/login', 'refresh');
 		}	elseif ($this->ion_auth->is_admin()) {
 
-			$datakeuangan = $this->Cpanel_model->getkeuangan_sampai(2);
+			$datakeuangan = $this->Cpanel_model->getkeuangan_sampai($this->blnskr);
 			$realisasikeu = $this->Cpanel_model->getrealisasi();
-			$realisasifis = $this->Cpanel_model->getfisik(2);
+			$realisasifis = $this->Cpanel_model->getfisik($this->blnskr);
 
 			// echo json_encode($realisasifis);exit;
 			foreach ($datakeuangan as $key => $value) {
@@ -606,4 +608,67 @@ class Cpanel extends MX_Controller {
 		}
 	}
 	/*Agung-Agung-Agung-Agung-Agung-Agung-Agung-Agung-************/
+
+	/*///////// Agung 29-11-2018Agung 29-11-2018Agung 29-11-2018Agung 29-11-2018Agung 29-11-2018*/
+	function rekapBmodalOpd(){
+
+		if (!$this->ion_auth->logged_in()) {
+				// redirect them to the login page
+				redirect('Home/login', 'refresh');
+		}	elseif ($this->ion_auth->is_admin()) {
+
+			$datakeuangan = $this->Cpanel_model->getkeuangan_bModal_smpai($this->blnskr);
+			$realisasi = $this->Cpanel_model->getrealisasi_bModal();
+			$fisik = $this->Cpanel_model->getfisik_bmodal($this->blnskr);
+			foreach ($datakeuangan as $key => $value) {
+				//nilai realisasi sampai bulan sekarang
+				$datakeuangan[$key]->realisasi_keu = $realisasi[$key]->realisasi_keu;
+				//persentase realisasi sampai bulan sekarang
+				$persentasiReal= $realisasi[$key]->realisasi_keu / $datakeuangan[$key]->pagu_b_modal *100;
+				$datakeuangan[$key]->persentasiReal = number_format($persentasiReal,2);
+				//persentase target fisik sampai bulan sekarang
+				$persenTarFis = $fisik[$key]->targetfis;
+				$datakeuangan[$key]->target_fis = number_format($persenTarFis,2);
+				//persentase realisasi fisik sampai bulan sekarang
+				$persenRealFis = $realisasi[$key]->realisasi_fis;
+				$datakeuangan[$key]->realisasi_fis =$persenRealFis ;
+				//nilairaporopd
+				$nilai = 0;
+				if($datakeuangan[$key]->persenTarKeu != 0){
+					$nilai = ($persentasiReal * 100) / $datakeuangan[$key]->persenTarKeu;
+				}
+
+				$datakeuangan[$key]->nilairapor = $nilai;
+			}
+			$data['data'] = $datakeuangan;
+			$this->template->load('template','v_rekap_bmodal',$data);
+
+		} else {
+			redirect('Home', 'refresh');
+		}
+	}
+	function opddetailprgrm($th,$id){
+
+		if (!$this->ion_auth->logged_in()) {
+				// redirect them to the login page
+				redirect('Home/login', 'refresh');
+		}	elseif ($this->ion_auth->is_admin()) {
+
+			$opd= $this->Cpanel_model->detopd_dpa($th,$id);
+			$program= $this->Cpanel_model->detprogram_dpa($th,$id);
+			$this->data= array(
+					'idopd'		=>  $id,
+					'opd' 		=> 	$opd->nmunit,
+                  	'thn' 		=>	$opd->tahun,
+                  	'program' 	=>	$program
+                 );
+
+			$this->template->load('template','v_detail_program_opd',$this->data);
+		} else {
+			redirect('Home', 'refresh');
+		}
+
+	}
+	
+	/* Agung 29-11-2018Agung 29-11-2018Agung 29-11-2018Agung 29-11-2018Agung 29-11-2018//////////////*/
 }
