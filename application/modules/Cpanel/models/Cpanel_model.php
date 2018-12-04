@@ -531,7 +531,9 @@ FROM
       $this->db->join('`daftunit`', 'tab_pptk_master.`unitkey` = `daftunit`.`unitkey`','right');
       $this->db->where("daftunit.`unitkey` NOT IN ('55_','40_','98_')");
       $this->db->group_by('`daftunit`.`unitkey`');
+
       $this->db->order_by('daftunit.`nmunit`');
+
       return $this->db->get()->result();
 
   }
