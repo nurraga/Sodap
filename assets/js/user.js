@@ -251,7 +251,7 @@ function modalrealisasi(data) {
   /*modal Cpanel/opduser*/
   // Set modal title
 var stat= data.status;
-if(stat==1 || stat==3){
+if(stat==1 || stat==3 || stat==4){
   $('#nilaikontrak').prop("disabled", "disabled");
   $('#pbj').prop("disabled", "disabled");
   $('#awalktr').prop("disabled", "disabled");
@@ -259,6 +259,11 @@ if(stat==1 || stat==3){
   $('#spmk').prop("disabled", "disabled");
   $('#nomorkontrak').prop("disabled", "disabled");
   $('#realfissudah').html(data.realfisik);
+  $('#realfisikbljmodal').val(data.realbj );
+  $('#realbobotbljmodal').val(data.bbtbj);
+  $('#iddet').html(data.iddet);
+
+
 }else{
   $('#nilaikontrak').removeAttr("disabled");
   $('#pbj').removeAttr("disabled");
@@ -266,9 +271,10 @@ if(stat==1 || stat==3){
   $('#akhirktr').removeAttr("disabled");
   $('#spmk').removeAttr("disabled");
   $('#nomorkontrak').removeAttr("disabled");
-    $('#realfissudah').html(0);
-    $('#idbmodal').html(0);
-    realfissudah
+  $('#realfissudah').html(0);
+  $('#idbmodal').html(0);
+  $('#iddet').html(0);
+    //realfissudah
 }
   $('.modal-title').html(data.title);
 
@@ -322,7 +328,7 @@ $('#modalrealisasi').on('hidden.bs.modal',  function(){
     $('#spmk').datepicker('setDate', null);
     $('#spmk').datepicker('destroy');
     $("#formrealisasibljmodal")[0].reset();
-    ajaxtoken();
+
     });
 
 });
