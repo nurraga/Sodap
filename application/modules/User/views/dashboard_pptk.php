@@ -13,7 +13,7 @@
                                 </div>
                                 <div class="card-footer">
                                     <div class="stats">
-                                        
+
                                         <div class="stats">
                                         <button class="btn btn-info btn-sx" id="btn-dash-entri"type="button">Proses</button>
                                         </div>
@@ -22,9 +22,9 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                     </div>
-                
+
 
 
                 </div>
@@ -35,7 +35,7 @@
 <section class="content-header">
   <h1>
     SODAP
-    <small>Payakumbuh</small>
+    <small>Kota Payakumbuh</small>
 </h1>
 <ol class="breadcrumb">
     <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
@@ -90,8 +90,8 @@
           Proses <i class="fa fa-arrow-circle-right"></i>
       </a> -->
        <a class="btn btn-block btn-social btn-success" id="btn-dash-entri">
-          <i class="fa fa-bars"></i> proses 
-        </a> 
+          <i class="fa fa-bars"></i> proses
+        </a>
   </div>
 </div>
 <!-- ./col -->
@@ -102,12 +102,3 @@
 
 </section>
 <!-- /.content -->
-
-
-
-
-
-
-
-
-
