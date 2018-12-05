@@ -35,7 +35,7 @@
 <section class="content-header">
   <h1>
     SODAP
-    <small>Kota Payakumbuh</small>
+    <small>Payakumbuh</small>
 </h1>
 <ol class="breadcrumb">
     <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
