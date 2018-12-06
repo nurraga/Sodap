@@ -7,9 +7,10 @@ $('.contentHolder').each(function(){
        });
 
 </script>
-<div class="content"> 
+<div class="content">
 
                 <div class="container-fluid">
+                  
                   <div class="row">
                         <div class="col-lg-3 col-md-6 col-sm-6">
                             <div class="card card-stats">
@@ -22,7 +23,7 @@ $('.contentHolder').each(function(){
                                 </div>
                                 <div class="card-footer">
                                     <div class="stats">
-                                        
+
                                             <div class="dropdown pull-left">
                                                         <button type="button" class="btn btn-round btn-info dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                                                             <i class="fa fa-external-link"></i> Kelola API
@@ -79,7 +80,7 @@ $('.contentHolder').each(function(){
                                                             <li>
                                                                 <a href="<?php echo base_url('Cpanel/opduser');?>">Pengguna Per OPD</a>
                                                             </li>
-                                                           
+
                                                         </ul>
                                                     </div>
                                     </div>
@@ -105,7 +106,7 @@ $('.contentHolder').each(function(){
                                                     <th>Nama Unit / OPD</th>
                                                      <th>Status</th>
                                                     <th>Aksi</th>
-                                                    
+
                                                 </tr>
                                             </thead>
                                             <tfoot>
@@ -119,8 +120,8 @@ $('.contentHolder').each(function(){
                                       </table>
                                     </div>
                                         </div>
-                                       
-                                      
+
+
                                     </div>
                                 </div>
                             </div>
@@ -134,19 +135,19 @@ $('.contentHolder').each(function(){
                                     <h4 class="card-title">History</h4>
                                     <div class="row contentHolder">
                                         <div class="col-md-12  ">
-                                         
-                            
-                                          
-                                        </div>  
+
+
+
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                      
+
                 </div>
-                
+
             </div>
-<div class="modal fade" id="dashboardmodal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">   
+<div class="modal fade" id="dashboardmodal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -155,24 +156,24 @@ $('.contentHolder').each(function(){
                     <h5 class="modal-title"></h5>
             </div>
 
-            <div class="modal-body">         
+            <div class="modal-body">
                 <div class="row">
                         <!-- <div class="col-md-2 ">
                             <br>
                             <h3>Detail</h3>
                         </div> -->
                         <div class="col-md-12 ">
-                          
+
                              <div class="card">
-                                
+
                                 <div class="card-content">
                                     <p class="hide" id="idopd"></p>
                                      <blockquote>
                                 <h4 class="info-text" id="namadinas"></h4>
                                 <small id="admin"></small>
-                               
+
                                 <br>
-                                
+
                             </blockquote>
 
                                <!--  <legend>Dokumen Pendukung</legend>
@@ -183,10 +184,10 @@ $('.contentHolder').each(function(){
                                             <tr>
                                                 <td>1</td>
                                                 <td>SK-Kominfo 2018</td>
-                                                
+
                                                 <td>View</td>
                                             </tr>
-                                            
+
                                         </tbody>
                                     </table> -->
                                 </div>
@@ -206,7 +207,7 @@ $('.contentHolder').each(function(){
             </div>
 
             <div class="modal-footer modal-footer-tombol">
-                                                            
+
             </div>
         </div>
     </div>
@@ -228,16 +229,15 @@ $('.contentHolder').each(function(){
                                                 <span class="material-input"></span></div>
                                             </div>
                                         </div>
-                                        
-                                        
-                                        
+
+
+
                                     </form>
                                                         </div>
                                                         <div class="modal-footer text-center">
-                                                            
+
                                                             <button type="button" class="btn btn-success btn-simple">Tolak</button>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-
