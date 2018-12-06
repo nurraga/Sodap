@@ -219,7 +219,8 @@ FROM
       $this->db->where('dpa22.unitkey', $id);
       $this->db->group_by('mpgrm.IDPRGRM');
       return $this->db->get()->result();
-      //agungagung!@$%&^!%
+
+
 //       SELECT
 //     `dpa22`.`kdkegunit`
 //     , `mpgrm`.`IDPRGRM`
@@ -231,6 +232,34 @@ FROM
 //     INNER JOIN `db_sodap`.`dpa22`
 //         ON (`dpa22`.`kdkegunit` = `mkegiatan`.`kdkegunit`) WHERE `dpa22`.`tahun`='2018' AND `dpa22`.`unitkey`='80_' GROUP BY `mpgrm`.`IDPRGRM`;
     }
+
+    function getkegiatan_by($idopd,$thn,$idprog){
+      $this->db->select('dpa22.kdkegunit,mkegiatan.nmkegunit');
+      $this->db->from('dpa22');
+      $this->db->join('daftunit', 'dpa22.unitkey = daftunit.unitkey');
+      $this->db->join('mkegiatan', 'dpa22.kdkegunit = mkegiatan.kdkegunit');
+      $this->db->join('mpgrm', 'mkegiatan.idprgrm = mpgrm.IDPRGRM');
+      $this->db->where('dpa22.tahun', $thn);
+      $this->db->where('dpa22.unitkey', $idopd);
+      $this->db->where('mpgrm.IDPRGRM', $idprog);
+      $this->db->group_by('dpa22.kdkegunit');
+      return $this->db->get()->result();
+    }
+    function getmasalah_by($idopd,$bln,$idkeg){
+      $this->db->select('`tab_realisasi`.`permasalahan`
+                        , `mkegiatan`.`nmkegunit` AS `nm_kegiatan`
+                        , `tab_realisasi`.`real_bulan`
+                        , `tab_pptk`.`kdkegunit`');
+      $this->db->from('tab_pptk');
+      $this->db->join('tab_pptk_master', '`tab_pptk`.`id_pptk_master` = `tab_pptk_master`.`id`');
+      $this->db->join('tab_realisasi', '`tab_realisasi`.`id_tabpptk` = `tab_pptk`.`id`');
+      $this->db->join('mkegiatan', '`mkegiatan`.`kdkegunit` = `tab_pptk`.`kdkegunit`');
+      $this->db->where('`tab_pptk_master`.`unitkey`', $idopd);
+      $this->db->where('MONTH(`tab_realisasi`.`real_bulan`)', $bln);
+      $this->db->where('`tab_pptk`.`kdkegunit`', $idkeg);
+      return $this->db->get();
+    }
+    //agungagung!@$%&^!%
 
   function addprgrm(){
     $thn='2018';
@@ -489,12 +518,23 @@ FROM
        $this->db->order_by('daftunit.`nmunit`');
       return $this->db->get()->result();
   }
-  public function getrealisasi(){
+  public function getrealisasikeu(){
     $this->db->select("daftunit.`unitkey`
                       , `daftunit`.`nmunit`
                       , `tab_pptk_master`.*
-                      ,SUM(tab_realisasi.`real_keuangan`) AS realisasi_keu
-                      ,SUM(tab_realisasi.`bobot_real`) AS realisasi_fis");
+                      ,SUM(tab_realisasi_det.`jumlah_harga`) AS realisasi_keu");
+      $this->db->from('`tab_pptk_master`');
+      $this->db->join('daftunit', '`tab_pptk_master`.`unitkey` = `daftunit`.`unitkey`', 'right');
+      $this->db->join('tab_pptk', '`tab_pptk`.`id_pptk_master` = `tab_pptk_master`.`id`', 'left');
+      $this->db->join('tab_realisasi', '`tab_realisasi`.`id_tabpptk` = `tab_pptk`.`id`', 'left');
+      $this->db->join('tab_realisasi_det', '`tab_realisasi`.`id` = `tab_realisasi_det`.`id_tab_realisasi` ', 'left');
+      $this->db->where("daftunit.`unitkey` NOT IN ('55_','40_','98_')");
+      $this->db->group_by('daftunit.`unitkey`');
+      $this->db->order_by('daftunit.`nmunit`');
+      return $this->db->get()->result();
+  }
+  public function getrealisasifis(){
+    $this->db->select("SUM(tab_realisasi.`bobot_real`) AS realisasi_fis");
       $this->db->from('`tab_pptk_master`');
       $this->db->join('daftunit', '`tab_pptk_master`.`unitkey` = `daftunit`.`unitkey`', 'right');
       $this->db->join('tab_pptk', '`tab_pptk`.`id_pptk_master` = `tab_pptk_master`.`id`', 'left');
@@ -521,7 +561,7 @@ FROM
                         ,coalesce(($sum / SUM(LENGTH(jan)+LENGTH(feb)+LENGTH(mar)
                         +LENGTH(apr)+LENGTH(mei)+LENGTH(jun)
                         +LENGTH(jul)+LENGTH(ags)+LENGTH(sep)
-                        +LENGTH(okt)+LENGTH(nov)+LENGTH(des)) * 100),'0') as targetbulanini
+                        +LENGTH(okt)+LENGTH(nov)+LENGTH(des)) * 100),'Belum Ada KAK') as targetbulanini
                       ,  `tab_schedule`.*
                         ");
       $this->db->from('tab_schedule');

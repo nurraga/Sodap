@@ -83,31 +83,38 @@ class User extends MX_Controller
                     /*jika peran 2 maka PPK*/
                     $lskeg = $this->User_model->getdetlistkegiatan_ppk($nip);
                     $unitkeyppk = $this->User_model->getunitkeyppk($nip);
-                    $data = $this->User_model->getdatappk($unitkeyppk,$nip);
-                    $pgthn = $this->User_model->getpagutahun($unitkeyppk);
-                    $angkas = $this->User_model->getangkashinggabulanini($unitkeyppk,$nip);
-                    $angkasbulanini = $this->User_model->getangkasbulanini($unitkeyppk,$nip);
+                    $data = $this->User_model->getdatappk($unitkeyppk, $nip);
+                    $pgthn = $this->User_model->getpagutahun($nip);
+                    $angkas = $this->User_model->getangkashinggabulanini($nip);
+                    $totreal = $this->User_model->gettotalrealisasi($nip); //total realisasi hingga bulan sebelumnya
+                    $angkasbulanini = $this->User_model->getangkasbulanini($nip) + (($angkas - $this->User_model->getangkasbulanini($nip)) - $totreal);
+                    $detangkasbulanini = $this->User_model->getdetangkasbulanini($nip);
                     $realisasibulanini = $this->User_model->getrealisasibulanini($this->User_model->getidstrukturppk($nip));
-                    $persenrealisasibulanini = ($realisasibulanini/$angkasbulanini)*100;
+                    $persenrealisasibulanini = ($realisasibulanini / $angkasbulanini) * 100;
                     $lspptk = $this->User_model->getnipstrukturpptk($this->User_model->getidstrukturppk($nip));
 
-                    //echo json_encode($lspptk);
+                    //var_dump($detangkasbulanini).exit;
                     //echo $this->template->rupiah($pgthn);
-                    $this->data= array(
-                        'idopd'     => $idopd,
-                        'nmopd'     => $namaopd,
-                        'tahun'     => date('Y'),
-                        'list'      => $lskeg,
+                    //var_dump($this->User_model->getdetangkashbs($nip)).exit;
+                    $this->data = array(
+                        'idopd' => $idopd,
+                        'nmopd' => $namaopd,
+                        'tahun' => date('Y'),
+                        'list' => $lskeg,
                         'pagu_tahun' => $this->template->rupiah($pgthn),
                         'angkas_bulan' => $this->template->rupiah($angkas),
                         'angkas_bulan_ini' => $this->template->rupiah($angkasbulanini),
+                        'det_angkas_bulan_ini' => $detangkasbulanini,
                         'realisasi_bulan_ini' => $this->template->rupiah($realisasibulanini),
-                        'persen_realisasi' => number_format((float)$persenrealisasibulanini, 2).' %',
+                        'persen_realisasi' => round($persenrealisasibulanini, 2) . ' %',
                         'lspptk' => $lspptk,
+                        'kegiatan' => $this->User_model->getkegiatan($nip),
+                        'data_realisasi' => $this->User_model->getdatarealisasi($nip), //data realisasi bulan ini
+                        'data_realisasi_hbs' => $this->User_model->getdatarealisasihbs($nip), //data realisasi hingga bulan sebelumnya
+                        'data_angkas_hbs' => $this->User_model->getdetangkashbs($nip), //data angkas hingga bulan sebelumnya
 
-                        'data_realisasi' => ''
                     );
-                    $this->template->load('templatenew','dashboard_ppk',$this->data);
+                    $this->template->load('templatenew', 'dashboard_ppk', $this->data);
 
                 }elseif($peran=='3'){
                     /*jika peran 3 maka PPTK*/
@@ -3163,5 +3170,50 @@ function getWeeks($date, $rollover)
 
     return $weeks;
 }
+
+//<--function created by ragaa
+    function getjsonrealisasi($kdkegunit)
+    {
+        //echo $kdbulan;
+        $kdbulan = date('m');
+        $data = $this->User_model->rincianrealisasi($kdkegunit,$kdbulan);
+        $jsondata = array();
+        if($data!=0){
+            $matangr = $this->User_model->getmatangr($kdkegunit,$kdbulan);
+            foreach ($matangr as $m){
+                $datamatangr[] = array(
+                    'kdper' => $m['kdper'],
+                    'nmper' => $m['nmper'],
+                    'mtgkey' => $m['mtgkey'],
+                    'sisa_dana' => $this->template->rupiah($m['sisa_dana'])
+                );
+            }
+            foreach ($data as $d){
+                $jsondata[] = array(
+                    'mtgkey' => $d['mtgkey'],
+                    'nmper' => $d['nmper'],
+                    'kdper' => $d['kdper'],
+                    'real_bulan' => $d['real_bulan'],
+                    'tgl_entri' => $d['tgl_entri'],
+                    'nm_dana' => $d['nm_dana'],
+                    'harga_satuan' => $this->template->rupiah($d['harga_satuan']),
+                    'jumlah_harga' => $this->template->rupiah($d['jumlah_harga']),
+                    'sisa_dana' => $this->template->rupiah($d['sisa_dana']),
+                    'vol' => $d['vol'],
+                    'satuan' => $d['satuan'],
+                    'urn' => $d['uraian']
+
+                );
+            }
+            $json = array(
+                'matangr' => $datamatangr,
+                'datar' => $jsondata
+            );
+            echo json_encode($json);
+        }else{
+            echo json_encode($data);
+        }
+    }
+    //-->
 
 }
