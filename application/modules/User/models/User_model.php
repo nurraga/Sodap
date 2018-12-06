@@ -849,70 +849,243 @@ FROM
     //end query untuk mendapatkan data dpa221, tab_pptk, matangr, mkegiatan ppk-->
 
     //<--query untuk mendapatkan data pagu tahun
-    function getpagutahun($unitkey)
+    function getpagutahun($nipppk)
     {
-        $query = 'SELECT SUM(`angkas`.`nilai`) AS `pagu_tahun`
-    FROM
-    `angkas` 
-        WHERE `angkas`.`unitkey`="'.$unitkey.'"';
+        $query = 'SELECT
+    SUM(`angkas`.`nilai`) AS `pagu_tahun`
+FROM
+    `db_sodap`.`tab_pptk`
+    INNER JOIN `db_sodap`.`angkas` 
+        ON (`tab_pptk`.`kdkegunit` = `angkas`.`kdkegunit`) WHERE `tab_pptk`.`idpnsppk`='.$nipppk.' AND `angkas`.`tahun` = YEAR(NOW());';
         return $this->db->query($query)->row()->pagu_tahun;
     }
     //end query untuk mendapatkan data pagu tahun-->
 
     //<--query untuk mendapatkan data angkas hingga bulan ini
-    function getangkashinggabulanini($unitkey,$nipppk)
+    function getangkashinggabulanini($nipppk)
     {
-        $query = 'SELECT SUM(`angkas`.`nilai`) AS `angkas_bulan`
-    FROM
-    `db_sodap`.`dpa221`
-    INNER JOIN `db_sodap`.`matangr` 
-        ON (`dpa221`.`mtgkey` = `matangr`.`mtgkey`)
-    INNER JOIN `db_sodap`.`mkegiatan` 
-        ON (`dpa221`.`kdkegunit` = `mkegiatan`.`kdkegunit`)
+        $query = 'SELECT
+    SUM(`angkas`.`nilai`) AS `angkas_bulan`
+FROM
+    `db_sodap`.`tab_pptk`
     INNER JOIN `db_sodap`.`angkas` 
-        ON (`matangr`.`mtgkey` = `angkas`.`mtgkey`)
-    INNER JOIN `db_sodap`.`tab_pptk` 
-        ON (`tab_pptk`.`kdkegunit` = `mkegiatan`.`kdkegunit`) AND (`angkas`.`kdkegunit` = `mkegiatan`.`kdkegunit`) WHERE `dpa221`.`unitkey` ="'.$unitkey.'" AND `tab_pptk`.`idpnsppk`="'.$nipppk.'" AND `angkas`.`kd_bulan` <='.date('m').'';
+        ON (`tab_pptk`.`kdkegunit` = `angkas`.`kdkegunit`) WHERE `tab_pptk`.`idpnsppk`='.$nipppk.' AND `angkas`.`kd_bulan` <= MONTH(NOW()) AND `angkas`.`tahun` = YEAR(NOW())';
         return $this->db->query($query)->row()->angkas_bulan;
     }
     //end query untuk mendapatkan data angkas hingga bulan ini-->
 
-    //<--query untuk mendapatkan data angkas hingga bulan ini
-    function getangkasbulanini($unitkey,$nipppk)
+    //<--query untuk mendapatkan data angkas bulan ini
+    function getangkasbulanini($nipppk)
     {
-        $query = 'SELECT SUM(`angkas`.`nilai`) AS `angkas_bulan`
-    FROM
-    `db_sodap`.`dpa221`
-    INNER JOIN `db_sodap`.`matangr` 
-        ON (`dpa221`.`mtgkey` = `matangr`.`mtgkey`)
-    INNER JOIN `db_sodap`.`mkegiatan` 
-        ON (`dpa221`.`kdkegunit` = `mkegiatan`.`kdkegunit`)
+        $query = 'SELECT
+    SUM(`angkas`.`nilai`) AS `angkas_bulan`
+FROM
+    `db_sodap`.`tab_pptk`
     INNER JOIN `db_sodap`.`angkas` 
-        ON (`matangr`.`mtgkey` = `angkas`.`mtgkey`)
-    INNER JOIN `db_sodap`.`tab_pptk` 
-        ON (`tab_pptk`.`kdkegunit` = `mkegiatan`.`kdkegunit`) AND (`angkas`.`kdkegunit` = `mkegiatan`.`kdkegunit`) WHERE `dpa221`.`unitkey` ="'.$unitkey.'" AND `tab_pptk`.`idpnsppk`="'.$nipppk.'" AND `angkas`.`kd_bulan` ='.date('m').'';
+        ON (`tab_pptk`.`kdkegunit` = `angkas`.`kdkegunit`) WHERE `tab_pptk`.`idpnsppk`='.$nipppk.' AND `angkas`.`kd_bulan` = MONTH(NOW()) AND `angkas`.`tahun` = YEAR(NOW())';
         return $this->db->query($query)->row()->angkas_bulan;
     }
-    //end query untuk mendapatkan data angkas hingga bulan ini-->
+    //end query untuk mendapatkan data angkas bulan ini-->
+
+    //<--query untuk mendapatkan detail data angkas bulan ini
+    function getdetangkasbulanini($nipppk)
+    {
+        $query = 'SELECT
+    `angkas`.`nilai`,
+    `angkas`.`kdkegunit`
+FROM
+    `db_sodap`.`tab_pptk`
+    INNER JOIN `db_sodap`.`angkas` 
+        ON (`tab_pptk`.`kdkegunit` = `angkas`.`kdkegunit`) WHERE `tab_pptk`.`idpnsppk`='.$nipppk.' AND `angkas`.`kd_bulan` = MONTH(NOW()) AND `angkas`.`tahun` = YEAR(NOW())';
+        return $this->db->query($query)->result_array();
+    }
+    //end query untuk mendapatkan detail data angkas bulan ini-->
 
     //<--query untuk mendapatkan data realisasi bulan ini
     function getrealisasibulanini($idppk)
     {
         $month = date('m');
         $query = "SELECT
-    `tab_realisasi`.`real_keuangan` as `realisasi`
-    FROM
-    `db_sodap`.`tab_realisasi`
+    SUM(`tab_realisasi_det`.`jumlah_harga`) AS `realisasi`
+FROM
+    `db_sodap`.`tab_realisasi_det`
+    INNER JOIN `db_sodap`.`tab_realisasi` 
+        ON (`tab_realisasi_det`.`id_tab_realisasi` = `tab_realisasi`.`id`)
     INNER JOIN `db_sodap`.`tab_struktur` 
-        ON (`tab_realisasi`.`admin_entri` = `tab_struktur`.`nip`) WHERE `tab_struktur`.`parent`='$idppk' AND MONTH(`tab_realisasi`.`real_bulan`) ='$month'";
+        ON (`tab_struktur`.`nip` = `tab_realisasi`.`admin_entri`) WHERE `tab_struktur`.`parent`='$idppk' AND MONTH(`tab_realisasi`.`real_bulan`) ='$month'";
 
         if($this->db->query($query)->num_rows()!=0){
             return $this->db->query($query)->row()->realisasi;
         }else{
             return 0;
         }
-
-
     }
     //end query untuk mendapatkan data realisasi bulan ini-->
+
+    //<--query untuk mendapatkan data kegiatan pptk
+    function getkegiatan($nipppk)
+    {
+        $query = 'SELECT
+`mkegiatan`.`nmkegunit`,
+`mkegiatan`.`kdkegunit`,
+`tab_pptk`.`idpnspptk`
+FROM
+`db_sodap`.`tab_pptk`
+INNER JOIN `db_sodap`.`mkegiatan`
+ON (`tab_pptk`.`kdkegunit` = `mkegiatan`.`kdkegunit`) WHERE `tab_pptk`.`idpnsppk`='.$nipppk;
+        return $this->db->query($query)->result_array();
+    }
+    //end query untuk mendapatkan data kegiatan pptk-->
+
+    //<--query untuk mendapatkan data realisasi bulan ini pptk
+    function getdatarealisasi($nipppk)
+    {
+        $query = 'SELECT
+    `tab_realisasi_det`.`jumlah_harga`
+    , `mkegiatan`.`kdkegunit`
+    , `mkegiatan`.`nmkegunit`
+FROM
+    `db_sodap`.`tab_realisasi_det`
+    INNER JOIN `db_sodap`.`tab_realisasi` 
+        ON (`tab_realisasi_det`.`id_tab_realisasi` = `tab_realisasi`.`id`)
+    INNER JOIN `db_sodap`.`dpa221` 
+        ON (`dpa221`.`id` = `tab_realisasi_det`.`id_dpa`)
+    INNER JOIN `db_sodap`.`mkegiatan` 
+        ON (`mkegiatan`.`kdkegunit` = `dpa221`.`kdkegunit`)
+    INNER JOIN `db_sodap`.`tab_pptk` 
+        ON (`tab_pptk`.`kdkegunit` = `mkegiatan`.`kdkegunit`) WHERE `tab_pptk`.`idpnsppk`='.$nipppk.' AND MONTH(`tab_realisasi`.`real_bulan`) ="'.date('m').'"';
+        return $this->db->query($query)->result_array();
+    }
+    //end query untuk mendapatkan data realisasi bulan ini pptk-->
+
+    //<--query untuk mendapatkan data realisasi hingga bulan sebelumnya
+    function getdatarealisasihbs($nipppk)
+    {
+        $query = 'SELECT
+    `tab_realisasi_det`.`jumlah_harga`
+    , `mkegiatan`.`kdkegunit`
+    , `mkegiatan`.`nmkegunit`
+FROM
+    `db_sodap`.`tab_realisasi_det`
+    INNER JOIN `db_sodap`.`tab_realisasi` 
+        ON (`tab_realisasi_det`.`id_tab_realisasi` = `tab_realisasi`.`id`)
+    INNER JOIN `db_sodap`.`dpa221` 
+        ON (`dpa221`.`id` = `tab_realisasi_det`.`id_dpa`)
+    INNER JOIN `db_sodap`.`mkegiatan` 
+        ON (`mkegiatan`.`kdkegunit` = `dpa221`.`kdkegunit`)
+    INNER JOIN `db_sodap`.`tab_pptk` 
+        ON (`tab_pptk`.`kdkegunit` = `mkegiatan`.`kdkegunit`) WHERE `tab_pptk`.`idpnsppk`='.$nipppk.' AND MONTH(`tab_realisasi`.`real_bulan`) <"'.date('m').'"';
+        return $this->db->query($query)->result_array();
+    }
+    //end query untuk mendapatkan data realisasi hingga bulan sebelumnya-->
+
+    //<--query untuk mendapatkan data realisasi hingga bulan ini
+    function gettotalrealisasi($nipppk)
+    {
+        $query = 'SELECT
+    SUM(`tab_realisasi_det`.`jumlah_harga`) as `total_realisasi`
+FROM
+    `db_sodap`.`tab_realisasi_det`
+    INNER JOIN `db_sodap`.`tab_realisasi` 
+        ON (`tab_realisasi_det`.`id_tab_realisasi` = `tab_realisasi`.`id`)
+    INNER JOIN `db_sodap`.`dpa221` 
+        ON (`dpa221`.`id` = `tab_realisasi_det`.`id_dpa`)
+    INNER JOIN `db_sodap`.`mkegiatan` 
+        ON (`mkegiatan`.`kdkegunit` = `dpa221`.`kdkegunit`)
+    INNER JOIN `db_sodap`.`tab_pptk` 
+        ON (`tab_pptk`.`kdkegunit` = `mkegiatan`.`kdkegunit`) WHERE `tab_pptk`.`idpnsppk`='.$nipppk.' AND MONTH(`tab_realisasi`.`real_bulan`) <"'.date('m').'"';
+
+        if($this->db->query($query)->num_rows()!=0){
+            return $this->db->query($query)->row()->total_realisasi;
+        }else{
+            return 0;
+        }
+    }
+    //end query untuk mendapatkan data realisasi hingga bulan ini-->
+
+    //<--query untuk mendapatkan detail angkas hingga bulan sebelumnya
+    function getdetangkashbs($nipppk)
+    {
+        $query = 'SELECT
+    `angkas`.`kd_bulan`
+    , `angkas`.`kdkegunit`
+    , SUM(`angkas`.`nilai`) AS `total_angkas`
+FROM
+    `db_sodap`.`angkas`
+    INNER JOIN `db_sodap`.`mkegiatan` 
+        ON (`angkas`.`kdkegunit` = `mkegiatan`.`kdkegunit`)
+    INNER JOIN `db_sodap`.`tab_pptk` 
+        ON (`tab_pptk`.`kdkegunit` = `mkegiatan`.`kdkegunit`) WHERE `tab_pptk`.`idpnsppk` = '.$nipppk.' AND `angkas`.`kd_bulan`<MONTH(NOW()) GROUP BY `angkas`.`kdkegunit`;';
+
+        if($this->db->query($query)->num_rows()!=0){
+            return $this->db->query($query)->result_array();
+        }else{
+            return 0;
+        }
+    }
+    //end query untuk mendapatkan detail angkas hingga bulan sebelumnya-->
+
+    //<--query untuk mendapatkan rincian realisasi
+    function rincianrealisasi($kdkegunit,$kdbulan)
+    {
+        $query = 'SELECT
+    `matangr`.`mtgkey`
+    , `matangr`.`nmper`
+    , `matangr`.`kdper`
+    , `tab_realisasi`.`real_bulan`
+    , `tab_realisasi`.`tgl_entri`
+    , `tab_sumber_dana`.`nm_dana`
+    , `tab_realisasi_det`.`harga_satuan`
+    , `tab_realisasi_det`.`jumlah_harga`
+    , `tab_realisasi_det`.`sisa_dana`
+    , `tab_realisasi_det`.`vol`
+    , `dpa221`.`satuan`
+    , `dpa221`.`uraian`
+FROM
+    `db_sodap`.`tab_realisasi`
+    INNER JOIN `db_sodap`.`tab_realisasi_det` 
+        ON (`tab_realisasi`.`id` = `tab_realisasi_det`.`id_tab_realisasi`)
+    INNER JOIN `db_sodap`.`dpa221` 
+        ON (`tab_realisasi_det`.`id_dpa` = `dpa221`.`id`)
+    INNER JOIN `db_sodap`.`matangr` 
+        ON (`dpa221`.`mtgkey` = `matangr`.`mtgkey`)
+    INNER JOIN `db_sodap`.`mkegiatan` 
+        ON (`dpa221`.`kdkegunit` = `mkegiatan`.`kdkegunit`)
+    INNER JOIN `db_sodap`.`tab_sumber_dana` 
+        ON (`tab_sumber_dana`.`id` = `tab_realisasi_det`.`sumber_dana`)
+        WHERE `mkegiatan`.`kdkegunit` = "'.$kdkegunit.'" AND MONTH(`tab_realisasi`.`real_bulan`)= "'.$kdbulan.'"';
+
+        if($this->db->query($query)->num_rows()!=0){
+            return $this->db->query($query)->result_array();
+        }else{
+            return 0;
+        }
+    }
+    //end query untuk mendapatkan rincian realisasi-->
+
+    //<--query untuk mendapatkan data mata anggaran
+    function getmatangr($kdkegunit,$kdbulan)
+    {
+        $query = 'SELECT
+    `matangr`.`kdper`
+    , `matangr`.`nmper`
+    , `matangr`.`mtgkey`
+    , SUM(`tab_realisasi_det`.`sisa_dana`) AS `sisa_dana`
+FROM
+    `db_sodap`.`matangr`
+    INNER JOIN `db_sodap`.`dpa221` 
+        ON (`matangr`.`mtgkey` = `dpa221`.`mtgkey`)
+    INNER JOIN `db_sodap`.`tab_realisasi_det` 
+        ON (`dpa221`.`id` = `tab_realisasi_det`.`id_dpa`)
+    INNER JOIN `db_sodap`.`tab_realisasi` 
+        ON (`tab_realisasi_det`.`id_tab_realisasi` = `tab_realisasi`.`id`)
+        WHERE `dpa221`.`kdkegunit`= "'.$kdkegunit.'" AND MONTH(`tab_realisasi`.`real_bulan`)="'.$kdbulan.'" GROUP BY `matangr`.`kdper`;';
+
+        if($this->db->query($query)->num_rows()!=0){
+            return $this->db->query($query)->result_array();
+        }else{
+            return 0;
+        }
+    }
+    //end query untuk mendapatkan data mata anggaran-->
 }
