@@ -104,7 +104,7 @@ var csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
                                     $this->db->join('matangr', 'dpa22.mtgkey=matangr.mtgkey');
                                     // $this->db->join('tab_realisasi_det', 'dpa22.id=tab_realisasi_det.id_dpa');
 
-                                    
+
                                     $this->db->where('dpa22.tahun', $thn);
                                     $this->db->where('dpa22.unitkey', $idopd);
                                     $this->db->where('dpa22.kdkegunit', $kdkeg);
