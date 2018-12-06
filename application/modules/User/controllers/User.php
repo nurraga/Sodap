@@ -2985,6 +2985,15 @@ function getWeeks($date, $rollover)
         $data = $this->User_model->rincianrealisasi($kdkegunit,$kdbulan);
         $jsondata = array();
         if($data!=0){
+            $matangr = $this->User_model->getmatangr($kdkegunit,$kdbulan);
+            foreach ($matangr as $m){
+                $datamatangr[] = array(
+                    'kdper' => $m['kdper'],
+                    'nmper' => $m['nmper'],
+                    'mtgkey' => $m['mtgkey'],
+                    'sisa_dana' => $this->template->rupiah($m['sisa_dana'])
+                );
+            }
             foreach ($data as $d){
                 $jsondata[] = array(
                     'mtgkey' => $d['mtgkey'],
@@ -3002,7 +3011,11 @@ function getWeeks($date, $rollover)
 
                 );
             }
-            echo json_encode($jsondata);
+            $json = array(
+                'matangr' => $datamatangr,
+                'datar' => $jsondata
+            );
+            echo json_encode($json);
         }else{
             echo json_encode($data);
         }

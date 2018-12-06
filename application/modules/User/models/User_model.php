@@ -906,11 +906,13 @@ FROM
     {
         $month = date('m');
         $query = "SELECT
-    `tab_realisasi`.`real_keuangan` as `realisasi`
-    FROM
-    `db_sodap`.`tab_realisasi`
+    SUM(`tab_realisasi_det`.`jumlah_harga`) AS `realisasi`
+FROM
+    `db_sodap`.`tab_realisasi_det`
+    INNER JOIN `db_sodap`.`tab_realisasi` 
+        ON (`tab_realisasi_det`.`id_tab_realisasi` = `tab_realisasi`.`id`)
     INNER JOIN `db_sodap`.`tab_struktur` 
-        ON (`tab_realisasi`.`admin_entri` = `tab_struktur`.`nip`) WHERE `tab_struktur`.`parent`='$idppk' AND MONTH(`tab_realisasi`.`real_bulan`) ='$month'";
+        ON (`tab_struktur`.`nip` = `tab_realisasi`.`admin_entri`) WHERE `tab_struktur`.`parent`='$idppk' AND MONTH(`tab_realisasi`.`real_bulan`) ='$month'";
 
         if($this->db->query($query)->num_rows()!=0){
             return $this->db->query($query)->row()->realisasi;
@@ -1031,7 +1033,6 @@ FROM
     , `matangr`.`nmper`
     , `matangr`.`kdper`
     , `tab_realisasi`.`real_bulan`
-    , `tab_realisasi`.`real_keuangan`
     , `tab_realisasi`.`tgl_entri`
     , `tab_sumber_dana`.`nm_dana`
     , `tab_realisasi_det`.`harga_satuan`
@@ -1061,4 +1062,30 @@ FROM
         }
     }
     //end query untuk mendapatkan rincian realisasi-->
+
+    //<--query untuk mendapatkan data mata anggaran
+    function getmatangr($kdkegunit,$kdbulan)
+    {
+        $query = 'SELECT
+    `matangr`.`kdper`
+    , `matangr`.`nmper`
+    , `matangr`.`mtgkey`
+    , SUM(`tab_realisasi_det`.`sisa_dana`) AS `sisa_dana`
+FROM
+    `db_sodap`.`matangr`
+    INNER JOIN `db_sodap`.`dpa221` 
+        ON (`matangr`.`mtgkey` = `dpa221`.`mtgkey`)
+    INNER JOIN `db_sodap`.`tab_realisasi_det` 
+        ON (`dpa221`.`id` = `tab_realisasi_det`.`id_dpa`)
+    INNER JOIN `db_sodap`.`tab_realisasi` 
+        ON (`tab_realisasi_det`.`id_tab_realisasi` = `tab_realisasi`.`id`)
+        WHERE `dpa221`.`kdkegunit`= "'.$kdkegunit.'" AND MONTH(`tab_realisasi`.`real_bulan`)="'.$kdbulan.'" GROUP BY `matangr`.`kdper`;';
+
+        if($this->db->query($query)->num_rows()!=0){
+            return $this->db->query($query)->result_array();
+        }else{
+            return 0;
+        }
+    }
+    //end query untuk mendapatkan data mata anggaran-->
 }
