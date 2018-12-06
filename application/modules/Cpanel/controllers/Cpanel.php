@@ -8,6 +8,7 @@ class Cpanel extends MX_Controller {
 	{
 		parent::__construct();
 		$this->blnskr =date('m');
+		// $this->blnskr =1;
 		$this->load->model(array('Cpanel_model'));
 		$this->load->library(array('ion_auth', 'form_validation'));
 	}
@@ -575,13 +576,15 @@ class Cpanel extends MX_Controller {
 	}
 	/*********Agung-Agung-Agung-Agung-Agung-Agung-Agung-Agung-*/
 	function raporOpd(){
+
 		if (!$this->ion_auth->logged_in()) {
 				// redirect them to the login page
 				redirect('Home/login', 'refresh');
 		}	elseif ($this->ion_auth->is_admin()) {
 
 			$datakeuangan = $this->Cpanel_model->getkeuangan_sampai($this->blnskr);
-			$realisasikeu = $this->Cpanel_model->getrealisasi();
+			$realisasikeu = $this->Cpanel_model->getrealisasikeu();
+			$realfisik = $this->Cpanel_model->getrealisasifis();
 			$realisasifis = $this->Cpanel_model->getfisik($this->blnskr);
 
 			// echo json_encode($realisasifis);exit;
@@ -593,9 +596,13 @@ class Cpanel extends MX_Controller {
 				$datakeuangan[$key]->persentasiReal = number_format($persentasiReal,2);
 				//persentase target fisik sampai bulan sekarang
 				$persenTarFis = $realisasifis[$key]->targetbulanini;
-				$datakeuangan[$key]->target_fis = number_format($persenTarFis,2);
+				if($persenTarFis!='Belum Ada KAK')
+				$datakeuangan[$key]->target_fis = number_format($persenTarFis,2)."%";
+				else
+				$datakeuangan[$key]->target_fis = $persenTarFis;
+
 				//persentase realisasi fisik sampai bulan sekarang
-				$persenRealFis = $realisasikeu[$key]->realisasi_fis;
+				$persenRealFis = $realfisik[$key]->realisasi_fis;
 				$datakeuangan[$key]->realisasi_fis =$persenRealFis ;
 				//nilairaporopd
 				$nilai = ($persentasiReal * 100) / $datakeuangan[$key]->persenTarKeu;
@@ -657,8 +664,8 @@ class Cpanel extends MX_Controller {
 			$opd= $this->Cpanel_model->detopd_dpa($th,$id);
 			$program= $this->Cpanel_model->detprogram_dpa($th,$id);
 			$this->data= array(
-					'idopd'		=>  $id,
-					'opd' 		=> 	$opd->nmunit,
+										'idopd'		=>  $id,
+										'opd' 		=> 	$opd->nmunit,
                   	'thn' 		=>	$opd->tahun,
                   	'program' 	=>	$program
                  );
@@ -669,6 +676,37 @@ class Cpanel extends MX_Controller {
 		}
 
 	}
-	
+
 	/* Agung 29-11-2018Agung 29-11-2018Agung 29-11-2018Agung 29-11-2018Agung 29-11-2018//////////////*/
+	/* #####Agung Rabu,5-Des-2018--Agung Rabu,5-Des-2018--Agung Rabu,5-Des-2018*/
+	function jsonmasalah(){
+
+		$tahun = $this->input->post('tahun');
+		$bulan = $this->input->post('bulan');
+		$unitkey = $this->input->post('unitkey');
+
+		$arrdata= array();
+		$program= $this->Cpanel_model->detprogram_dpa($tahun,$unitkey);
+		foreach ($program as $key => $value) {
+			$idprog = $value->IDPRGRM;
+			$keg = $this->Cpanel_model->getkegiatan_by($unitkey,$tahun,$idprog);
+			$program[$key]->keg = $keg;
+			foreach ($keg as $keykeg => $valkeg) {
+				$idkeg = $valkeg->kdkegunit;
+				$mslh = $this->Cpanel_model->getmasalah_by($unitkey,$bulan,$idkeg);
+				$data = $mslh->row();
+				if(($mslh->num_rows()) == 0 ){
+					$keg[$keykeg]->masalah = 'Belum ada realisasi';
+				}else{
+					if( $data->permasalahan!='')
+					$keg[$keykeg]->masalah = $data->permasalahan;
+					else
+					$keg[$keykeg]->masalah = 'Tidak Ada Masalah';
+
+				}
+			}
+		}
+		echo json_encode($program);
+	}
+	/* Agung Rabu,5-Des-2018--Agung Rabu,5-Des-2018--Agung Rabu,5-Des-2018############*/
 }
