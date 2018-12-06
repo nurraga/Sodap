@@ -17,7 +17,6 @@
     </h1>
     <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-
     </ol>
 </section>
 <!-- Main content -->
@@ -55,9 +54,6 @@
                 <div class="icon">
                     <i class="ion ion-stats-bars"></i>
                 </div>
-                <!--   <a href="#" class="small-box-footer" id="dashkeg">
-                      Proses <i class="fa fa-arrow-circle-right"></i>
-                  </a> -->
                 <a class="btn btn-block btn-social btn-success" id="dashkeg">
                     <i class="fa fa-bars"></i> proses
                 </a>
@@ -206,24 +202,6 @@
             </div>
         </div>
     </div>
-    <div id="modal-data" class="modal">
-        <div class="modal-dialog modal-lg" style="width: 95%">
-
-            <div class="modal-content">
-                <div class="modal-header" style="text-align: center">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span></button>
-                    Detail Realisasi
-                    <strong id="header">
-
-                    </strong>
-                </div>
-                <div class="modal-body">
-
-                </div>
-            </div>
-        </div>
-    </div>
 </section>
 <!-- include the style -->
 <link rel="stylesheet" href="<?php echo base_url('assets/alertify/css/alertify.min.css') ?>"/>
@@ -240,34 +218,33 @@
                 if (JSON.parse(data) != 0) {
                     console.log(JSON.parse(data).datar);
                     var tr = '';
-                    for(i=0;i<JSON.parse(data).matangr.length;i++){
-                        tr += '<tr style="background-color: #f7f3f7">'+
-                            '<td style="text-align:center;vertical-align: middle"><strong>'+JSON.parse(data).matangr[i].kdper+'</strong></td>'+
-                            '<td><strong>'+JSON.parse(data).matangr[i].nmper+'</strong></td>'+
-                            '<td></td>'+
-                            '<td></td>'+
-                            '<td></td>'+
-                            '<td></td>'+
-                            '<td></td>'+
-                            '<td style="text-align:center;vertical-align: middle"><strong>'+JSON.parse(data).matangr[i].sisa_dana+'</strong></td>'+
+                    for (i = 0; i < JSON.parse(data).matangr.length; i++) {
+                        tr += '<tr style="background-color: #f7f3f7">' +
+                            '<td style="text-align:center;vertical-align: middle"><strong>' + JSON.parse(data).matangr[i].kdper + '</strong></td>' +
+                            '<td><strong>' + JSON.parse(data).matangr[i].nmper + '</strong></td>' +
+                            '<td></td>' +
+                            '<td></td>' +
+                            '<td></td>' +
+                            '<td></td>' +
+                            '<td></td>' +
+                            '<td style="text-align:center;vertical-align: middle"><strong>' + JSON.parse(data).matangr[i].sisa_dana + '</strong></td>' +
                             '</tr>';
-                        for(j=0;j<JSON.parse(data).datar.length;j++){
-                            if((JSON.parse(data).matangr[i].mtgkey)==(JSON.parse(data).datar[j].mtgkey)){
-                                tr += '<tr>'+
-                                    '<td></td>'+
-                                    '<td style="text-align:left">'+JSON.parse(data).datar[j].urn+'</td>'+
-                                    '<td style="text-align:center;vertical-align:middle"><strong>'+JSON.parse(data).datar[j].vol+'</strong></td>'+
-                                    '<td style="text-align:center;vertical-align:middle"><strong>'+JSON.parse(data).datar[j].satuan+'</strong></td>'+
-                                    '<td style="text-align:center;vertical-align:middle"><strong>'+JSON.parse(data).datar[j].harga_satuan+'</strong></td>'+
-                                    '<td style="text-align:center;vertical-align:middle"><strong>'+JSON.parse(data).datar[j].jumlah_harga+'</strong></td>'+
-                                    '<td style="text-align:center;vertical-align:middle"><strong>'+JSON.parse(data).datar[j].nm_dana+'</strong></td>'+
-                                    '<td style="text-align:center;vertical-align:middle"><strong>'+JSON.parse(data).datar[j].sisa_dana+'</strong></td>'+
+                        for (j = 0; j < JSON.parse(data).datar.length; j++) {
+                            if ((JSON.parse(data).matangr[i].mtgkey) == (JSON.parse(data).datar[j].mtgkey)) {
+                                tr += '<tr>' +
+                                    '<td></td>' +
+                                    '<td style="text-align:left">' + JSON.parse(data).datar[j].urn + '</td>' +
+                                    '<td style="text-align:center;vertical-align:middle">' + JSON.parse(data).datar[j].vol + '</td>' +
+                                    '<td style="text-align:center;vertical-align:middle">' + JSON.parse(data).datar[j].satuan + '</td>' +
+                                    '<td style="text-align:center;vertical-align:middle">' + JSON.parse(data).datar[j].harga_satuan + '</td>' +
+                                    '<td style="text-align:center;vertical-align:middle">' + JSON.parse(data).datar[j].jumlah_harga + '</td>' +
+                                    '<td style="text-align:center;vertical-align:middle">' + JSON.parse(data).datar[j].nm_dana + '</td>' +
+                                    '<td style="text-align:center;vertical-align:middle">' + JSON.parse(data).datar[j].sisa_dana + '</td>' +
                                     '</tr>';
                             }
                         }
                     }
                     var header = document.getElementById('keg' + kdkegunit).innerHTML;
-                    var data_real = '';
                     var tb = '<table class="table table-bordered table-condensed table-hover" width="100%">\n' +
                         '                        <thead>\n' +
                         '                        <tr>\n' +
@@ -307,28 +284,20 @@
                         '\n' +
                         '                        </tbody>\n' +
                         '                    </table>';
-                    alertify.defaults.glossary.title = '<center>Detail Realisasi <strong>'+header+'</strong></center>';
-                    alertify.confirm(tb,function(){ alertify.success('Dikonfirmasi')},function(){ alertify.error('Detail ditutup!')}).set({transition:'zoom'}).maximize().set({labels:{ok:'Konfirmasi', cancel: 'Batal'}, padding: false}).set('defaultFocus', 'cancel');
-                    /*for (i = 0; i < JSON.parse(data).length; i++) {
-                        data_real += '<tr>' +
-                            '<td style="text-align: center;white-space: nowrap;width: 1%">' + JSON.parse(data)[i].nm_dana + '</td>' +
-                            '<td style="text-align: left;">' + JSON.parse(data)[i].urn + '</td>' +
-                            '<td style="text-align: center;white-space: nowrap;width: 1%">' + JSON.parse(data)[i].vol + '</td>' +
-                            '<td style="text-align: center;white-space: nowrap;width: 1%">' + JSON.parse(data)[i].satuan + '</td>' +
-                            '<td style="text-align: right;white-space: nowrap;width: 1%">' + JSON.parse(data)[i].harga_satuan + '</td>' +
-                            '<td style="text-align: right;white-space: nowrap;width: 1%">' + JSON.parse(data)[i].jumlah_harga + '</td>' +
-                            '<td style="text-align: right;white-space: nowrap;width: 1%">' + JSON.parse(data)[i].sisa_dana + '</td>' +
-                            '</tr>';
-                    }
-                    */
+                    alertify.defaults.glossary.title = '<center>Detail Realisasi <strong>' + header + '</strong></center>';
+                    alertify.confirm(tb, function () {
+                        alertify.success('Telah Dikonfirmasi!')
+                    }, function () {
+                        alertify.error('Dibatalkan!')
+                    }).set({transition: 'zoom'}).maximize().set({
+                        labels: {ok: 'Konfirmasi', cancel: 'Batal'},
+                        padding: false
+                    }).set('defaultFocus', 'cancel');
                     document.getElementById('tb-data').innerHTML = tr;
-
-                    //$('#modal-data').modal('show');
-
                 } else {
                     var header = document.getElementById('keg' + kdkegunit).innerHTML;
                     alertify.defaults.glossary.title = 'Info!';
-                    alertify.alert('<div class="text-red">Belum ada realisasi <strong style="color: #000000" "> Kegiatan '+header+'!</strong></div>').set({transition:'zoom'});
+                    alertify.alert('<div class="text-red">Belum ada realisasi <strong style="color: #000000" "> Kegiatan ' + header + '!</strong></div>').set({transition: 'zoom'});
                 }
             }
         });
