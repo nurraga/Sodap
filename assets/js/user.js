@@ -250,50 +250,69 @@ $('#btn-dash-entri').click(function(){
 function modalrealisasi(data) {
   /*modal Cpanel/opduser*/
   // Set modal title
-var stat= data.status;
-if(stat==1 || stat==3 || stat==4){
-  $('#nilaikontrak').prop("disabled", "disabled");
-  $('#pbj').prop("disabled", "disabled");
-  $('#awalktr').prop("disabled", "disabled");
-  $('#akhirktr').prop("disabled", "disabled");
-  $('#spmk').prop("disabled", "disabled");
-  $('#nomorkontrak').prop("disabled", "disabled");
-  $('#realfissudah').html(data.realfisik);
-  $('#realfisikbljmodal').val(data.realbj );
-  $('#realbobotbljmodal').val(data.bbtbj);
-  $('#iddet').html(data.iddet);
-
-
-}else{
-  $('#nilaikontrak').removeAttr("disabled");
-  $('#pbj').removeAttr("disabled");
-  $('#awalktr').removeAttr("disabled");
-  $('#akhirktr').removeAttr("disabled");
-  $('#spmk').removeAttr("disabled");
-  $('#nomorkontrak').removeAttr("disabled");
-  $('#realfissudah').html(0);
-  $('#idbmodal').html(0);
-  $('#iddet').html(0);
-    //realfissudah
-}
   $('.modal-title').html(data.title);
-
   $('#idbmodal').html(data.idbmodal);
-  $('#code').html(stat);
+
   $('#rekbmodal').html(data.rek);
   $('#nmrekbmodal').html(data.nmrek);
   $('#mtgkey').html(data.mtgkey);
-  $('#nilaikontrak').val(data.nlktrk);
-  $('#pbj').val(data.pbj);
-  $("#awalktr").datepicker("setDate",new Date(data.awlktrk));
-  $("#akhirktr").datepicker("setDate",new Date(data.akrktrk));
-  $("#spmk").datepicker("setDate",new Date(data.spmk));
-  $('#nomorkontrak').val(data.noktrk);
-  $('#pagubmodalbln').html(data.paguprbln);
-    var pgkeg = $('#pagukegiatan').html();
-
+  var pgkeg = $('#pagukegiatan').html();
   var x=data.paguprbln / pgkeg * 100;
   $('#bobotbljmodal').val(x.toFixed(2));
+  $('#pagubmodalbln').html(data.paguprbln);
+  var stat= data.status;
+  $('#code').html(stat);
+  if(stat==1){
+    $('#nilaikontrak').prop("disabled", "disabled");
+    $('#pbj').prop("disabled", "disabled");
+    $('#awalktr').prop("disabled", "disabled");
+    $('#akhirktr').prop("disabled", "disabled");
+    $('#spmk').prop("disabled", "disabled");
+    $('#nomorkontrak').prop("disabled", "disabled");
+    $('#nilaikontrak').val(data.nlktrk);
+    $('#pbj').val(data.pbj);
+    $("#awalktr").datepicker("setDate",new Date(data.awlktrk));
+    $("#akhirktr").datepicker("setDate",new Date(data.akrktrk));
+    $("#spmk").datepicker("setDate",new Date(data.spmk));
+    $('#nomorkontrak').val(data.noktrk);
+    $('#realfissudah').html(data.realfisik);
+
+  }else if(stat==3 || stat==4){
+    $('#nilaikontrak').prop("disabled", "disabled");
+    $('#pbj').prop("disabled", "disabled");
+    $('#awalktr').prop("disabled", "disabled");
+    $('#akhirktr').prop("disabled", "disabled");
+    $('#spmk').prop("disabled", "disabled");
+    $('#nomorkontrak').prop("disabled", "disabled");
+    $('#nilaikontrak').val(data.nlktrk);
+    $('#pbj').val(data.pbj);
+    $("#awalktr").datepicker("setDate",new Date(data.awlktrk));
+    $("#akhirktr").datepicker("setDate",new Date(data.akrktrk));
+    $("#spmk").datepicker("setDate",new Date(data.spmk));
+    $('#nomorkontrak').val(data.noktrk);
+    $('#realfissudah').html(data.realfisik);
+    $('#realfisikbljmodal').val(data.realbj );
+    $('#realbobotbljmodal').val(data.bbtbj);
+    $('#iddet').html(data.iddet);
+  }else{
+    $('#nilaikontrak').removeAttr("disabled");
+    $('#pbj').removeAttr("disabled");
+    $('#awalktr').removeAttr("disabled");
+    $('#akhirktr').removeAttr("disabled");
+    $('#spmk').removeAttr("disabled");
+    $('#nomorkontrak').removeAttr("disabled");
+    $('#realfissudah').html(0);
+    $('#idbmodal').html(0);
+    $('#iddet').html(0);
+  }
+
+
+
+
+
+
+
+
 
   // Clear buttons except Cancel
   $('.modal-footer button:not(".btn-default")').remove();

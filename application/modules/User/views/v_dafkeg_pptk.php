@@ -118,7 +118,7 @@
     },
     dataType: "JSON",
     complete: function(data){
-      console.log(data);
+    //  console.log(data);
       ajaxtoken();
       var html = "";
       var dethtml = "";
@@ -213,7 +213,7 @@
         var mm = d.getMonth()+1;
         var yyyy = d.getFullYear();
 
-        var skr   =new Date("01"+"/06/"+yyyy);
+        var skr   =new Date("08"+"/06/"+yyyy);
 
         var jsonData = JSON.parse(data.responseText);
         html+="<table class='table table-bordered'>\
@@ -244,7 +244,7 @@
                   var batasakr = new Date(nobln+"/05/"+yyyy);
 
                   var batasjn = new Date("2/05/"+yyyy);
-                  if(1 < no){
+                  if(8 < no){
                     //dibatasi bulan sekarang (tidak boleh lebih dari bulan sekarang)
                     tmb = "<button class='btn bg-maroon btn-flat disabled'>Realisasi<div class='ripple-container'></div></button>";
 
@@ -281,7 +281,7 @@
 
                     }else if(pertama==1 && nilai!=0){
                        //tmb = "ini bukan januari ini pertama dan nilai tidak 0";
-                        tmb="<button class='enrealisasi btn bg-blue btn-flat'>Entri Realisasi<div class='ripple-container'></div></button>";
+                        tmb="<button class='enjanuari btn bg-blue btn-flat'>Entri Realisasi<div class='ripple-container'></div></button>";
 
 
                     }else if (pertama!=1 && nilai==0){
@@ -295,7 +295,14 @@
                          }else if(skr >= batasawl && skr <= batasakr ){
                            //cek nominal
                            //jika nominal 0 maka entri realisasi, jika tidak maka ubah
-                               tmb="<button class='enrealisasi btn bg-blue btn-flat'>Entri Realisasi<div class='ripple-container'></div></button>";
+                           if(nmnltotreal==0){
+                             tmb="<button class='enjanuari btn bg-blue btn-flat'>Entri Realisasi<div class='ripple-container'></div></button>";
+                             stat="0";
+                           }else{
+                             tmb = "<button class='enjanuari btn bg-blue btn-flat'>Ubah Realisasi <div class='ripple-container'></div></button>";
+                             stat="1";
+                           }
+
                          }else{
                             //tmb = "lebih tgl 5";
                           tmb = totreal;
@@ -305,9 +312,28 @@
 
 
                     }else{
+                      //misal bulan 4 pada kegiatan 11338_ tabpptk 5
                         //(pertama!=1 && nilai!=0)
-                         tmb="<button class='enrealisasi btn bg-blue btn-flat'>Entri Realisasi<div class='ripple-container'></div></button>";
+                        // tmb="<button class='enjanuari btn bg-blue btn-flat'>Entri Realisasit<div class='ripple-container'></div></button>";
+                        if(skr <= batasawl){
+                         // tmb = "tunggu tgl 5";
+                          tmb = "<button class='btn bg-maroon btn-flat disabled'>Realisasi<div class='ripple-container'></div></button>";
 
+                        }else if(skr >= batasawl && skr <= batasakr ){
+                          //cek nominal
+                          //jika nominal 0 maka entri realisasi, jika tidak maka ubah
+                          if(nmnltotreal==0){
+                            tmb="<button class='enjanuari btn bg-blue btn-flat'>Entri Realisasi<div class='ripple-container'></div></button>";
+                            stat="0";
+                          }else{
+                            tmb = "<button class='enjanuari btn bg-blue btn-flat'>Ubah Realisasi<div class='ripple-container'></div></button>";
+                            stat="1";
+                          }
+
+                        }else{
+                           //tmb = "lebih tgl 5";
+                         tmb = totreal;
+                        }
                     }
 
 
@@ -328,11 +354,11 @@
                       // }else{
 
                       //     tmb = "<button class='btnreal btn bg-blue btn-flat'>Realisasi <div class='ripple-container'></div></button>";
-                      // }
+                      // }style='display:none;'
                   }
               tbody +="<tr>\
-                    <td class='stat' style='display:none;'>"+stat+"</td>\
-                    <td class='pertama' style='display:none;'>"+pertama+"</td>\
+                    <td class='stat' >"+stat+"</td>\
+                    <td class='pertama' >"+pertama+"</td>\
                     <td class='indexbl' style='display:none;'>"+x+"</td>\
                     <td class='bl' style='display:none;'>"+no+"</td>\
                     <td>"+no+"</td>\
@@ -407,7 +433,13 @@
                       var tab = result.uri[0].tab;
                       if(stat==0){
                          // jika stat 0 maka entri baru jika 1 maka ubah
+                         Pace.restart ();
+                         Pace.track (function (){
+                           $('#modaldafkeg').modal('hide');
+                           });
+
                           window.location.href = base_url+"User/realisasipptk?unit="+unit+"&keg="+kegiatan+"&tab="+tab+"&pr="+pertama+"&indexbl="+indexbl+"&bl="+bl;
+
                       }else if(stat==1){
                         alert("ubah realisasi?");
 
@@ -437,6 +469,7 @@
 
 
             });
+
 
 
             //akhir jsonrealisasi complete
