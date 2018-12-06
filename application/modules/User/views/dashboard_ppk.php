@@ -71,6 +71,7 @@
                 <center><strong>Realisasi</strong></center>
             </div>
             <div class="box-body table-responsive">
+                <br>
                 <div class="row col-md-offset-1 col-md-10 col-sm-10 col-xs-10">
                     <div class="col-md-3 col-sm-3 col-xs-3">
                         <strong>Pagu Tahun</strong>
@@ -78,6 +79,9 @@
                     <div class="col-md-3 col-sm-3 col-xs-3">
                         <?php echo $pagu_tahun; ?>
                     </div>
+                </div>
+                <div class="row col-md-12">
+                    <br>
                 </div>
                 <div class="row col-md-offset-1 col-md-10 col-sm-10 col-xs-10">
                     <div class="col-md-3 col-sm-3 col-xs-3">
@@ -87,6 +91,20 @@
                         <?php echo $angkas_bulan; ?>
                     </div>
                 </div>
+                <div class="row col-md-12">
+                    <br>
+                </div>
+                <div class="row col-md-offset-1 col-md-10 col-sm-10 col-xs-10">
+                    <div class="col-md-3 col-sm-3 col-xs-3">
+                        <strong>Angkas bulan ini</strong>
+                    </div>
+                    <div class="col-md-3 col-sm-3 col-xs-3">
+                        <?php echo $angkas_bulan_ini; ?>
+                    </div>
+                </div>
+                <div class="row col-md-12">
+                    <br>
+                </div>
                 <div class="row col-md-offset-1 col-md-10 col-sm-10 col-xs-10">
                     <div class="col-md-3 col-sm-3 col-xs-3">
                         <strong>Persentase realisasi bulan ini</strong>
@@ -95,84 +113,195 @@
                         <?php echo $persen_realisasi; ?>
                     </div>
                 </div>
+                <div class="row col-md-12">
+                    <br>
+                </div>
                 <div class="row col-md-12 col-sm-12 col-xs-12">
                     <br>
                     <table class="table table-bordered">
                         <thead>
                         <tr>
-                            <td style="text-align: center">No</td>
-                            <td>PPTK</td>
-                            <td style="text-align: center">Persentase</td>
-                            <td style="text-align: center">Nilai</td>
+                            <td style="text-align: center;white-space: nowrap;width: 1%"><strong>No</strong></td>
+                            <td><strong>PPTK</strong></td>
+                            <td style="text-align: center;white-space: nowrap;width: 1%"><strong>Persentase</strong>
+                            </td>
+                            <td style="text-align: center;white-space: nowrap;width: 1%"><strong>Nilai</strong></td>
+                            <td style="text-align: center;white-space: nowrap;width: 1%"></td>
                         </tr>
                         </thead>
                         <tbody>
-                        <?php $no=1;foreach ($lspptk as $pptk){ ?>
+                        <?php $no = 1;
+                        foreach ($lspptk
+
+                        as $pptk){ ?>
                         <tr>
-                            <td style="text-align: center"><?php echo $no; ?></td>
-                            <td><?php echo $pptk['nama'] ?></td>
-                            <td style="text-align: center">%</td>
-                            <td style="text-align: center">...</td>
+                            <td style="text-align: center"><?php echo '<strong>' . $no . '</strong>'; ?></td>
+                            <td><?php echo '<strong>' . $pptk['nama'] . '</strong>' ?></td>
+                            <td style="text-align: center"></td>
+                            <td style="text-align: center;white-space: nowrap;width: 1%"></td>
+                            <td style="text-align: center;white-space: nowrap;width: 1%"></td>
                         </tr>
+                        <?php
+                        foreach ($kegiatan as $keg) {
+                            if ($keg['idpnspptk'] == $pptk['nip']) {
+                                ?>
+                                <tr>
+                                    <td style="text-align: center"></td>
+                                    <td id="keg<?php echo $keg['kdkegunit'] ?>"><?php echo $keg['nmkegunit'] ?></td>
+                                    <td style="text-align: center;white-space: nowrap;width: 1%">
+                                        <?php
+                                        $jum = 0;
+                                        foreach ($data_realisasi as $d_real) {
+                                            if ($d_real['kdkegunit'] == $keg['kdkegunit']) {
+                                                $jum += $d_real['jumlah_harga'];
+                                            }
+                                        }
+                                        $tb = 0;
+                                        foreach ($det_angkas_bulan_ini as $det) {
+                                            if ($det['kdkegunit'] == $keg['kdkegunit']) {
+                                                $tb += $det['nilai']; //tb : total angkas bulan
+                                            }
+                                        }
+                                        $trhbs = 0;
+                                        foreach ($data_realisasi_hbs as $r) {
+                                            if ($r['kdkegunit'] == $keg['kdkegunit']) {
+                                                $trhbs += $r['jumlah_harga']; //total realisasi hingga bulan sebelumnya : trhbs
+                                            }
+                                        }
+                                        $angkas = 0;
+                                        foreach ($data_angkas_hbs as $a) {
+                                            if ($a['kdkegunit'] == $keg['kdkegunit']) {
+                                                $angkas += $a['total_angkas'];
+                                            }
+                                        }
+                                        $sisa_angkas_hbs = ($angkas - $trhbs); //sisa angkas hingga bulan sebelumnya
+                                        $ta = $sisa_angkas_hbs + $tb;
+                                        $persen = round(($jum / $ta) * 100, 2);
+                                        echo $persen; ?> %
+                                    </td>
+                                    <td style="text-align: center;white-space: nowrap;width: 1%">
+                                        <?php $jum = 0;
+                                        foreach ($data_realisasi as $d_real) {
+                                            if ($d_real['kdkegunit'] == $keg['kdkegunit']) {
+                                                $jum += $d_real['jumlah_harga'];
+                                            }
+                                        }
+                                        echo $this->template->rupiah($jum); ?>
+                                    </td>
+                                    <td style="text-align: center;white-space: nowrap;width: 1%">
+                                        <button id="<?php echo $keg['kdkegunit']; ?>"
+                                                onclick="detail('<?php echo $keg['kdkegunit']; ?>')"
+                                                class="btn btn-primary btn-flat btn-sm btn-social"><i
+                                                    class="fa fa-list"></i> detail
+                                        </button>
+                                    </td>
+                                </tr>
+                            <?php }
+                        } ?>
                         </tbody>
-                        <?php $no++;} ?>
+                        <?php $no++;
+                        } ?>
                     </table>
                 </div>
             </div>
         </div>
     </div>
-    <div id="modal-data" class="modal fadeIn">
-        <div class="modal-dialog">
+    <div id="modal-data" class="modal">
+        <div class="modal-dialog modal-lg" style="width: 95%">
 
             <div class="modal-content">
                 <div class="modal-header" style="text-align: center">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span></button>
                     Detail Realisasi
+                    <strong id="header">
+
+                    </strong>
                 </div>
                 <div class="modal-body">
-                    <table class="table table-bordered table-condensed">
+                    <table class="table table-bordered table-condensed table-hover">
                         <thead>
                         <tr>
-                            <td rowspan="3" style="text-align: center;vertical-align: middle"><strong>Sumber Dana</strong></td>
-                            <td colspan="3" style="text-align: center;vertical-align: middle"><strong>Realisasi</strong></td>
-                            <td rowspan="3" style="text-align: center;vertical-align: middle"><strong>Sisa Dana</strong></td>
+                            <td rowspan="3"
+                                style="text-align: center;vertical-align: middle;white-space: nowrap;width: 1%"><strong>Sumber
+                                    Dana</strong></td>
+                            <td colspan="5" style="text-align: center;vertical-align: middle"><strong>Realisasi</strong>
+                            </td>
+                            <td rowspan="3"
+                                style="text-align: center;vertical-align: middle;white-space: nowrap;width: 1%"><strong>Sisa
+                                    Dana</strong></td>
                         </tr>
                         <tr>
-                            <td rowspan="2" style="text-align: center;vertical-align: middle"><strong>Volumes</strong></td>
-                            <td rowspan="2" style="text-align: center;vertical-align: middle"><strong>Harga Satuan</strong></td>
-                            <td rowspan="2" style="text-align: center;vertical-align: middle"><strong>Jumlah</strong></td>
+                            <td rowspan="2"
+                                style="text-align: center;vertical-align: middle;white-space: nowrap;width: 1%"><strong>Uraian</strong>
+                            </td>
+                            <td rowspan="2"
+                                style="text-align: center;vertical-align: middle;white-space: nowrap;width: 1%"><strong>Volumes</strong>
+                            </td>
+                            <td rowspan="2"
+                                style="text-align: center;vertical-align: middle;white-space: nowrap;width: 1%"><strong>Satuan</strong>
+                            </td>
+                            <td rowspan="2"
+                                style="text-align: center;vertical-align: middle;white-space: nowrap;width: 1%"><strong>Harga
+                                    Satuan</strong></td>
+                            <td rowspan="2"
+                                style="text-align: center;vertical-align: middle;white-space: nowrap;width: 1%"><strong>Jumlah</strong>
+                            </td>
                         </tr>
                         <tr>
 
                         </tr>
                         </thead>
+                        <tbody id="tb-data">
+
+                        </tbody>
                     </table>
                 </div>
             </div>
         </div>
     </div>
 </section>
-<?php if($data_realisasi){ ?>
+<!-- include the style -->
+<link rel="stylesheet" href="<?php echo base_url('assets/alertify/css/alertify.min.css') ?>"/>
+<!-- include a theme -->
+<link rel="stylesheet" href="<?php echo base_url('assets/alertify/css/themes/default.min.css') ?>"/>
+<!-- include the script -->
+<script src="<?php echo base_url('assets/alertify/alertify.min.js') ?>"></script>
 <script type="application/javascript">
-    function addRowHandlers() {
-        var table = document.getElementById("tabel-realisasi");
-        var rows = table.getElementsByTagName("tr");
-        for (i = 0; i < rows.length; i++) {
-            var currentRow = table.rows[i];
-            var createClickHandler = function(row) {
-                return function() {
-                    var cell = row.getElementsByTagName("td")[1];
-                    var id = cell.innerHTML;
-                    //alert("id:" + id);
-                    //document.getElementById('nmpptk').innerHTML = id;
+    function detail(kdkegunit) {
+        $.ajax({
+            url: '<?php echo base_url('User/getjsonrealisasi/'); ?>' + kdkegunit,
+            type: 'GET',
+            success: function (data) {
+                if (JSON.parse(data) != 0) {
+                    var header = document.getElementById('keg' + kdkegunit).innerHTML;
+                    document.getElementById('header').innerHTML = header;
+                    var data_real = '';
+                    for (i = 0; i < JSON.parse(data).length; i++) {
+                        data_real += '<tr>' +
+                            '<td style="text-align: center;white-space: nowrap;width: 1%">' + JSON.parse(data)[i].nm_dana + '</td>' +
+                            '<td style="text-align: left;">' + JSON.parse(data)[i].urn + '</td>' +
+                            '<td style="text-align: center;white-space: nowrap;width: 1%">' + JSON.parse(data)[i].vol + '</td>' +
+                            '<td style="text-align: center;white-space: nowrap;width: 1%">' + JSON.parse(data)[i].satuan + '</td>' +
+                            '<td style="text-align: right;white-space: nowrap;width: 1%">' + JSON.parse(data)[i].harga_satuan + '</td>' +
+                            '<td style="text-align: right;white-space: nowrap;width: 1%">' + JSON.parse(data)[i].jumlah_harga + '</td>' +
+                            '<td style="text-align: right;white-space: nowrap;width: 1%">' + JSON.parse(data)[i].sisa_dana + '</td>' +
+                            '</tr>';
+                    }
+                    document.getElementById('tb-data').innerHTML = data_real;
                     $('#modal-data').modal('show');
-                };
-            };
-            currentRow.onclick = createClickHandler(currentRow);
-        }
+
+                } else {
+                    var header = document.getElementById('keg' + kdkegunit).innerHTML;
+                    alertify.defaults.glossary.title = 'Info!';
+                    alertify.alert('<div class="text-red">Belum ada realisasi <strong style="color: #000000" "> Kegiatan '+header+'!</strong></div>').setting({
+                        'onok':function(){ alertify.success('Closed')}
+                    }).set({transition:'zoom'});//.set('resizable',true).resizeTo('95%',250);
+                }
+            }
+        });
     }
-    window.onload = addRowHandlers();
 </script>
-<?php } ?>
 <!-- /.content -->
 
 
