@@ -1088,4 +1088,26 @@ FROM
         }
     }
     //end query untuk mendapatkan data mata anggaran-->
+
+    //<--query untuk mendapatkan detail angkas untuk satu tahun
+    function getdetangkassatutahun($nipppk)
+    {
+        $query = 'SELECT
+    `angkas`.`kd_bulan`
+    , `angkas`.`kdkegunit`
+    , SUM(`angkas`.`nilai`) AS `total_angkas`
+FROM
+    `db_sodap`.`angkas`
+    INNER JOIN `db_sodap`.`mkegiatan` 
+        ON (`angkas`.`kdkegunit` = `mkegiatan`.`kdkegunit`)
+    INNER JOIN `db_sodap`.`tab_pptk` 
+        ON (`tab_pptk`.`kdkegunit` = `mkegiatan`.`kdkegunit`) WHERE `tab_pptk`.`idpnsppk` = '.$nipppk.' AND `angkas`.`tahun`=YEAR(NOW()) GROUP BY `angkas`.`kdkegunit`;';
+
+        if($this->db->query($query)->num_rows()!=0){
+            return $this->db->query($query)->result_array();
+        }else{
+            return 0;
+        }
+    }
+    //end query untuk mendapatkan detail angkas untuk satu tahun-->
 }

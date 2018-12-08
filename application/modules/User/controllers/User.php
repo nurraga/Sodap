@@ -105,6 +105,7 @@ class User extends MX_Controller
                         'angkas_bulan' => $this->template->rupiah($angkas),
                         'angkas_bulan_ini' => $this->template->rupiah($angkasbulanini),
                         'det_angkas_bulan_ini' => $detangkasbulanini,
+                        'det_angkas_satu_tahun' => $this->User_model->getdetangkassatutahun($nip),
                         'realisasi_bulan_ini' => $this->template->rupiah($realisasibulanini),
                         'persen_realisasi' => round($persenrealisasibulanini, 2) . ' %',
                         'lspptk' => $lspptk,

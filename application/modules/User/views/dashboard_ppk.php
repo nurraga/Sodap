@@ -117,33 +117,81 @@
                     <table class="table table-bordered">
                         <thead>
                         <tr>
-                            <td style="text-align: center;white-space: nowrap;width: 1%"><strong>No</strong></td>
-                            <td><strong>PPTK</strong></td>
-                            <td style="text-align: center;white-space: nowrap;width: 1%"><strong>Persentase</strong>
-                            </td>
-                            <td style="text-align: center;white-space: nowrap;width: 1%"><strong>Nilai</strong></td>
-                            <td style="text-align: center;white-space: nowrap;width: 1%"></td>
+                            <td rowspan="3" style="text-align: center;white-space: nowrap;width: 1%;vertical-align: middle"><strong>No</strong></td>
+                            <td rowspan="3" style="vertical-align: middle;text-align: center"><strong>Kegiatan</strong></td>
+                            <td rowspan="3" style="text-align: center;vertical-align: middle"><strong>PPTK</strong></td>
+                            <td colspan="4" style="text-align: center;white-space: nowrap;width: 1%"><strong>Keuangan</strong></td>
+                            <td colspan="2" style="text-align: center;white-space: nowrap;width: 1%"><strong>Fisik</strong></td>
+                            <td rowspan="3" style="text-align: center;white-space: nowrap;width: 1%;vertical-align: middle"><strong>Status</strong></td>
+                            <td rowspan="3" style="text-align: center;white-space: nowrap;width: 1%;vertical-align: middle"><strong>Detail</strong></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" style="text-align: center;white-space: nowrap;width: 1%"><strong>Target</strong></td>
+                            <td colspan="2" style="text-align: center;white-space: nowrap;width: 1%"><strong>Realisasi</strong></td>
+                            <td rowspan="2" style="text-align: center;white-space: nowrap;width: 1%;vertical-align: middle"><strong>Target</strong></td>
+                            <td rowspan="2" style="text-align: center;white-space: nowrap;width: 1%;vertical-align: middle"><strong>Realisasi</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Persentase</strong></td>
+                            <td><strong>Keuangan</strong></td>
+                            <td><strong>Persentase</strong></td>
+                            <td><strong>Keuangan</strong></td>
                         </tr>
                         </thead>
                         <tbody>
                         <?php $no = 1;
-                        foreach ($lspptk
-
-                        as $pptk){ ?>
-                        <tr>
-                            <td style="text-align: center"><?php echo '<strong>' . $no . '</strong>'; ?></td>
-                            <td><?php echo '<strong>' . $pptk['nama'] . '</strong>' ?></td>
-                            <td style="text-align: center"></td>
-                            <td style="text-align: center;white-space: nowrap;width: 1%"></td>
-                            <td style="text-align: center;white-space: nowrap;width: 1%"></td>
-                        </tr>
-                        <?php
-                        foreach ($kegiatan as $keg) {
+                        foreach ($kegiatan as $keg){
+                        foreach ($lspptk as $pptk) {
                             if ($keg['idpnspptk'] == $pptk['nip']) {
                                 ?>
                                 <tr>
-                                    <td style="text-align: center"></td>
-                                    <td id="keg<?php echo $keg['kdkegunit'] ?>"><?php echo $keg['nmkegunit'] ?></td>
+                                    <td style="text-align: center"><?php echo $no; ?></td>
+                                    <td id="keg<?php echo $keg['kdkegunit'] ?>"><?php echo '<strong>'.$keg['nmkegunit'].'</strong>'; ?></td>
+                                    <td><?php echo $pptk['nama']; ?></td>
+                                    <td style="text-align: center;white-space: nowrap;width: 1%">
+                                        <?php
+                                        $tb = 0;
+                                        foreach ($det_angkas_bulan_ini as $det) {
+                                            if ($det['kdkegunit'] == $keg['kdkegunit']) {
+                                                $tb += $det['nilai']; //tb : total angkas bulan
+                                            }
+                                        }
+                                        $angkas = 0;
+                                        foreach ($data_angkas_hbs as $a) {
+                                            if ($a['kdkegunit'] == $keg['kdkegunit']) {
+                                                $angkas += $a['total_angkas'];
+                                            }
+                                        }
+                                        $angkastahun = 0;
+                                        foreach ($det_angkas_satu_tahun as $dast){
+                                            if($dast['kdkegunit']==$keg['kdkegunit']){
+                                                $angkastahun += $dast['total_angkas'];
+                                            }
+                                        }
+
+                                        $target = $tb+$angkas;
+                                        $persen = ($target/$angkastahun)*100;
+                                        echo $persen.' %';
+                                        ?>
+                                    </td>
+                                    <td style="text-align: right;white-space: nowrap;width: 1%">
+                                        <?php
+                                        $tb = 0;
+                                        foreach ($det_angkas_bulan_ini as $det) {
+                                            if ($det['kdkegunit'] == $keg['kdkegunit']) {
+                                                $tb += $det['nilai']; //tb : total angkas bulan
+                                            }
+                                        }
+                                        $angkas = 0;
+                                        foreach ($data_angkas_hbs as $a) {
+                                            if ($a['kdkegunit'] == $keg['kdkegunit']) {
+                                                $angkas += $a['total_angkas'];
+                                            }
+                                        }
+                                        $target = $tb+$angkas;
+                                        echo $this->template->rupiah($target);
+                                        ?>
+                                    </td>
                                     <td style="text-align: center;white-space: nowrap;width: 1%">
                                         <?php
                                         $jum = 0;
@@ -184,6 +232,9 @@
                                         }
                                         echo $this->template->rupiah($jum); ?>
                                     </td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
                                     <td style="text-align: center;white-space: nowrap;width: 1%">
                                         <button id="<?php echo $keg['kdkegunit']; ?>"
                                                 onclick="detail('<?php echo $keg['kdkegunit']; ?>')"
