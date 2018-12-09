@@ -132,10 +132,10 @@
                             <td rowspan="2" style="text-align: center;white-space: nowrap;width: 1%;vertical-align: middle"><strong>Realisasi</strong></td>
                         </tr>
                         <tr>
-                            <td><strong>Persentase</strong></td>
-                            <td><strong>Keuangan</strong></td>
-                            <td><strong>Persentase</strong></td>
-                            <td><strong>Keuangan</strong></td>
+                            <td style="text-align: center"><strong>%</strong></td>
+                            <td style="text-align: center"><strong>Keuangan</strong></td>
+                            <td style="text-align: center"><strong>%</strong></td>
+                            <td style="text-align: center"><strong>Keuangan</strong></td>
                         </tr>
                         </thead>
                         <tbody>
@@ -145,10 +145,10 @@
                             if ($keg['idpnspptk'] == $pptk['nip']) {
                                 ?>
                                 <tr>
-                                    <td style="text-align: center"><?php echo $no; ?></td>
-                                    <td id="keg<?php echo $keg['kdkegunit'] ?>"><?php echo '<strong>'.$keg['nmkegunit'].'</strong>'; ?></td>
-                                    <td><?php echo $pptk['nama']; ?></td>
-                                    <td style="text-align: center;white-space: nowrap;width: 1%">
+                                    <td style="text-align: center;vertical-align: middle"><?php echo $no; ?></td>
+                                    <td style="vertical-align: middle" id="keg<?php echo $keg['kdkegunit'] ?>"><?php echo '<strong>'.$keg['nmkegunit'].'</strong>'; ?></td>
+                                    <td style="vertical-align: middle"><?php echo $pptk['nama']; ?></td>
+                                    <td style="text-align: center;white-space: nowrap;width: 1%;vertical-align: middle">
                                         <?php
                                         $tb = 0;
                                         foreach ($det_angkas_bulan_ini as $det) {
@@ -171,10 +171,10 @@
 
                                         $target = $tb+$angkas;
                                         $persen = ($target/$angkastahun)*100;
-                                        echo $persen.' %';
+                                        echo $persen;
                                         ?>
                                     </td>
-                                    <td style="text-align: right;white-space: nowrap;width: 1%">
+                                    <td style="text-align: right;white-space: nowrap;width: 1%;vertical-align: middle">
                                         <?php
                                         $tb = 0;
                                         foreach ($det_angkas_bulan_ini as $det) {
@@ -192,7 +192,7 @@
                                         echo $this->template->rupiah($target);
                                         ?>
                                     </td>
-                                    <td style="text-align: center;white-space: nowrap;width: 1%">
+                                    <td style="text-align: center;white-space: nowrap;width: 1%;vertical-align: middle">
                                         <?php
                                         $jum = 0;
                                         foreach ($data_realisasi as $d_real) {
@@ -221,9 +221,9 @@
                                         $sisa_angkas_hbs = ($angkas - $trhbs); //sisa angkas hingga bulan sebelumnya
                                         $ta = $sisa_angkas_hbs + $tb;
                                         $persen = round(($jum / $ta) * 100, 2);
-                                        echo $persen; ?> %
+                                        echo $persen; ?>
                                     </td>
-                                    <td style="text-align: center;white-space: nowrap;width: 1%">
+                                    <td style="text-align: center;white-space: nowrap;width: 1%;vertical-align: middle">
                                         <?php $jum = 0;
                                         foreach ($data_realisasi as $d_real) {
                                             if ($d_real['kdkegunit'] == $keg['kdkegunit']) {
@@ -232,9 +232,81 @@
                                         }
                                         echo $this->template->rupiah($jum); ?>
                                     </td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
+                                    <td style="text-align: center;white-space: nowrap;width: 1%;vertical-align: middle">
+                                        <?php
+                                        $no_target = '<span class="badge" style="background-color: red">belum ada target</span>';
+                                        $total_target = array(0);
+                                        $total_target_hbi = array(0);
+                                        foreach ($data_schedule as $ds){
+                                            for($i=1;$i<=12;$i++){
+                                                if($ds['kdkegunit']==$keg['kdkegunit']){
+                                                    $total_target[] += strlen($ds['bulan_'.$i]);
+                                                }
+                                            }
+                                            for($i=1;$i<=date('m');$i++){
+                                                if($ds['kdkegunit']==$keg['kdkegunit']){
+                                                    $total_target_hbi[] += strlen($ds['bulan_'.$i]);
+                                                }
+                                            }
+                                        }
+                                        $total = array_sum($total_target);
+                                        $target_hbi = array_sum($total_target_hbi);
+                                        if($total==0){
+                                            $persen_fisik = $no_target;
+                                        }else{
+                                            $persen_fisik = round(($target_hbi/$total)*100,2).' %';
+                                        }
+                                        echo $persen_fisik;
+                                        ?>
+                                    </td>
+                                    <td style="text-align: center;white-space: nowrap;width: 1%;vertical-align: middle">
+                                        <?php
+                                        $real_fisik = 0;
+                                        foreach ($data_real_fisik as $drf){
+                                            if($drf['kdkegunit']==$keg['kdkegunit']){
+                                                $real_fisik+=$drf['bobot_real'];
+                                            }
+                                        }
+
+                                        echo $real_fisik.' %';
+                                            ?>
+                                    </td>
+                                    <td style="text-align: center;white-space: nowrap;width: 1%;vertical-align: middle">
+                                        <?php
+                                        $jum = 0;
+                                        foreach ($data_realisasi as $d_real) {
+                                            if ($d_real['kdkegunit'] == $keg['kdkegunit']) {
+                                                $jum += $d_real['jumlah_harga'];
+                                            }
+                                        }
+                                        $tb = 0;
+                                        foreach ($det_angkas_bulan_ini as $det) {
+                                            if ($det['kdkegunit'] == $keg['kdkegunit']) {
+                                                $tb += $det['nilai']; //tb : total angkas bulan
+                                            }
+                                        }
+                                        $trhbs = 0;
+                                        foreach ($data_realisasi_hbs as $r) {
+                                            if ($r['kdkegunit'] == $keg['kdkegunit']) {
+                                                $trhbs += $r['jumlah_harga']; //total realisasi hingga bulan sebelumnya : trhbs
+                                            }
+                                        }
+                                        $angkas = 0;
+                                        foreach ($data_angkas_hbs as $a) {
+                                            if ($a['kdkegunit'] == $keg['kdkegunit']) {
+                                                $angkas += $a['total_angkas'];
+                                            }
+                                        }
+                                        $sisa_angkas_hbs = ($angkas - $trhbs); //sisa angkas hingga bulan sebelumnya
+                                        $ta = $sisa_angkas_hbs + $tb;
+                                        $persen = ($jum / $ta) * 100;
+                                        if($persen>=80){
+                                            $status = '<span class="badge" style="background-color: green">tercapai</span>';
+                                        }else{
+                                            $status = '<span class="badge" style="background-color: red">belum tercapai</span>';
+                                        }
+                                        echo $status; ?>
+                                    </td>
                                     <td style="text-align: center;white-space: nowrap;width: 1%">
                                         <button id="<?php echo $keg['kdkegunit']; ?>"
                                                 onclick="detail('<?php echo $keg['kdkegunit']; ?>')"
