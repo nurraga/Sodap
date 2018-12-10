@@ -240,6 +240,11 @@
             'Volume Melebihi Yang di Tetapkan!!!',
             'info'
           );
+          row.find(".vl").val(0);
+          row.find(".harga-satuan").val(0);
+          totperrek(rek);
+          totkeu();
+          totsisadana();
         }
         if(parseInt(jumlah, 10) > parseInt(totpagu, 10) ) {
             swal(
@@ -970,6 +975,7 @@ $(function () {
         var realbobot   = $('#realbobot').val();
         var formData = new FormData($('#formrealisasi')[0]);
         formData.append("token",token);
+
         formData.append("idtab",tab);
         formData.append("botkeg",botkeg);
         formData.append("bulan",bulan);
@@ -1050,19 +1056,16 @@ $(function () {
 </section>
 <section class="content">
 
-
-
-    <div class="callout callout-info">
+    <div class="callout bg-blue">
       <div class="row">
           <div class="col-xs-12 col-md-12 col-md-offset-1">
              <br>
-              <p id="kdunit"><?php echo $idopd ?></p>
-              <p id="kdkeg"><?php echo $kdkeg ?></p>
-              <p id="idtab"><?php echo $idtab ?></p>
-              <p id="idtahun"><?php echo $tahun ?></p>
-              <p id="indexbulan"><?php echo $indexbulan ?></p>
-
-              <p id="idbulan"><?php echo $bulan ?></p>
+              <p id="kdunit" hidden><?php echo $idopd ?></p>
+              <p id="kdkeg" hidden><?php echo $kdkeg ?></p>
+              <p id="idtab" hidden><?php echo $idtab ?></p>
+              <p id="idtahun" hidden><?php echo $tahun ?></p>
+              <p id="indexbulan" hidden><?php echo $indexbulan ?></p>
+              <p id="idbulan" hidden><?php echo $bulan ?></p>
              <div class="row">
                 <div class="col-md-2 col-sm-2" style="text-align: left">Organisasi</div>
                 <div class="col-md-1 col-sm-1" style="text-align: right;width: 5px">:</div>
@@ -1088,7 +1091,7 @@ $(function () {
 <div class="row">
 
       <div class="col-md-3 col-sm-6 col-xs-12">
-        <a class="btn btn-block btn-social btn-success" id="btn-kembali">
+        <a class="btn btn-block btn-social btn-flat btn-success" id="btn-kembali">
           <i class="fa fa-arrow-left"></i> Kembali
         </a>
       </div>
@@ -1229,7 +1232,7 @@ $(function () {
 </div>
 
 <hr>
-<table class="table table-bordered ">
+<table class="table table-bordered table-condensed " style="font-size: 11px">
   <thead >
     <tr>
       <th rowspan="3" style="vertical-align : middle;text-align:center; width: 100px">Kode Rekening</th>
@@ -1338,19 +1341,18 @@ $(function () {
                           </tr>';
                         }
                       }else{
-
+                        //selain 5.2.3
                         $class='active';
+                        $this->db->select('
+                        ,SUM(`dpa221`.`jumbyek` *`dpa221`.`tarif`) as nilai');
+                        $this->db->from('dpa221');
+                        $this->db->where('`dpa221`.`tahun`', $tahun);
+                        $this->db->where('`dpa221`.`unitkey`', $idopd);
+                        $this->db->where('`dpa221`.`kdkegunit`', $kdkeg);
+                        $this->db->where('`dpa221`.`mtgkey`', $mtgkey);
+                        $nltahun=$this->db->get()->row();
 
-                      $this->db->select('
-                      ,SUM(`dpa221`.`jumbyek` *`dpa221`.`tarif`) as nilai');
-                      $this->db->from('dpa221');
-                      $this->db->where('`dpa221`.`tahun`', $tahun);
-                      $this->db->where('`dpa221`.`unitkey`', $idopd);
-                      $this->db->where('`dpa221`.`kdkegunit`', $kdkeg);
-                      $this->db->where('`dpa221`.`mtgkey`', $mtgkey);
-                      $nltahun=$this->db->get()->row();
-
-                      echo'<tr class ="'.$class.'">
+                        echo'<tr class ="'.$class.'">
 
                       <td class="unit" style="display:none;">'.$hrow['unitkey'].'</td>
                       <td class="keg" style="display:none;">'.$hrow['kdkegunit'].'</td>
@@ -1400,7 +1402,7 @@ $(function () {
                               <td class"text-muted" style="text-align:right">'.$this->template->rupiah($total) .'</td>
                                <td class="totjum" style="display:none;">'.$total.'</td>
                                <td class="active"></td>
-                              <td >  <select class="form-control select2" name="sumberdn[]" style="width: 100%;">';
+                              <td >  <select class="form-control select2" name="sumberdn[]" style="font-size: 11px;width: 100%;">';
                                $sdana= $this->User_model->sumberdana();
                               foreach ($sdana as $k) {
                                 if($k['id']==1){
@@ -1412,16 +1414,16 @@ $(function () {
 
                               echo'</select></td>
                               <td><div class="input-group spinner" data-trigger="spinner">
-                                <input type="text" class="form-control text-center vl" value="0" name="volume[]" data-rule="quantity">
+                                <input type="text" class="form-control text-center vl" style="font-size: 11px" value="0" name="volume[]" data-rule="quantity">
                                 <div class="input-group-addon">
                                   <a href="javascript:;" class="spin-up" data-spin="up"><i class="fa fa-caret-up"></i></a>
                                   <a href="javascript:;" class="spin-down" data-spin="down"><i class="fa fa-caret-down"></i></a>
                                 </div>
                               </div></td>
 
-                                <td><input type="text" class="form-control harga-satuan" name="hrsatuan[]"></td>
-                                <td><input type="text" class="form-control harga-jumlah '.$clasrek.'" readonly name="jum[]"></td>
-                                <td><input type="text" class="form-control sisadana" readonly name="sisadn[]"value='.$total.'></td>
+                                <td><input type="text" class="form-control harga-satuan" name="hrsatuan[]" style="font-size: 11px;"></td>
+                                <td><input type="text" class="form-control harga-jumlah '.$clasrek.'" readonly name="jum[]" style="font-size: 11px;"></td>
+                                <td><input type="text" class="form-control sisadana" readonly name="sisadn[]"value='.$total.' style="font-size: 11px;"></td>
                           </tr>';
                         }
                       }

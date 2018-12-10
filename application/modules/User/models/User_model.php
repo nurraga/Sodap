@@ -290,6 +290,7 @@ class User_model extends CI_Model
         $hrsatuan   = $this->input->post('hrsatuan');
         $jum        = $this->input->post('jum');
         $sisadn     = $this->input->post('sisadn');
+
         $detpgblnskr     = $this->input->post('detpgblnskr');
 
         $list=array();
@@ -297,13 +298,22 @@ class User_model extends CI_Model
           $var1 = str_replace("Rp ","",$hrsatuan[$i]);
           $var2 = str_replace("Rp ","",$jum[$i]);
           $var3 = str_replace("Rp ","",$sisadn[$i]);
+        //jika jumlah tidak sama dengan 0 dan hrsatuan =0 maka reset jumlah ke 0
+        if($volume[$i]!=0 && $var1==0){
+          $vol=0;
+
+        }else{
+          $vol=$volume[$i];
+
+
+        }
           $list[$i]=array(
             'id_tab_realisasi'=> $id_master,
             'id_dpa'          => $iddpa[$i],
             'mtgkey'          => $mtgkey[$i],
             'kd_rek'          => $kdrek[$i],
             'sumber_dana'     => $sumberdana[$i],
-            'vol'             => $volume[$i],
+            'vol'             => $vol,
             'harga_satuan'    => str_replace(".","",$var1),
             'jumlah_harga'    => str_replace(".","",$var2),
             'sisa_dana'       => str_replace(".","",$var3),
@@ -872,7 +882,7 @@ FROM
     SUM(`angkas`.`nilai`) AS `pagu_tahun`
 FROM
     `db_sodap`.`tab_pptk`
-    INNER JOIN `db_sodap`.`angkas` 
+    INNER JOIN `db_sodap`.`angkas`
         ON (`tab_pptk`.`kdkegunit` = `angkas`.`kdkegunit`) WHERE `tab_pptk`.`idpnsppk`='.$nipppk.' AND `angkas`.`tahun` = YEAR(NOW());';
 
         return $this->db->query($query)->row()->pagu_tahun;
@@ -887,7 +897,7 @@ FROM
     SUM(`angkas`.`nilai`) AS `angkas_bulan`
 FROM
     `db_sodap`.`tab_pptk`
-    INNER JOIN `db_sodap`.`angkas` 
+    INNER JOIN `db_sodap`.`angkas`
         ON (`tab_pptk`.`kdkegunit` = `angkas`.`kdkegunit`) WHERE `tab_pptk`.`idpnsppk`='.$nipppk.' AND `angkas`.`kd_bulan` <= MONTH(NOW()) AND `angkas`.`tahun` = YEAR(NOW())';
 
         return $this->db->query($query)->row()->angkas_bulan;
@@ -902,7 +912,7 @@ FROM
     SUM(`angkas`.`nilai`) AS `angkas_bulan`
 FROM
     `db_sodap`.`tab_pptk`
-    INNER JOIN `db_sodap`.`angkas` 
+    INNER JOIN `db_sodap`.`angkas`
         ON (`tab_pptk`.`kdkegunit` = `angkas`.`kdkegunit`) WHERE `tab_pptk`.`idpnsppk`='.$nipppk.' AND `angkas`.`kd_bulan` = MONTH(NOW()) AND `angkas`.`tahun` = YEAR(NOW())';
 
         return $this->db->query($query)->row()->angkas_bulan;
@@ -917,7 +927,7 @@ FROM
     `angkas`.`kdkegunit`
 FROM
     `db_sodap`.`tab_pptk`
-    INNER JOIN `db_sodap`.`angkas` 
+    INNER JOIN `db_sodap`.`angkas`
         ON (`tab_pptk`.`kdkegunit` = `angkas`.`kdkegunit`) WHERE `tab_pptk`.`idpnsppk`='.$nipppk.' AND `angkas`.`kd_bulan` = MONTH(NOW()) AND `angkas`.`tahun` = YEAR(NOW())';
         return $this->db->query($query)->result_array();
     }
@@ -932,9 +942,9 @@ FROM
     SUM(`tab_realisasi_det`.`jumlah_harga`) AS `realisasi`
 FROM
     `db_sodap`.`tab_realisasi_det`
-    INNER JOIN `db_sodap`.`tab_realisasi` 
+    INNER JOIN `db_sodap`.`tab_realisasi`
         ON (`tab_realisasi_det`.`id_tab_realisasi` = `tab_realisasi`.`id`)
-    INNER JOIN `db_sodap`.`tab_struktur` 
+    INNER JOIN `db_sodap`.`tab_struktur`
         ON (`tab_struktur`.`nip` = `tab_realisasi`.`admin_entri`) WHERE `tab_struktur`.`parent`='$idppk' AND MONTH(`tab_realisasi`.`real_bulan`) ='$month'";
 
 
@@ -970,13 +980,13 @@ ON (`tab_pptk`.`kdkegunit` = `mkegiatan`.`kdkegunit`) WHERE `tab_pptk`.`idpnsppk
     , `mkegiatan`.`nmkegunit`
 FROM
     `db_sodap`.`tab_realisasi_det`
-    INNER JOIN `db_sodap`.`tab_realisasi` 
+    INNER JOIN `db_sodap`.`tab_realisasi`
         ON (`tab_realisasi_det`.`id_tab_realisasi` = `tab_realisasi`.`id`)
-    INNER JOIN `db_sodap`.`dpa221` 
+    INNER JOIN `db_sodap`.`dpa221`
         ON (`dpa221`.`id` = `tab_realisasi_det`.`id_dpa`)
-    INNER JOIN `db_sodap`.`mkegiatan` 
+    INNER JOIN `db_sodap`.`mkegiatan`
         ON (`mkegiatan`.`kdkegunit` = `dpa221`.`kdkegunit`)
-    INNER JOIN `db_sodap`.`tab_pptk` 
+    INNER JOIN `db_sodap`.`tab_pptk`
         ON (`tab_pptk`.`kdkegunit` = `mkegiatan`.`kdkegunit`) WHERE `tab_pptk`.`idpnsppk`='.$nipppk.' AND MONTH(`tab_realisasi`.`real_bulan`) ="'.date('m').'"';
         return $this->db->query($query)->result_array();
     }
@@ -991,13 +1001,13 @@ FROM
     , `mkegiatan`.`nmkegunit`
 FROM
     `db_sodap`.`tab_realisasi_det`
-    INNER JOIN `db_sodap`.`tab_realisasi` 
+    INNER JOIN `db_sodap`.`tab_realisasi`
         ON (`tab_realisasi_det`.`id_tab_realisasi` = `tab_realisasi`.`id`)
-    INNER JOIN `db_sodap`.`dpa221` 
+    INNER JOIN `db_sodap`.`dpa221`
         ON (`dpa221`.`id` = `tab_realisasi_det`.`id_dpa`)
-    INNER JOIN `db_sodap`.`mkegiatan` 
+    INNER JOIN `db_sodap`.`mkegiatan`
         ON (`mkegiatan`.`kdkegunit` = `dpa221`.`kdkegunit`)
-    INNER JOIN `db_sodap`.`tab_pptk` 
+    INNER JOIN `db_sodap`.`tab_pptk`
         ON (`tab_pptk`.`kdkegunit` = `mkegiatan`.`kdkegunit`) WHERE `tab_pptk`.`idpnsppk`='.$nipppk.' AND MONTH(`tab_realisasi`.`real_bulan`) <"'.date('m').'"';
         return $this->db->query($query)->result_array();
     }
@@ -1010,13 +1020,13 @@ FROM
     SUM(`tab_realisasi_det`.`jumlah_harga`) as `total_realisasi`
 FROM
     `db_sodap`.`tab_realisasi_det`
-    INNER JOIN `db_sodap`.`tab_realisasi` 
+    INNER JOIN `db_sodap`.`tab_realisasi`
         ON (`tab_realisasi_det`.`id_tab_realisasi` = `tab_realisasi`.`id`)
-    INNER JOIN `db_sodap`.`dpa221` 
+    INNER JOIN `db_sodap`.`dpa221`
         ON (`dpa221`.`id` = `tab_realisasi_det`.`id_dpa`)
-    INNER JOIN `db_sodap`.`mkegiatan` 
+    INNER JOIN `db_sodap`.`mkegiatan`
         ON (`mkegiatan`.`kdkegunit` = `dpa221`.`kdkegunit`)
-    INNER JOIN `db_sodap`.`tab_pptk` 
+    INNER JOIN `db_sodap`.`tab_pptk`
         ON (`tab_pptk`.`kdkegunit` = `mkegiatan`.`kdkegunit`) WHERE `tab_pptk`.`idpnsppk`='.$nipppk.' AND MONTH(`tab_realisasi`.`real_bulan`) <"'.date('m').'"';
 
         if($this->db->query($query)->num_rows()!=0){
@@ -1036,9 +1046,9 @@ FROM
     , SUM(`angkas`.`nilai`) AS `total_angkas`
 FROM
     `db_sodap`.`angkas`
-    INNER JOIN `db_sodap`.`mkegiatan` 
+    INNER JOIN `db_sodap`.`mkegiatan`
         ON (`angkas`.`kdkegunit` = `mkegiatan`.`kdkegunit`)
-    INNER JOIN `db_sodap`.`tab_pptk` 
+    INNER JOIN `db_sodap`.`tab_pptk`
         ON (`tab_pptk`.`kdkegunit` = `mkegiatan`.`kdkegunit`) WHERE `tab_pptk`.`idpnsppk` = '.$nipppk.' AND `angkas`.`kd_bulan`<MONTH(NOW()) GROUP BY `angkas`.`kdkegunit`;';
 
         if($this->db->query($query)->num_rows()!=0){
@@ -1067,15 +1077,15 @@ FROM
     , `dpa221`.`uraian`
 FROM
     `db_sodap`.`tab_realisasi`
-    INNER JOIN `db_sodap`.`tab_realisasi_det` 
+    INNER JOIN `db_sodap`.`tab_realisasi_det`
         ON (`tab_realisasi`.`id` = `tab_realisasi_det`.`id_tab_realisasi`)
-    INNER JOIN `db_sodap`.`dpa221` 
+    INNER JOIN `db_sodap`.`dpa221`
         ON (`tab_realisasi_det`.`id_dpa` = `dpa221`.`id`)
-    INNER JOIN `db_sodap`.`matangr` 
+    INNER JOIN `db_sodap`.`matangr`
         ON (`dpa221`.`mtgkey` = `matangr`.`mtgkey`)
-    INNER JOIN `db_sodap`.`mkegiatan` 
+    INNER JOIN `db_sodap`.`mkegiatan`
         ON (`dpa221`.`kdkegunit` = `mkegiatan`.`kdkegunit`)
-    INNER JOIN `db_sodap`.`tab_sumber_dana` 
+    INNER JOIN `db_sodap`.`tab_sumber_dana`
         ON (`tab_sumber_dana`.`id` = `tab_realisasi_det`.`sumber_dana`)
         WHERE `mkegiatan`.`kdkegunit` = "'.$kdkegunit.'" AND MONTH(`tab_realisasi`.`real_bulan`)= "'.$kdbulan.'"';
 
@@ -1097,11 +1107,11 @@ FROM
     , SUM(`tab_realisasi_det`.`sisa_dana`) AS `sisa_dana`
 FROM
     `db_sodap`.`matangr`
-    INNER JOIN `db_sodap`.`dpa221` 
+    INNER JOIN `db_sodap`.`dpa221`
         ON (`matangr`.`mtgkey` = `dpa221`.`mtgkey`)
-    INNER JOIN `db_sodap`.`tab_realisasi_det` 
+    INNER JOIN `db_sodap`.`tab_realisasi_det`
         ON (`dpa221`.`id` = `tab_realisasi_det`.`id_dpa`)
-    INNER JOIN `db_sodap`.`tab_realisasi` 
+    INNER JOIN `db_sodap`.`tab_realisasi`
         ON (`tab_realisasi_det`.`id_tab_realisasi` = `tab_realisasi`.`id`)
         WHERE `dpa221`.`kdkegunit`= "'.$kdkegunit.'" AND MONTH(`tab_realisasi`.`real_bulan`)="'.$kdbulan.'" GROUP BY `matangr`.`kdper`;';
 

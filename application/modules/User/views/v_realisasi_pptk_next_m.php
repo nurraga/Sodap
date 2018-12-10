@@ -985,6 +985,7 @@
             var realbobot   = $('#realbobot').val();
             var formData = new FormData($('#formrealisasi')[0]);
             formData.append("token",token);
+
             formData.append("idtab",tab);
             formData.append("botkeg",botkeg);
             formData.append("bulan",bulan);
@@ -1256,36 +1257,36 @@
           </div>
               <hr>
 
-            <table class="table table-bordered table-responsive">
+            <table class="table table-bordered table-condensed table-responsive" style="font-size: 11px">
               <thead >
                 <tr>
                   <th rowspan="3" style="vertical-align : middle;text-align:center; width: 100px">Kode Rekening</th>
-                  <th rowspan="3" style="vertical-align : middle;text-align:center; width: 160px">Uraian</th>
+                  <th rowspan="3" style="vertical-align : middle;text-align:center;">Uraian</th>
                   <th colspan="4" style="vertical-align : middle;text-align:center;">SISA ANGGARAN TAHUN SEKARANG</th>
-                  <th rowspan="3" style="vertical-align : middle;text-align:center; width: 80px">JUMLAH PAGU s/d BULAN SEKARANG</th>
-                  <th class="danger" rowspan="3" style="vertical-align : middle;text-align:center; width: 80px">SUMBER DANA</th>
-                  <th class="danger" colspan="3"  style="vertical-align : middle;text-align:center;">REALISASI BULAN LALU</th>
+                  <th rowspan="3" style="vertical-align : middle;text-align:center; width: 80px">Jumlah Pagu s/d Bulan Sekarang</th>
 
-                  <th rowspan="3" style="vertical-align : middle;text-align:center; width: 80px">SUMBER DANA</th>
+                  <th class="danger" colspan="2"  style="vertical-align : middle;text-align:center;">REALISASI BULAN LALU</th>
+
+                  <th rowspan="3" style="vertical-align : middle;text-align:center; width: 70px">SUMBER DANA</th>
                   <th colspan="3" style="vertical-align : middle;text-align:center;">REALISASI</th>
-                  <th rowspan="3" style="vertical-align : middle;text-align:center; width: 130px">SISA DANA</th>
+                  <th rowspan="3" style="vertical-align : middle;text-align:center; width: 100px">SISA DANA</th>
                 </tr>
                 <tr>
                   <th style="vertical-align : middle;text-align:center;" colspan="4">Rincian Perhitungan</th>
-                  <th class="danger" colspan="3" style="vertical-align : middle;text-align:center;">Rincian Bulan <span class="blink_me text-danger" style="color: white;
+                  <th class="danger" colspan="2" style="vertical-align : middle;text-align:center;">Rincian Bulan <span class="blink_me text-danger" style="color: white;
     text-shadow: 1px 1px 2px black, 0 0 25px blue, 0 0 5px darkblue;"><b><?php echo $bulanlalu?></b></span></th>
-                  <th rowspan="2" style="vertical-align : middle;text-align:center;  width: 120px">Volume</th>
+                  <th rowspan="2" style="vertical-align : middle;text-align:center;  width: 100px">Volume</th>
                   <th rowspan="2" style="vertical-align : middle;text-align:center; width: 130px">Harga Satuan</th>
                   <th rowspan="2" style="vertical-align : middle;text-align:center; width: 130px">Jumlah</th>
                 </tr>
                 <tr>
-                  <th style="vertical-align : middle;text-align:center;  width: 120px">Sisa Volume</th>
-                  <th style="vertical-align : middle;text-align:center; width: 130px">Satuan</th>
-                  <th style="vertical-align : middle;text-align:center; width: 130px">Harga Satuan</th>
-                  <th style="vertical-align : middle;text-align:center; width: 130px">Jumlah Harga</th>
-                  <th class="danger"  style="vertical-align : middle;text-align:center; width: 70px">Volume Realisasi</th>
+                  <th style="vertical-align : middle;text-align:center;  width: 50px">Vol</th>
+                  <th style="vertical-align : middle;text-align:center; width: 80px">Satuan</th>
+                  <th style="vertical-align : middle;text-align:center; width: 100px">Harga Satuan</th>
+                  <th style="vertical-align : middle;text-align:center; width: 100px">Jumlah Harga</th>
+                  <th class="danger"  style="vertical-align : middle;text-align:center; width: 50px">Vol</th>
                   <th class="danger"  style="vertical-align : middle;text-align:center; width: 120px">Jumlah Realisasi</th>
-                  <th class="danger"  style="vertical-align : middle;text-align:center; width: 120px">Total Realisasi</th>
+
                 </tr>
               </thead>
                 <tbody>
@@ -1339,9 +1340,9 @@
                         <td style="display:none;"><b>'.$this->template->rupiah($jumsdhreal).'</b></td>
                         <td class="sisaentribm'.$clasrek.'"style="text-align:right"><b>'.$this->template->rupiah($bmsisablnskr).'</b></td>
                         <td style="display:none;"><input type="text" class="form-control headtotsd"  readonly value='.$bmsisablnskr.'></td>
-                        <td colspan="2"style="vertical-align : middle;text-align:center;"><u><b><i>Nilai Kontrak</i></b></u></td>
+                        <td style="vertical-align : middle;text-align:center;"><u><b><i>Nilai Kontrak</i></b></u></td>
                         <td colspan="2"style="vertical-align : middle;text-align:center;"><input type="text" class="format-rupiah form-control" readonly value='.$nlrealbmodal.' id="nlrealbmodal'.$clasrek.'"></td>
-                        <td colspan="4"></td>
+                        <td colspan="3"></td>
                         <td style="vertical-align : middle;text-align:right; display:none;"><input type="text" class="format-rupiah form-control hr real5-2-3 harga-rek'.$clasrek.'" readonly ></td>
                         <td style="vertical-align : middle;text-align:center;"><button type="button" class="btnrealfisik btn bg-blue btn-flat bm'.$clasrek.'">Realisasi<div class="ripple-container"></div></button></td>
                         </tr>';
@@ -1386,7 +1387,7 @@
                                   <td style='text-align:right'><b>".$this->template->rupiah($dettarif)."</b></td>
                                   <td class='sisavoltarif' style='display:none;'>$sisvoltarif</td>
                                   <td style='text-align:right'><b>".$this->template->rupiah($sisvoltarif)."</b></td>
-                                  <td colspan='10'></td>
+                                  <td colspan='8'></td>
                                 </tr>";
                           }
                         }
@@ -1410,10 +1411,9 @@
                         <td style="display:none;"><b>'.$this->template->rupiah($jumsdhreal).'</b></td>
                         <td style="text-align:right"><b>'.$this->template->rupiah($sisablnskr).'</b></td>
                         <td style="display:none;"><input type="text" class="form-control headtotsd"  readonly value='.$sisablnskr.'></td>
-                        <td class="info" colspan="4"></td>
-                        <td colspan="3"></td>
-                        <td><input type="text" class="format-rupiah form-control hr harga-rek'.$clasrek.'" readonly name="jumperrek[]"></td>
-                        <td></td>
+                        <td class="info" colspan="2"></td>
+                        <td colspan="5"></td>
+
                         </tr>';
                         //ambil detail(anak rincian) rekening ke table dpa221 berdasarkan tahun, unit, kdkegunit, mtgkey,
                         $this->db->where('`dpa221`.`tahun`', $tahun);
@@ -1446,10 +1446,12 @@
                           $exvol = $jumvolsdh->jumvol;
                           $sisavol = (int)$detjumbyek - (int)$exvol;
 
+
                           //select data realiasasi bulan sebelumnya
                           //ambil ke tab_realisasi_det berdasarkan id_tab_realisasi dan mtgkey
 
-                          $this->db->select('`tab_sumber_dana`.`nm_dana`
+                          $this->db->select('`tab_sumber_dana`.`id`
+                          ,`tab_sumber_dana`.`nm_dana`
                           , `tab_realisasi_det`.`vol`
                           , `tab_realisasi_det`.`harga_satuan`
                           , `tab_realisasi_det`.`jumlah_harga`');
@@ -1461,6 +1463,7 @@
                           $rowbulanlalu = $this->db->get()->row_array();
                         //print_r($rowbulanlalu);
                         //ini aneh tidak bisa row() seperti biasa harus row_array /sajam untuk iko se
+                        $bliddana=$rowbulanlalu['id'];
                         $blnmdana=$rowbulanlalu['nm_dana'];
                         $blvol=$rowbulanlalu['vol'];
                         $blhs = $rowbulanlalu['harga_satuan'];
@@ -1498,42 +1501,56 @@
                                   <td style='text-align:right'>".$this->template->rupiah($sisvoltarif)."</td>
                                   <td class='active'></td>
 
-
-                                  <td class='info' style='text-align:center'>".$blnmdana."</td>
                                   <td class='info' style='text-align:center'>".$blvol."</td>
                                   <td class='info' style='text-align:center'>".$this->template->rupiah($blhs)."</td>
-                                  <td class='info' style='text-align:center'>".$this->template->rupiah($bljh)."</td>
-                                  <td ><select class='form-control select2' name='sumberdn[]' style='width: 100%;'>";
+
+                                  <td ><select class='form-control select2' name='sumberdn[]' style='width: 100%;font-size: 11px;'>";
                                    $sdana= $this->User_model->sumberdana();
-                                  foreach ($sdana as $k) {
-                                    if($k['id']==1){
-                                       echo "<option selected='selected' value='{$k['id']}'>{$k['nm_dana']}</option>";
-                                    }else{
-                                      echo "<option value='{$k['id']}'>{$k['nm_dana']}</option>";
-                                    }
-                                  }
+
+                                   // jika exvol(jumlah vol realisasi) = 0 maka tampilkan semua sumber dana,
+                                   // jika lebih dari nol maka acuan ke yang sudah di entri pertama kali
+                                   if($exvol==0){
+                                     foreach ($sdana as $k) {
+                                       if($k['id']==1){
+                                          echo "<option selected='selected' value='{$k['id']}' style='font-size: 11px;' >{$k['nm_dana']}</option>";
+                                       }else{
+                                         echo "<option value='{$k['id']}' style='font-size: 11px;'>{$k['nm_dana']}</option>";
+                                       }
+                                     }
+                                   }else{
+                                     foreach ($sdana as $k) {
+                                       if($k['id']==$bliddana){
+                                          echo "<option selected='selected' value='{$k['id']}' style='font-size: 11px;'>{$k['nm_dana']}</option>";
+                                       }else{
+                                         echo "<option value='{$k['id']}' disabled style='font-size: 11px;'>{$k['nm_dana']}</option>";
+                                       }
+                                     }
+                                   }
+
                                   echo"</select></td>
                                   <td><div class='input-group spinner' data-trigger='spinner'>
-                                    <input type='text' class='form-control text-center envol' value='0' name='volume[]' data-rule='quantity'>
+                                    <input type='text' class='form-control text-center envol' style='font-size: 11px' value='0' name='volume[]' data-rule='quantity'>
                                   <div class='input-group-addon'>
                                     <a href='javascript:;' class='spin-up' data-spin='up'><i class='fa fa-caret-up'></i></a>
                                     <a href='javascript:;' class='spin-down' data-spin='down'><i class='fa fa-caret-down'></i></a>
                                   </div>
                                 </div></td>
-                                <td><input type='text' class='format-rupiah form-control enharga-satuan' name='hrsatuan[]'></td>
-                                <td><input type='text' class='format-rupiah form-control harga-jumlah $clasrek' readonly name='jum[]'></td>
-                                <td><input type='text' class='format-rupiah form-control sisadana' readonly name='sisadn[]'value='.$sisvoltarif.'></td>
+                                <td><input type='text' class='format-rupiah form-control enharga-satuan' style='font-size: 11px' name='hrsatuan[]'></td>
+                                <td><input type='text' class='format-rupiah form-control harga-jumlah $clasrek' readonly style='font-size: 11px' name='jum[]'></td>
+                                <td><input type='text' class='format-rupiah form-control sisadana' style='font-size: 11px'readonly name='sisadn[]'value='.$sisvoltarif.'></td>
                                 </tr>";
                           }
 
                         }
                         echo"<tr>
-                          <td colspan='4' style='text-align:right'><b>Total Jumlah</b></td>
-                          <td colspan='2' style='text-align:right'><b>".$this->template->rupiah($jumtahun)."</b></td>
+                          <td colspan='4' style='vertical-align : middle;text-align:right'><b>Total Jumlah</b></td>
+                          <td colspan='2' style='vertical-align : middle;text-align:right'><b>".$this->template->rupiah($jumtahun)."</b></td>
 
                           <td class='active'></td>
-                          <td class='info' colspan='4'></td>
-                          <td colspan='5'></td>
+                          <td class='info' colspan='2'></td>
+                          <td colspan='3' style='vertical-align : middle; text-align:right'><b>Total Jumlah</b></td>
+                          <td><input type='text' class='format-rupiah form-control hr harga-rek".$clasrek."' readonly style='font-size: 11px' name='jumperrek[]'></td>
+                          <td></td>
                           </tr>";
 
                     }
