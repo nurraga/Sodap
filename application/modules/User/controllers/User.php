@@ -96,6 +96,7 @@ class User extends MX_Controller
                     //var_dump($detangkasbulanini).exit;
                     //echo $this->template->rupiah($pgthn);
                     //var_dump($this->User_model->getdetangkashbs($nip)).exit;
+                    //echo json_encode($this->User_model->getdataschedule($nip));
                     $this->data = array(
                         'idopd' => $idopd,
                         'nmopd' => $namaopd,
@@ -105,6 +106,7 @@ class User extends MX_Controller
                         'angkas_bulan' => $this->template->rupiah($angkas),
                         'angkas_bulan_ini' => $this->template->rupiah($angkasbulanini),
                         'det_angkas_bulan_ini' => $detangkasbulanini,
+                        'det_angkas_satu_tahun' => $this->User_model->getdetangkassatutahun($nip),
                         'realisasi_bulan_ini' => $this->template->rupiah($realisasibulanini),
                         'persen_realisasi' => round($persenrealisasibulanini, 2) . ' %',
                         'lspptk' => $lspptk,
@@ -112,6 +114,8 @@ class User extends MX_Controller
                         'data_realisasi' => $this->User_model->getdatarealisasi($nip), //data realisasi bulan ini
                         'data_realisasi_hbs' => $this->User_model->getdatarealisasihbs($nip), //data realisasi hingga bulan sebelumnya
                         'data_angkas_hbs' => $this->User_model->getdetangkashbs($nip), //data angkas hingga bulan sebelumnya
+                        'data_schedule' => $this->User_model->getdataschedule($nip), //data schedule satu tahun
+                        'data_real_fisik' => $this->User_model->getrealfisik($nip), //data realisasi fisik bulan ini
 
                     );
                     $this->template->load('templatenew', 'dashboard_ppk', $this->data);
@@ -3194,6 +3198,7 @@ function getWeeks($date, $rollover)
                     'nmper' => $d['nmper'],
                     'kdper' => $d['kdper'],
                     'real_bulan' => $d['real_bulan'],
+                    'bobot_real' => $d['bobot_real'],
                     'tgl_entri' => $d['tgl_entri'],
                     'nm_dana' => $d['nm_dana'],
                     'harga_satuan' => $this->template->rupiah($d['harga_satuan']),

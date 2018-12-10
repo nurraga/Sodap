@@ -1068,6 +1068,7 @@ FROM
     , `matangr`.`kdper`
     , `tab_realisasi`.`real_bulan`
     , `tab_realisasi`.`tgl_entri`
+    , `tab_realisasi`.`bobot_real`
     , `tab_sumber_dana`.`nm_dana`
     , `tab_realisasi_det`.`harga_satuan`
     , `tab_realisasi_det`.`jumlah_harga`
@@ -1122,4 +1123,84 @@ FROM
         }
     }
     //end query untuk mendapatkan data mata anggaran-->
+
+    //<--query untuk mendapatkan detail angkas untuk satu tahun
+    function getdetangkassatutahun($nipppk)
+    {
+        $query = 'SELECT
+    `angkas`.`kd_bulan`
+    , `angkas`.`kdkegunit`
+    , SUM(`angkas`.`nilai`) AS `total_angkas`
+FROM
+    `db_sodap`.`angkas`
+    INNER JOIN `db_sodap`.`mkegiatan` 
+        ON (`angkas`.`kdkegunit` = `mkegiatan`.`kdkegunit`)
+    INNER JOIN `db_sodap`.`tab_pptk` 
+        ON (`tab_pptk`.`kdkegunit` = `mkegiatan`.`kdkegunit`) WHERE `tab_pptk`.`idpnsppk` = '.$nipppk.' AND `angkas`.`tahun`=YEAR(NOW()) GROUP BY `angkas`.`kdkegunit`;';
+
+        if($this->db->query($query)->num_rows()!=0){
+            return $this->db->query($query)->result_array();
+        }else{
+            return 0;
+        }
+    }
+    //end query untuk mendapatkan detail angkas untuk satu tahun-->
+
+    //<--query untuk mendapatkan data schedule satu tahun
+    function getdataschedule($nipppk)
+    {
+        $query = 'SELECT
+    `tab_pptk`.`kdkegunit`
+    , `tab_schedule`.`id_tab_kak`
+    , `tab_schedule`.`jan` AS `bulan_1`
+    , `tab_schedule`.`feb` AS `bulan_2`
+    , `tab_schedule`.`mar` AS `bulan_3`
+    , `tab_schedule`.`apr` AS `bulan_4`
+    , `tab_schedule`.`mei` AS `bulan_5`
+    , `tab_schedule`.`jun` AS `bulan_6`
+    , `tab_schedule`.`jul` AS `bulan_7`
+    , `tab_schedule`.`ags` AS `bulan_8`
+    , `tab_schedule`.`sep` AS `bulan_9`
+    , `tab_schedule`.`okt` AS `bulan_10`
+    , `tab_schedule`.`nov` AS `bulan_11`
+    , `tab_schedule`.`des` AS `bulan_12`
+FROM
+    `db_sodap`.`tab_kak`
+    INNER JOIN `db_sodap`.`tab_pptk` 
+        ON (`tab_kak`.`idtab_pptk` = `tab_pptk`.`id`)
+    INNER JOIN `db_sodap`.`mkegiatan` 
+        ON (`tab_pptk`.`kdkegunit` = `mkegiatan`.`kdkegunit`)
+    INNER JOIN `db_sodap`.`tab_schedule` 
+        ON (`tab_schedule`.`id_tab_kak` = `tab_kak`.`id`)
+        WHERE `tab_pptk`.`idpnsppk`='.$nipppk.' AND `mkegiatan`.`tahun`=YEAR(NOW())';
+
+        if($this->db->query($query)->num_rows()!=0){
+            return $this->db->query($query)->result_array();
+        }else{
+            return 0;
+        }
+    }
+    //end query untuk mendapatkan data schedule satu tahun-->
+
+    //<--query untuk mendapatkan data realisasi fisik bulan ini
+    function getrealfisik($nipppk)
+    {
+        $query = 'SELECT
+    `mkegiatan`.`kdkegunit`
+    , `tab_realisasi`.`bobot_real`
+FROM
+    `db_sodap`.`tab_pptk`
+    INNER JOIN `db_sodap`.`mkegiatan` 
+        ON (`tab_pptk`.`kdkegunit` = `mkegiatan`.`kdkegunit`)
+    INNER JOIN `db_sodap`.`tab_realisasi` 
+        ON (`tab_realisasi`.`id_tabpptk` = `tab_pptk`.`id`)
+        WHERE `tab_pptk`.`idpnsppk`='.$nipppk.' AND `mkegiatan`.`tahun`=YEAR(NOW()) AND MONTH(`tab_realisasi`.`real_bulan`)=MONTH(NOW())';
+
+        if($this->db->query($query)->num_rows()!=0){
+            return $this->db->query($query)->result_array();
+        }else{
+            return 0;
+        }
+    }
+    //end query untuk mendapatkan data realisasi fisik bulan ini-->
 }
