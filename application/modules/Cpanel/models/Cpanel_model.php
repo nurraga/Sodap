@@ -521,6 +521,7 @@ FROM
   public function getrealisasikeu(){
     $this->db->select("daftunit.`unitkey`
                       , `daftunit`.`nmunit`
+                      , `tab_pptk_master`.id as idpptkmaster
                       , `tab_pptk_master`.*
                       ,SUM(tab_realisasi_det.`jumlah_harga`) AS realisasi_keu");
       $this->db->from('`tab_pptk_master`');
@@ -621,6 +622,16 @@ FROM
     $this->db->order_by('daftunit.`nmunit`');
     return $this->db->get()->result();
   }
+  function getrealisasi_bModal_by($idpptkmaster){
+    $this->db->select("SUM(tab_realisasi_bmodal.`nilai_ktrk`) AS realisasi_keu
+
+    ");
+    $this->db->from('tab_realisasi_bmodal');
+    $this->db->join('`tab_pptk`', '`tab_realisasi_bmodal`.`id_tab_pptk` = `tab_pptk`.`id`');
+    $this->db->join('`tab_pptk_master`', '`tab_pptk_master`.`id` = `tab_pptk`.`id_pptk_master`');
+    $this->db->where("tab_pptk_master.`id`",$idpptkmaster);
+    return $this->db->get()->row();
+  }
   public function getfisik_bmodal($bulan){
 
       $arrbulan = array('jan','feb','mar','apr','mei','jun','jul','ags','sep','okt','nov','des');
@@ -654,6 +665,39 @@ FROM
       $this->db->order_by('daftunit.`nmunit`');
       return $this->db->get()->result();
 
+  }
+
+  public function gettargetkota_now(){
+    $this->db->select('SUM(nilai) AS target,kd_bulan');
+    $this->db->from('angkas');
+    $this->db->where('kd_bulan <= MONTH(NOW())');
+    $this->db->group_by('kd_bulan');
+
+    return $this->db->get()->result();
+  }
+  public function getrealnonmodalkota_now(){
+    $this->db->select('SUM(`tab_realisasi_det`.`jumlah_harga`) as realisasi
+                      , MONTH(`tab_realisasi`.`real_bulan`) AS bulan');
+    $this->db->from('tab_realisasi_det');
+    $this->db->join('`tab_realisasi`', '`tab_realisasi_det`.`id_tab_realisasi` = `tab_realisasi`.`id`');
+    $this->db->where('MONTH(`tab_realisasi`.`real_bulan`) <= MONTH(NOW())');
+    $this->db->group_by('bulan');
+
+    return $this->db->get()->result();
+  }
+  public function getrealmodalkota_now(){
+    $this->db->select('SUM(nilai_ktrk) AS realmodal,MONTH(`tab_realisasi_bmodal`.`real_bulan`) as kd_bulan');
+    $this->db->from('tab_realisasi_bmodal');
+    $this->db->where('MONTH(`tab_realisasi_bmodal`.`real_bulan`) <= MONTH(NOW())');
+    $this->db->group_by('kd_bulan');
+
+    return $this->db->get()->result();
+  }
+  public function getpagukota(){
+    $this->db->select('SUM(nilai) AS pagu');
+    $this->db->from('angkas');
+
+    return $this->db->get()->row()->pagu;
   }
   /* Agung 29-11-2018Agung 29-11-2018Agung 29-11-2018Agung 29-11-2018Agung 29-11-2018//////////////*/
 }

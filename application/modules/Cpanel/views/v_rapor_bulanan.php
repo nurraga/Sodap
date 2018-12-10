@@ -67,10 +67,8 @@ $(document).ready(function(){
           dataType: "JSON",
           complete: function(data){
             $('#modalbulan').modal('hide');
-            console.log(data.responseText);
             ajaxtoken();
             var jsonprog = JSON.parse(data.responseText);
-            console.log(jsonprog);
             var html = "";
             for(x in jsonprog){
 
@@ -118,6 +116,7 @@ $(document).ready(function(){
               //
               // }
             }
+
             modalmasalah({
               buttons: {
                 batal: {
@@ -279,7 +278,7 @@ function modalbulan(data) {
                 <thead class="text-info">
                   <tr class="active">
                     <th rowspan="3" style="text-align: center;">No</th>
-                    <th rowspan="3" style="width:30%">Nama OPD</th>
+                    <th rowspan="3" style="width:30%"  class="text-center">Nama OPD</th>
                     <th rowspan="3" style="text-align: center;">Pagu Dana</th>
                     <th colspan="4" style="text-align: center;">Keuangan</th>
                     <th colspan="2" rowspan="2" style="text-align: center;">Fisik</th>
@@ -292,12 +291,12 @@ function modalbulan(data) {
                     <th colspan="2" style="text-align: center;">Realisasai</th>
                   </tr>
                   <tr class="active">
-                    <th>Persentase</th>
-                    <th>Nilai</th>
-                    <th>Persentase</th>
-                    <th>Nilai</th>
-                    <th>Target</th>
-                    <th>Realisasi</th>
+                    <th class="text-center">%</th>
+                    <th class="text-center">Nilai (Rp.)</th>
+                    <th class="text-center">%</th>
+                    <th class="text-center">Nilai (Rp.)</th>
+                    <th class="text-center">Target</th>
+                    <th class="text-center">Realisasi</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -312,19 +311,24 @@ function modalbulan(data) {
 
                       <td><?php echo $n++?></td>
                       <td class="nmunit"><?php echo $key->nmunit ?></td>
-                      <td style="text-align: right;"><?php echo $this->template->nominal($key->pagu_dana) ?></td>
-                      <td style="text-align: center;">
+                      <td class="text-right"><?php echo $this->template->nominal($key->pagu_dana) ?></td>
+                      <td class="text-center">
                         <?php
 
                         echo number_format($key->persenTarKeu,2);
-                        ?>%
+                        ?>
                       </td>
-                      <td><?php echo $this->template->nominal($key->targetKeu) ?></td>
-                      <td style="text-align: center;"><?php echo $key->persentasiReal ?>%</td>
-                      <td style="text-align: right;"><?php echo $this->template->nominal($key->realisasi_keu) ?></td>
-                      <td style="text-align: center;"><?php echo $key->target_fis ?></td>
-                      <td style="text-align: center;"><?php echo $key->realisasi_fis ?>%</td>
-                      <td style="text-align: center;">
+                      <td class="text-right"><?php echo $this->template->nominal($key->targetKeu) ?></td>
+                      <td class="text-center"><?php echo $key->persentasiReal ?></td>
+                      <td class="text-right"><?php echo $this->template->nominal($key->realisasi_keu) ?></td>
+                      <td class="text-center"><?php echo $key->target_fis ?></td>
+                      <td class="text-center">
+                        <?php if($key->realisasi_fis!='')
+                      echo $key->realisasi_fis.'%';
+                      else
+                      echo '0.00%'
+                      ?></td>
+                      <td class="text-center">
                         <?php
                         if($key->nilairapor < 80){
                           echo "<span class='label label-danger'>Belum Tercapai</span>";
