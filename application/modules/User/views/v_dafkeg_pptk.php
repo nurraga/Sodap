@@ -213,7 +213,7 @@
         var mm = d.getMonth()+1;
         var yyyy = d.getFullYear();
 
-        var skr   =new Date("08"+"/06/"+yyyy);
+        var skr   =new Date("02"+"/06/"+yyyy);
 
         var jsonData = JSON.parse(data.responseText);
         html+="<table class='table table-bordered'>\
@@ -244,7 +244,7 @@
                   var batasakr = new Date(nobln+"/05/"+yyyy);
 
                   var batasjn = new Date("2/05/"+yyyy);
-                  if(8 < no){
+                  if(2 < no){
                     //dibatasi bulan sekarang (tidak boleh lebih dari bulan sekarang)
                     tmb = "<button class='btn bg-maroon btn-flat disabled'>Realisasi<div class='ripple-container'></div></button>";
 
@@ -357,8 +357,8 @@
                       // }style='display:none;'
                   }
               tbody +="<tr>\
-                    <td class='stat' >"+stat+"</td>\
-                    <td class='pertama' >"+pertama+"</td>\
+                    <td class='stat' style='display:none;' >"+stat+"</td>\
+                    <td class='pertama' style='display:none;' >"+pertama+"</td>\
                     <td class='indexbl' style='display:none;'>"+x+"</td>\
                     <td class='bl' style='display:none;'>"+no+"</td>\
                     <td>"+no+"</td>\
@@ -380,7 +380,7 @@
                   label : 'Tutup'
                 }
               },
-              title: 'Target Keuangan'+kdkegunit,
+              title: 'Target Keuangan',
 
               kdkeg : kdkegunit,
               idtab : idtab,
@@ -555,7 +555,7 @@
 
 
 
-    <div class="callout callout-info">
+    <div class="callout bg-blue">
       <div class="row">
           <div class="col-xs-12 col-md-12 col-md-offset-1">
              <br>
@@ -587,7 +587,7 @@
 <div class="row">
 
       <div class="col-md-3 col-sm-6 col-xs-12">
-        <a class="btn btn-block btn-social btn-success" id="btn-kembali">
+        <a class="btn btn-block btn-social btn-success btn-flat" id="btn-kembali">
           <i class="fa fa-arrow-left"></i> Kembali
         </a>
       </div>
@@ -610,7 +610,8 @@
 
 <div class="box box-primary">
     <div class="box-header with-border">
-      <h3 class="box-title">Lisk Kegiatan</h3>
+        <i class="fa fa-list"></i>
+      <h3 class="box-title">List Kegiatan</h3>
 
 
       </div>
@@ -628,6 +629,7 @@
                 </thead>
                 <tbody>
                    <?php
+                                              //<button class="btnreal btn btn-danger">Realisasi lama<div class="ripple-container"></div></button></td>
                                               $i = 0;
                                               foreach ($list as $row){
                                                   $i++;
@@ -638,11 +640,11 @@
                                                     <td class="col-xs-5">'.$row['nmkegunit'].'</td>
                                                     <td class="text-right">'.$this->template->rupiah($row['nilai']).'</td>
                                                     <td class=" td-actions text-center">
-                                                     <button class="btntf btn btn-success">Target Fisik<div class="ripple-container"></div></button>
-                                                    <button class="btntk btn btn-info">Target Keuangan<div class="ripple-container"></div>
+                                                     <button class="btntf btn btn-success btn-flat">Target Fisik<div class="ripple-container"></div></button>
+                                                    <button class="btntk btn bg-blue btn-flat">Target Keuangan<div class="ripple-container"></div>
                                                     </button>
-                                                    <button class="btnrl btn btn-danger">Realisasi<div class="ripple-container"></div></button>
-                                                    <button class="btnreal btn btn-danger">Realisasi lama<div class="ripple-container"></div></button></td>
+                                                    <button class="btnrl btn btn-danger btn-flat">Realisasi<div class="ripple-container"></div></button>
+
                                                     </tr>';
 
                                             }
