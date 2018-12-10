@@ -231,56 +231,40 @@
               },
               dataType: "JSON",
               success: function(result){
-
-
                   if (result.data[0].code == 0){
-
-
-                                    $('#awalktr').datepicker({
-                                     format: "dd MM yyyy",
-                                     language: "id",
-                                     autoclose: true
-
-                                   }).on("input change", function (e) {
-
-                                     var namabln =this.value;
-                                     var convert = namabln.split(" ");
-
-                                     tgl = convert[0];
-                                     bln = bulan[convert[1]];
-                                     thn = convert[2];
-                                     // console.log(tgl +'-'+ bln +'-'+thn);
-                                     $('#akhirktr').datepicker('setDate', null);
-                                     $('#akhirktr').datepicker('destroy');
-                                     $('#akhirktr').datepicker({
-                                         format: "dd MM yyyy",
-
-                                         autoclose: true,
-                                         startDate: new Date(thn,bln,tgl),
-
-
-                                       }).on("input change", function (e) {
-                                         var namabln2 =this.value;
-                                         var convert2 = namabln2.split(" ");
-                                         var tgl2 = convert2[0];
-                                         var bln2 = bulan[convert2[1]];
-                                         var thn2 = convert2[2];
-                                         $('#spmk').datepicker('setDate', null);
-                                         $('#spmk').datepicker('destroy');
-                                         $('#spmk').datepicker({
-                                             format: "dd MM yyyy",
-                                             autoclose: true,
-                                             startDate: new Date(thn,bln,tgl),
-                                             endDate: new Date(thn2,bln2,tgl2)
-
-
-                                           });
-
-
-                                       });
-                                     });
-
-
+                      $('#awalktr').datepicker({
+                        format: "dd MM yyyy",
+                        language: "id",
+                        autoclose: true
+                      }).on("input change", function (e) {
+                      var namabln =this.value;
+                      var convert = namabln.split(" ");
+                      tgl = convert[0];
+                      bln = bulan[convert[1]];
+                      thn = convert[2];
+                      // console.log(tgl +'-'+ bln +'-'+thn);
+                      $('#akhirktr').datepicker('setDate', null);
+                      $('#akhirktr').datepicker('destroy');
+                      $('#akhirktr').datepicker({
+                        format: "dd MM yyyy",
+                        autoclose: true,
+                        startDate: new Date(thn,bln,tgl),
+                      }).on("input change", function (e) {
+                        var namabln2 =this.value;
+                        var convert2 = namabln2.split(" ");
+                        var tgl2 = convert2[0];
+                        var bln2 = bulan[convert2[1]];
+                        var thn2 = convert2[2];
+                        $('#spmk').datepicker('setDate', null);
+                        $('#spmk').datepicker('destroy');
+                        $('#spmk').datepicker({
+                          format: "dd MM yyyy",
+                          autoclose: true,
+                          startDate: new Date(thn,bln,tgl),
+                          endDate: new Date(thn2,bln2,tgl2)
+                        });
+                      });
+                    });
                     modalrealisasi({
                           buttons: {
                             batal: {
@@ -301,7 +285,8 @@
                           nmrek:nmrek,
                           mtgkey:mtgkey,
                           paguprbln:totpagubln,
-                          status : result.data[0].code
+                          status : result.data[0].code,
+                          tottarfis :result.data[0].targetfis
 
 
                         });
@@ -352,45 +337,61 @@
                                          });
                                        });
 
-                    modalrealisasi({
-                          buttons: {
-                            batal: {
-                              id    : 'btn-modal-tutup',
-                              type  : 'button',
-                              css   : 'btn-danger btn-raised btn-flat ',
-                              label : 'Tutup'
+                    var jumreal = result.data[0].realfisik;
+                    if (jumreal < 100){
+                      modalrealisasi({
+
+                            buttons: {
+                              batal: {
+                                id    : 'btn-modal-tutup',
+                                type  : 'button',
+                                css   : 'btn-danger btn-raised btn-flat ',
+                                label : 'Tutup'
+                              },
+                              simpan: {
+                                id    : 'btn-modal-simpan',
+                                type  : 'submit',
+                                css   : 'btn-info btn-raised btn-flat btn-bitbucket',
+                                label : 'Simpan'
+                              }
                             },
-                            simpan: {
-                              id    : 'btn-modal-simpan',
-                              type  : 'submit',
-                              css   : 'btn-info btn-raised btn-flat btn-bitbucket',
-                              label : 'Simpan'
-                            }
-                          },
-                          title: 'Realiasasi Belanja Modal',
-                          rek:res,
-                          nmrek:nmrek,
-                          mtgkey:mtgkey,
-                          paguprbln:totpagubln,
-                          nlktrk:result.data[0].nilai_ktrk,
-                          pbj:result.data[0].pbj,
-                          awlktrk : result.data[0].awlktrk,
-                          akrktrk : result.data[0].akrktrk,
-                          spmk    : result.data[0].spmk,
-                          noktrk  : result.data[0].noktrk,
-                          status : result.data[0].code,
-                          realfisik : result.data[0].realfisik,
-                          idbmodal : result.data[0].idbmodal
-                        });
-                  }else if(result.data[0].code == 2){
-                    swal({
-                      title: 'Info',
-                      text: 'Realisasi Belanja Modal Sudah 100%',
-                      type: 'info',
-                      confirmButtonClass: "btn btn-danger",
-                      buttonsStyling: false
-                    })
-                  }else if(result.data[0].code == 4){
+                            title: 'Realiasasi Belanja Modal',
+                            rek:res,
+                            nmrek:nmrek,
+                            mtgkey:mtgkey,
+                            paguprbln:totpagubln,
+                            nlktrk:result.data[0].nilai_ktrk,
+                            pbj:result.data[0].pbj,
+                            awlktrk : result.data[0].awlktrk,
+                            akrktrk : result.data[0].akrktrk,
+                            spmk    : result.data[0].spmk,
+                            noktrk  : result.data[0].noktrk,
+                            status : result.data[0].code,
+                            realfisik : result.data[0].realfisik,
+                            idbmodal : result.data[0].idbmodal,
+                            tottarfis :result.data[0].targetfis
+                          });
+                    }else{
+                      swal({
+                        title: 'Info',
+                        text: 'Realisasi Belanja Modal Sudah 100%',
+                        type: 'info',
+                        confirmButtonClass: "btn btn-danger",
+                        buttonsStyling: false
+                      })
+                    }
+
+                  }
+                  // else if(result.data[0].code == 2){
+                  //   swal({
+                  //     title: 'Info',
+                  //     text: 'Realisasi Belanja Modal Sudah 100%',
+                  //     type: 'info',
+                  //     confirmButtonClass: "btn btn-danger",
+                  //     buttonsStyling: false
+                  //   })
+                  // }
+                  else if(result.data[0].code == 4){
                     //code 4 = realisasi masih bisa di edit
 
                                     $('#awalktr').datepicker({
@@ -469,45 +470,47 @@
                           status  : result.data[0].code,
                           realfisik : result.data[0].realfisik,
                           idbmodal : result.data[0].idbmodal,
-                          iddet : result.data[0].iddet
+                          iddet : result.data[0].iddet,
+                          tottarfis :result.data[0].targetfis
 
                         });
-                  }else{
-                    //code 3 = realisasi belum 100 persen dan masih bisa tambah
-                    modalrealisasi({
-
-                          buttons: {
-                            batal: {
-                              id    : 'btn-modal-tutup',
-                              type  : 'button',
-                              css   : 'btn-danger btn-raised btn-flat ',
-                              label : 'Tutup'
-                            },
-                            simpan: {
-                              id    : 'btn-modal-simpan',
-                              type  : 'submit',
-                              css   : 'btn-info btn-raised btn-flat btn-bitbucket',
-                              label : 'Simpan'
-                            }
-                          },
-                          title: 'Realiasasi Belanja Modal',
-                          rek:res,
-                          nmrek:nmrek,
-                          mtgkey:mtgkey,
-                          paguprbln:totpagubln,
-                          nlktrk:result.data[0].nilai_ktrk,
-                          pbj:result.data[0].pbj,
-                          awlktrk : result.data[0].awlktrk,
-                          akrktrk : result.data[0].akrktrk,
-                          spmk    : result.data[0].spmk,
-                          noktrk  : result.data[0].noktrk,
-                          status : result.data[0].code,
-                          realfisik : result.data[0].realfisik,
-                          idbmodal : result.data[0].idbmodal
-
-                        });
-
                   }
+                  // // else{
+                  //   //code 3 = realisasi belum 100 persen dan masih bisa tambah
+                  //   modalrealisasi({
+                  //
+                  //         buttons: {
+                  //           batal: {
+                  //             id    : 'btn-modal-tutup',
+                  //             type  : 'button',
+                  //             css   : 'btn-danger btn-raised btn-flat ',
+                  //             label : 'Tutup'
+                  //           },
+                  //           simpan: {
+                  //             id    : 'btn-modal-simpan',
+                  //             type  : 'submit',
+                  //             css   : 'btn-info btn-raised btn-flat btn-bitbucket',
+                  //             label : 'Simpan'
+                  //           }
+                  //         },
+                  //         title: 'Realiasasi Belanja Modal',
+                  //         rek:res,
+                  //         nmrek:nmrek,
+                  //         mtgkey:mtgkey,
+                  //         paguprbln:totpagubln,
+                  //         nlktrk:result.data[0].nilai_ktrk,
+                  //         pbj:result.data[0].pbj,
+                  //         awlktrk : result.data[0].awlktrk,
+                  //         akrktrk : result.data[0].akrktrk,
+                  //         spmk    : result.data[0].spmk,
+                  //         noktrk  : result.data[0].noktrk,
+                  //         status : result.data[0].code,
+                  //         realfisik : result.data[0].realfisik,
+                  //         idbmodal : result.data[0].idbmodal
+                  //
+                  //       });
+                  //
+                  // }
                   // if (jsonData.data[0].status == false){
                   //
                   // }else{
@@ -556,32 +559,63 @@
            });
 
         $("#realfisikbljmodal").on('input change',function (e) {
+        var status =  $('#code').html();
+        if (status != 4){
+          var x = parseInt($("#realfisikbljmodal").val());
+          var y = parseInt($('#realfissudah').html());
+          var xy= x+y;
+          var botblj=$('#bobotbljmodal').val();
+          if (xy>100){
+             swal(
+                'Ups',
+                'Tidak Lebih Dari 100 %, ya :)',
+                'info'
+              );
+             $("#realfisikbljmodal").val('');
+               $("#realbobotbljmodal").val(0);
+             return false;
+          }else{
 
-         var x=parseInt($("#realfisikbljmodal").val());
-         var y = parseInt($('#realfissudah').html());
-         var xy= x+y;
-         var botblj=$('#bobotbljmodal').val();
-         if (xy>100){
-            swal(
-               'Ups',
-               'Tidak Lebih Dari 100 %, ya :)',
-               'info'
-             );
-            $("#realfisikbljmodal").val('');
+            var bobtreal=x/100*botblj;
+
+            if(isNaN(bobtreal)){
               $("#realbobotbljmodal").val(0);
-            return false;
-         }else{
-
-           var bobtreal=x/100*botblj;
-
-           if(isNaN(bobtreal)){
-             $("#realbobotbljmodal").val(0);
-           }else{
-             $("#realbobotbljmodal").val( bobtreal.toFixed(2));
-           }
+            }else{
+              $("#realbobotbljmodal").val( bobtreal.toFixed(2));
+            }
 
 
-         }
+          }
+        }else{
+          var x = parseInt($("#realfisikbljmodal").val());
+          var y = parseInt($('#realfissudah').html());
+          var z = parseInt($('#realfisedit').html());
+          var yz= y-z;
+          var xyz= x+yz;
+          var botblj=$('#bobotbljmodal').val();
+          if (xyz>100){
+             swal(
+                'Ups',
+                'Tidak Lebih Dari 100 %, ya :)',
+                'info'
+              );
+             $("#realfisikbljmodal").val('');
+               $("#realbobotbljmodal").val(0);
+             return false;
+          }else{
+
+            var bobtreal=x/100*botblj;
+
+            if(isNaN(bobtreal)){
+              $("#realbobotbljmodal").val(0);
+            }else{
+              $("#realbobotbljmodal").val( bobtreal.toFixed(2));
+            }
+
+
+          }
+        }
+
         });
 
         $(".realfisik").on('input change',function (e) {
@@ -1190,7 +1224,7 @@
       <div class="col-md-1 col-sm-1 col-xs-12">
       </div>
       <div class="col-md-2 col-sm-2 col-xs-12">
-       <h4 class="text-left text-muted">Nama PPK</h4>
+       <h4 class="text-left text-muted">Nama KPA</h4>
      </div>
      <div class="col-md-1 col-sm-1 col-xs-12">
       <h4 class="text-center text-muted">:</h4>
@@ -1707,10 +1741,11 @@
 
         <div class="row">
           <div class="col-md-12">
-            <p id="iddet"></p>
-            <p id="code"></p>
-            <p id="idbmodal"></p>
-            <p id="realfissudah"></p>
+            <p id="iddet" hidden></p>
+            <p id="code" hidden></p>
+            <p id="idbmodal" hidden></p>
+            <p id="realfissudah" hidden></p>
+            <p id="realfisedit" hidden></p>
             <!-- <p id="rek"></p> -->
             <p id="pagubmodalbln" hidden></p>
             <p id="mtgkey" hidden></p>
@@ -1718,7 +1753,7 @@
              <div class="row">
               <div class="col-md-1 col-sm-1 col-xs-12">
               </div>
-                  <div class="col-md-3 col-sm-3 col-xs-12">
+                  <div class="col-md-4 col-sm-4 col-xs-12">
                    <h4 class="text-left text-muted">Rekening</h4>
                  </div>
                  <div class="col-md-1 col-sm-1 col-xs-12">
@@ -1733,7 +1768,7 @@
               <div class="row">
               <div class="col-md-1 col-sm-1 col-xs-12">
               </div>
-                  <div class="col-md-3 col-sm-3 col-xs-12">
+                  <div class="col-md-4 col-sm-4 col-xs-12">
                    <h4 class="text-left text-muted">Nama Rekening</h4>
                  </div>
                  <div class="col-md-1 col-sm-1 col-xs-12">
@@ -1748,7 +1783,7 @@
            <div class="row">
               <div class="col-md-1 col-sm-1 col-xs-12">
               </div>
-                  <div class="col-md-3 col-sm-3 col-xs-12">
+                  <div class="col-md-4 col-sm-4 col-xs-12">
                    <h4 class="text-left text-muted">Nilai Kontrak</h4>
                  </div>
                  <div class="col-md-1 col-sm-1 col-xs-12">
@@ -1764,7 +1799,7 @@
               <div class="row">
               <div class="col-md-1 col-sm-1 col-xs-12">
               </div>
-                  <div class="col-md-3 col-sm-3 col-xs-12">
+                  <div class="col-md-4 col-sm-4 col-xs-12">
                    <h4 class="text-left text-muted">Pelaksana / Penyedia PBJ</h4>
                  </div>
                  <div class="col-md-1 col-sm-1 col-xs-12">
@@ -1779,7 +1814,7 @@
               <div class="row">
               <div class="col-md-1 col-sm-1 col-xs-12">
               </div>
-                  <div class="col-md-3 col-sm-3 col-xs-12">
+                  <div class="col-md-4 col-sm-4 col-xs-12">
                    <h4 class="text-left text-muted">Awal Kontrak</h4>
                  </div>
                  <div class="col-md-1 col-sm-1 col-xs-12">
@@ -1799,7 +1834,7 @@
               <div class="row">
               <div class="col-md-1 col-sm-1 col-xs-12">
               </div>
-                  <div class="col-md-3 col-sm-3 col-xs-12">
+                  <div class="col-md-4 col-sm-4 col-xs-12">
                    <h4 class="text-left text-muted">Akhir Kontrak</h4>
                  </div>
                  <div class="col-md-1 col-sm-1 col-xs-12">
@@ -1819,8 +1854,8 @@
               <div class="row">
               <div class="col-md-1 col-sm-1 col-xs-12">
               </div>
-                  <div class="col-md-3 col-sm-3 col-xs-12">
-                   <h4 class="text-left text-muted">SPMK</h4>
+                  <div class="col-md-4 col-sm-4 col-xs-12">
+                   <h4 class="text-left text-muted">SPMK/SPP</h4>
                  </div>
                  <div class="col-md-1 col-sm-1 col-xs-12">
                   <h4 class="text-center text-muted">:</h4>
@@ -1839,8 +1874,8 @@
               <div class="row">
               <div class="col-md-1 col-sm-1 col-xs-12">
               </div>
-                  <div class="col-md-3 col-sm-3 col-xs-12">
-                   <h4 class="text-left text-muted">Nomor Kontrak/SP</h4>
+                  <div class="col-md-4 col-sm-4 col-xs-12">
+                   <h4 class="text-left text-muted">Nomor Kontrak</h4>
                  </div>
                  <div class="col-md-1 col-sm-1 col-xs-12">
                   <h4 class="text-center text-muted">:</h4>
@@ -1854,7 +1889,7 @@
               <div class="row">
               <div class="col-md-1 col-sm-1 col-xs-12">
               </div>
-                  <div class="col-md-3 col-sm-3 col-xs-12">
+                  <div class="col-md-4 col-sm-4 col-xs-12">
                    <h4 class="text-left text-muted">Bobot Belanja Modal</h4>
                  </div>
                  <div class="col-md-1 col-sm-1 col-xs-12">
@@ -1874,8 +1909,49 @@
               <div class="row">
               <div class="col-md-1 col-sm-1 col-xs-12">
               </div>
-                  <div class="col-md-3 col-sm-3 col-xs-12">
-                   <h4 class="text-left text-muted">Realisasi Fisik</h4>
+                  <div class="col-md-4 col-sm-4 col-xs-12">
+                   <h4 class="text-left text-muted">Target Fisik s/d Bulan Sekarang</h4>
+                 </div>
+                 <div class="col-md-1 col-sm-1 col-xs-12">
+                  <h4 class="text-center text-muted">:</h4>
+                </div>
+                <div class="col-md-4 col-sm-4 col-xs-12">
+                  <div class="input-group">
+                                <input type="text" class=" form-control" id="totargetfisik"  name="totargetfisik" style="text-align: right;" readonly>
+                                <div class="input-group-addon">
+                                <i class="fa fa-percent"></i>
+                                </div>
+                                </div>
+                </div>
+                <div class="col-md-2 col-sm-2 col-xs-12">
+                </div>
+              </div>
+              <div class="row realfissudah2" >
+              <div class="col-md-1 col-sm-1 col-xs-12">
+              </div>
+                  <div class="col-md-4 col-sm-4 col-xs-12">
+                   <h4 class="text-left text-muted">Total Realisasi Fisik s/d Bulan Sekarang</h4>
+                 </div>
+                 <div class="col-md-1 col-sm-1 col-xs-12">
+                  <h4 class="text-center text-muted">:</h4>
+                </div>
+                <div class="col-md-4 col-sm-4 col-xs-12">
+
+                  <div class="input-group">
+                                <input type="text" class=" form-control" id="realfissudah2"  name="realfissudah2" style="text-align: right;" readonly>
+                                <div class="input-group-addon">
+                                <i class="fa fa-percent"></i>
+                                </div>
+                                </div>
+                </div>
+                <div class="col-md-2 col-sm-2 col-xs-12">
+                </div>
+              </div>
+              <div class="row">
+              <div class="col-md-1 col-sm-1 col-xs-12">
+              </div>
+                  <div class="col-md-4 col-sm-4 col-xs-12">
+                   <h4 class="text-left text-muted">Tambahan Realisasi Fisik Bulan Sekarang</h4>
                  </div>
                  <div class="col-md-1 col-sm-1 col-xs-12">
                   <h4 class="text-center text-muted">:</h4>
@@ -1894,7 +1970,7 @@
               <div class="row">
                   <div class="col-md-1 col-sm-1 col-xs-12">
                   </div>
-                  <div class="col-md-3 col-sm-3 col-xs-12">
+                  <div class="col-md-4 col-sm-4 col-xs-12">
                    <h4 class="text-left text-muted">Bobot Realisasi </h4>
                  </div>
                  <div class="col-md-1 col-sm-1 col-xs-12">

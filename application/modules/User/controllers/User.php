@@ -1364,13 +1364,52 @@ function cekrealbmodal()
   $indexbulan = $this->input->post('indexbulan');
   // $idtab      = '5';
   // $mtgkey     = '1326_';
-  // $indexbulan = '2';
+  // $indexbulan = '1';
+  $arraytarget = array(
+      'jan',
+      'feb',
+      'mar',
+      'apr',
+      'mei',
+      'jun',
+      'jul',
+      'ags',
+      'sep',
+      'okt',
+      'nov',
+      'des'
+  );
+$query='';
+  for($i = 0; $i < $indexbulan; $i++){
+    if($i==0){
+      $query .= $arraytarget[$i];
+    }else {
+      $query .= '+'.$arraytarget[$i];
+    }
+  }
+  //   SELECT
+  //    jan+feb+mar
+  // FROM
+  //     `db_sodap`.`tab_schedule_blnj_mdl`
+  //     INNER JOIN `db_sodap`.`tab_target_blnj_modal`
+  //         ON (`tab_schedule_blnj_mdl`.`id_tab_target` = `tab_target_blnj_modal`.`id`) WHERE `idtab_pptk`='5' AND `mtgkey`='12112_';
+
+  $this->db->select('('.$query.') as tot');
+  $this->db->from('tab_schedule_blnj_mdl');
+  $this->db->join('tab_target_blnj_modal', '`tab_schedule_blnj_mdl`.`id_tab_target` = `tab_target_blnj_modal`.`id`');
+  $this->db->where('idtab_pptk', $idtab);
+  $this->db->where('mtgkey', $mtgkey);
+  $tottargetfis = $this->db->get()->row_array();
+
+
+  //select ke tab realisasi belanja modal berdasrkan id_tab_pptk dan mtgkey
   $this->db->select('*');
   $this->db->from('tab_realisasi_bmodal');
   $this->db->where('`tab_realisasi_bmodal`.`id_tab_pptk`', $idtab);
   $this->db->where('`tab_realisasi_bmodal`.`mtgkey`', $mtgkey);
   $this->db->where('`tab_realisasi_bmodal`.`stat`','1');
   $adabmodal=$this->db->get();
+  //jika ada realisasi belanja modal sudah ada
   if($adabmodal->num_rows()>0){
     //cek kedetail tab real bmodal
       $idbmodal =  $adabmodal->row()->id;
@@ -1380,66 +1419,47 @@ function cekrealbmodal()
       $akrktrk  =  $adabmodal->row()->akhir_ktrk;
       $spmk     =  $adabmodal->row()->spmk;
       $noktrk   =  $adabmodal->row()->no_kontrak;
-
-      $this->db->select('*');
-      $this->db->from('tab_realisasi_bmodal_det');
-      $this->db->where('`tab_realisasi_bmodal_det`.`id_tab_real_bmodal`', $idbmodal);
-      $this->db->where('MONTH(`tab_realisasi_bmodal_det`.`real_bulan`)', $indexbulan);
-      $this->db->where('`tab_realisasi_bmodal_det`.`stat`','1');
-      $detbmodal=$this->db->get();
+      //kalkulasi realfisik_bljmodal berdasarkan id_tab_real_bmodal
       $this->db->select('SUM(`realfisik_bljmodal`) AS sumary');
       $this->db->from('tab_realisasi_bmodal_det');
       $this->db->where('`tab_realisasi_bmodal_det`.`id_tab_real_bmodal`', $idbmodal);
       $this->db->where('`tab_realisasi_bmodal_det`.`stat`','1');
       $sumary=$this->db->get()->row();
       if($sumary){
+        //jika ada
         $jumrealfis= $sumary->sumary;
       }else{
+        //jika tidak ada = 0
         $jumrealfis= 0;
       }
 
 
-      if($detbmodal->num_rows()>0){
-        $blnskr = date('n');
-        if($indexbulan == '4' ){
-          $arr['data'][]= array(
-              'iddet'     => $detbmodal->row()->id,
-              'code' => 4,
-              'nilai_ktrk'  => $nlktrk,
-              'pbj'         => $pbj,
-              'awlktrk'     => $awlktrk,
-              'akrktrk'     => $akrktrk,
-              'spmk'        => $spmk,
-              'noktrk'      => $noktrk,
-              'realfisik'   => $jumrealfis,
-              'realblj'     => $detbmodal->row()->realfisik_bljmodal,
-              'bobotrealblj'=> $detbmodal->row()->bobot_real_bljmodal,
-              'idbmodal'    => $idbmodal
-          );
-        }elseif($jumrealfis < 100){
-              //masih bisa di tambah lagi
-              //status 3
-                $arr['data'][]= array(
+      //select detail realisasi belanja modal berdasarkan id_tab_real_bmodal dan real_bulan
+      $this->db->select('*');
+      $this->db->from('tab_realisasi_bmodal_det');
+      $this->db->where('`tab_realisasi_bmodal_det`.`id_tab_real_bmodal`', $idbmodal);
+      $this->db->where('MONTH(`tab_realisasi_bmodal_det`.`real_bulan`)', $indexbulan);
+      $this->db->where('`tab_realisasi_bmodal_det`.`stat`','1');
+      $detbmodal=$this->db->get();
+      //jika ada
+      if($detbmodal->num_rows() > 0){
 
-                    'code' => 3,
-                    'nilai_ktrk'  => $nlktrk,
-                    'pbj'         => $pbj,
-                    'awlktrk'     => $awlktrk,
-                    'akrktrk'     => $akrktrk,
-                    'spmk'        => $spmk,
-                    'noktrk'      => $noktrk,
-                    'realfisik'   => $jumrealfis,
-                    'idbmodal'    => $idbmodal
-                );
-        }else{
-          // tidak bisa di tambah lagi
-            //status 2
-            $arr['data'][]= array(
-
-                'code' => 2
-
-            );
-        }
+        //maka update detail realisasi belanja modal
+        $arr['data'][]= array(
+            'iddet'       => $detbmodal->row()->id,
+            'code'        => 4,
+            'nilai_ktrk'  => $nlktrk,
+            'pbj'         => $pbj,
+            'awlktrk'     => $awlktrk,
+            'akrktrk'     => $akrktrk,
+            'spmk'        => $spmk,
+            'noktrk'      => $noktrk,
+            'realfisik'   => $jumrealfis, //total semua realisasi fisik
+            'realblj'     => $detbmodal->row()->realfisik_bljmodal,
+            'bobotrealblj'=> $detbmodal->row()->bobot_real_bljmodal,
+            'idbmodal'    => $idbmodal,
+            'targetfis'   => $tottargetfis['tot']
+        );
 
 
       }else{
@@ -1454,25 +1474,26 @@ function cekrealbmodal()
             'spmk'        => $spmk,
             'noktrk'      => $noktrk,
             'realfisik'   => $jumrealfis,
-            'idbmodal'    => $idbmodal
+            'idbmodal'    => $idbmodal,
+            'targetfis'   => $tottargetfis['tot']
 
 
         );
       }
 
   }else{
-    //status 0
+    //code 0
     $arr['data'][]= array(
-
-        'code' => 0
+        'code' => 0,
+        'targetfis'   => $tottargetfis['tot']
     );
   }
 
 
 
   //code 0 = belum ada sama sekali entri belnja modal pada kegiatan
-  //code 1 = Master sudah ada tetapi detail belum ada
-  //code 2 = realisasi sudah 100 persen tidak bisa di tambah
+  //code 1 = Master sudah ada tetapi detail belum ada (x)
+  //code 2 = realisasi sudah 100 persen tidak bisa di tambah (x)
   //code 3 = realisasi belum 100 persen dan masih bisa tambah
   // $arr['data'][]= array(
   //
@@ -2113,7 +2134,9 @@ function viewkakppk(){
                         'tahun'     => date('Y'),
                         'list'      => $lskak,
                         'schedule'      => $schedule,
-                        'schbelanja'      => $schedule_blj_modal
+                        'schbelanja'      => $schedule_blj_modal,
+                        'idkeg' => $kegiatan,
+                        'idtab' => $idtab
                     );
                     $this->template->load('templatenew','v_kak',$this->data);
                 }
@@ -2129,6 +2152,88 @@ function viewkakppk(){
 
   }
 }
+
+// LAPORAN KAK 
+
+function lapkak($idtab){
+    
+       if (!$this->ion_auth->logged_in()){
+        redirect('Home/login', 'refresh');
+    }elseif ($this->ion_auth->is_admin()){
+        redirect('Cpanel', 'refresh');
+    }elseif ($this->ion_auth->is_kasubag()){
+        redirect('User/admingeneral', 'refresh');
+    }
+        $this->load->library('mytcpdf');
+        $nip=$this->ion_auth->user()->row()->username;
+        $struktur = $this->User_model->cekstrukturpns($nip);
+        $getopd = $this->User_model->getnamaopd($nip);
+        $idopd =$getopd->unitkey;
+        $namaopd=$getopd->nmunit;
+        $namappk = $this->User_model->getnamappk($idtab);
+        $lskak = $this->User_model->getkak_by($idtab);
+        $schedule = $this->User_model->getSchedule_by($lskak->id);
+        $schedule_blj_modal = $this->User_model->getBljModal_by($idtab);
+//        var_dump($lskak);exit;        
+        $this->data= array(
+
+                         'idopd'     => $idopd,
+                        'nmopd'     => $namaopd,
+                        'idtab' => $idtab,
+                        'tahun'     => date('Y'),
+                        'nama'   => $namappk,
+                        'list'      => $lskak
+                    
+                                                                    
+
+        );
+      //    echo json_encode ($this->data); 
+        $this->load->view('lap_kak',$this->data);
+
+    }
+
+
+function timeschedule($idtab){
+    
+       if (!$this->ion_auth->logged_in()){
+        redirect('Home/login', 'refresh');
+    }elseif ($this->ion_auth->is_admin()){
+        redirect('Cpanel', 'refresh');
+    }elseif ($this->ion_auth->is_kasubag()){
+        redirect('User/admingeneral', 'refresh');
+    }
+        $this->load->library('mytcpdf');
+        $nip=$this->ion_auth->user()->row()->username;
+        $struktur = $this->User_model->cekstrukturpns($nip);
+        $getopd = $this->User_model->getnamaopd($nip);
+        $idopd =$getopd->unitkey;
+        $namaopd=$getopd->nmunit;
+
+        $lskak = $this->User_model->getkak_by($idtab);
+        $schedule = $this->User_model->getSchedule_by($lskak->id);
+        $schedule_blj_modal = $this->User_model->getBljModal_by($idtab);       
+        $this->data= array(
+
+                         'idopd'     => $idopd,
+                        'nmopd'     => $namaopd,
+                        'idtab' => $idtab,
+                        'tahun'     => date('Y'),
+                         'schedule'      => $schedule,
+                        'list'      => $lskak                                        
+        );
+        //
+        //echo json_encode ($schedule);
+      $this->load->view('lap_timeschedule',$this->data);
+
+    }
+
+    
+
+//end laporan
+
+
+
+
 function jsoncheckbodal(){
     $idkeg=$this->input->post('idkeg');
     $unitkey=$this->input->post('unitkey');
@@ -3180,6 +3285,7 @@ function getWeeks($date, $rollover)
     {
         //echo $kdbulan;
         $kdbulan = date('m');
+        //$kdbulan = 1;
         $data = $this->User_model->rincianrealisasi($kdkegunit,$kdbulan);
         $jsondata = array();
         if($data!=0){
