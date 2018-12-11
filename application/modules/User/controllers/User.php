@@ -17,6 +17,8 @@ class User extends MX_Controller
             redirect('Home/login', 'refresh');
         }elseif ($this->ion_auth->is_admin()){
             redirect('Cpanel', 'refresh');
+        }elseif ($this->ion_auth->is_walikota()){
+            redirect('Cpanel', 'refresh');
         }elseif ($this->ion_auth->is_kasubag()){
             redirect('User/admingeneral', 'refresh');
         }else{
