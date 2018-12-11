@@ -3,7 +3,7 @@
   var tblbelanjamodal;
 
   $(document).ready(function() {
-  
+
   //rizky.init();
   ajaxtoken();
   $(".select2").select2();
@@ -15,8 +15,8 @@
   var kdkeg   = $('#idkegiatan').html();
 
   /*Datatable untuk List Belanja Modal*/
-  
-  
+
+
    $.fn.dataTableExt.oApi.fnPagingInfo = function(oSettings){
     return{
       "iStart": oSettings._iDisplayStart,
@@ -48,10 +48,10 @@
     responsive: true,
     processing: true,
     serverSide: true,
-    ajax: {  
+    ajax: {
       "url": base_url+"User/jsonlistbmodal/"+kdunit+"/"+kdkeg,
       "type": "POST",
-    
+
     },
     columns: [
       {
@@ -60,20 +60,20 @@
         "searchable": false
       },
       {
-        "data": "mtgkey",  
+        "data": "mtgkey",
         "orderable": false,
         "visible": false,
         "searchable": false
       },
       {
-        "data": "kdper",  
+        "data": "kdper",
       },
       {
-        "data": "nmper",  
+        "data": "nmper",
       },
       {
-        "data": "ada",  
-        "orderable": false, 
+        "data": "ada",
+        "orderable": false,
          render : function (data, type, row) {
                   return data == '1' ? '<button type="button" class="btnkak btn btn-block btn-primary btn-flat disabled"data-toggle="tooltip"\
                               title="Target Belanja Modal Sudah Di entri">Entri Target <i class="fa fa-check text-success"></i></button>'  : '<button type="button" class="btnblnjamodal btn btn-block btn-primary btn-flat" data-toggle="tooltip"\
@@ -85,7 +85,7 @@
 
     ],
     //rowsGroup: [0], //ini untuk colspan atau grouping
-    // order: [[4, 'asc']], 
+    // order: [[4, 'asc']],
     displayLength: 10,
     //ini untuk menambahkan kolom no di index 0
     rowCallback: function(row, data, iDisplayIndex) {
@@ -94,7 +94,7 @@
       var length = info.iLength;
       var index = page * length + (iDisplayIndex + 1);
       $('td:eq(0)', row).html(index);
-    }          
+    }
   });
 
   $('#tbl-list-bmodal').on( 'click', 'button.btnblnjamodal', function (){
@@ -103,12 +103,12 @@
     row = row.prev();
   }
   var kolom = tblbelanjamodal.row( row ).data();
-  
-  Pace.restart (); 
+
+  Pace.restart ();
   Pace.track (function (){
 
 
-      var kdkegunit = kolom['kdkegunit']; 
+      var kdkegunit = kolom['kdkegunit'];
       var mtgkey = kolom['mtgkey'];
       var unit = $('#kdunit').html();
       var tabppk = $('#idtabpptk').html();
@@ -128,17 +128,17 @@
         startDate: new Date(awalthun, fixawalbulan, '01'),
         endDate: new Date(akhirthn, fixakhirbulan, '01')
       }).on("input change", function (e) {
-          // string jadi array 
-       
+          // string jadi array
+
         var namabln =this.value;
-        var convert = namabln.split(" ");   
+        var convert = namabln.split(" ");
         $('#akhirkegfisik').datepicker('setDate', null);
         $('#akhirkegfisik').datepicker('destroy');
         $(".tabel-bulan tbody").empty();
         awalbln=0;
         akhirbln=0;
         awalbln = bulan[convert[0]];
-   
+
           $('#akhirkegfisik').datepicker({
             format: "MM yyyy",
             viewMode: "months",
@@ -150,16 +150,16 @@
           }).on("input change", function (e) {
 
             var namabln2 =this.value;
-            var convert2 = namabln2.split(" ");  
-          
+            var convert2 = namabln2.split(" ");
+
             akhirbln=0;
             akhirbln = bulan[convert2[0]];
-            $(".tabel-bulan tbody").empty(); 
+            $(".tabel-bulan tbody").empty();
           });
         });
         modaltargetfisik({
               buttons: {
-              
+
                  simpan: {
                   type : 'submit',
                   id    : 'btn-modal-simpan',
@@ -169,10 +169,10 @@
               },
               title: 'Entri Target Fisik',
               mgkey : mtgkey
-           
+
 
             });
-  });  
+  });
 
   });
 
@@ -205,17 +205,17 @@
   //       startDate: new Date(awalthun, fixawalbulan, '01'),
   //       endDate: new Date(akhirthn, fixakhirbulan, '01')
   //     }).on("input change", function (e) {
-  //         // string jadi array 
-       
+  //         // string jadi array
+
   //       var namabln =this.value;
-  //       var convert = namabln.split(" ");  
-  //       // console.log(awalbln); 
+  //       var convert = namabln.split(" ");
+  //       // console.log(awalbln);
   //       $('#akhirkegfisik').datepicker('setDate', null);
   //       $('#akhirkegfisik').datepicker('destroy');
   //       awalbln=0;
   //       akhirbln=0;
   //       awalbln = bulan[convert[0]];
-   
+
   //         $('#akhirkegfisik').datepicker({
   //           format: "MM yyyy",
   //           viewMode: "months",
@@ -227,10 +227,10 @@
   //         }).on("input change", function (e) {
 
   //           var namabln2 =this.value;
-  //           var convert2 = namabln2.split(" ");  
-          
+  //           var convert2 = namabln2.split(" ");
+
   //           akhirbln=0;
-  //           akhirbln = bulan[convert2[0]]; 
+  //           akhirbln = bulan[convert2[0]];
   //         });
   //       });
   //           modaltargetfisik({
@@ -250,11 +250,11 @@
   //             },
   //             title: 'Entri Target Fisik',
   //             mgkey : mtgkey
-           
+
 
   //           });
   //   }
-    
+
   // });
 
   $(".btn-generate-fisik").click(function() {
@@ -320,7 +320,7 @@
             'Upss ',
             'Total Target Fisik Harus 100 %!!!',
             'info'
-          ) 
+          )
           this.select();
         }
        // jumlah = jumlah > 100 ? swal(
@@ -329,19 +329,19 @@
        //      'info'
        //    ) this.select(): jumlah;
       });
-    }       
+    }
   });
 
   $('#modal-target').on('hidden.bs.modal',  function(){
-    ajaxtoken(); 
+    ajaxtoken();
     $('#awalkegfisik').datepicker('setDate', null);
     $('#awalkegfisik').datepicker('destroy');
     $('#akhirkegfisik').datepicker('setDate', null);
     $('#akhirkegfisik').datepicker('destroy');
     $(".tabel-bulan tbody").empty();
     $('#metode').val('0').trigger('change.select2');
-    tblbelanjamodal.ajax.reload(); 
-  
+    tblbelanjamodal.ajax.reload();
+
   });
   });
 //batas on ready
@@ -356,7 +356,7 @@ function findTotal(){
             tot += parseInt(arr[i].value);
     }
     jumlah=tot;
-    
+
 }
 
 
@@ -374,20 +374,20 @@ $(function () {
             'Upss ',
             'Silahkan Generate Bulan!!!',
             'info'
-          ) 
+          )
       }else if( mt == "0"){
          swal(
             'Upss ',
             'Silahkan Pilih Metode Pelaksanaan!!!',
             'info'
-          ) 
+          )
       }else if(jumlah>100 || jumlah<100){
           swal(
             'Upss ',
             'Total Target Fisik Harus 100 %!!!',
             'info'
-          ) 
-        
+          )
+
         }else{
           swal({
         title: "Simpan Entri Target Fisik",
@@ -419,8 +419,8 @@ $(function () {
                       cache: false,
                       processData: false,
                       success: function(result){
-                     
-                             var jsonData = JSON.parse(result);     
+
+                             var jsonData = JSON.parse(result);
                             if (jsonData.data[0].status == false){
                               swal(
                                 'info',
@@ -445,7 +445,7 @@ $(function () {
 
                                 if(isConfirm){
                                   swal.close();
-                                  $('#modal-target').modal('hide');   
+                                  $('#modal-target').modal('hide');
                                 }
                               });
 
@@ -468,7 +468,7 @@ $(function () {
                 }
               });
         }
-      
+
         });
     });
 </script>
@@ -479,7 +479,7 @@ $(function () {
   </h1>
   <ol class="breadcrumb">
     <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-    
+
   </ol>
 </section>
 <section class="content">
@@ -518,8 +518,8 @@ $(function () {
 
   <div class="col-md-3 col-sm-6 col-xs-12">
     <a class="btn btn-block btn-social btn-success" id="btn-kembali">
-      <i class="fa fa-arrow-left"></i> Kembali 
-    </a> 
+      <i class="fa fa-arrow-left"></i> Kembali
+    </a>
   </div>
   <div class="col-md-3 col-sm-6 col-xs-12">
   </div>
@@ -529,8 +529,8 @@ $(function () {
 
   <div class="col-md-3 col-sm-6 col-xs-12">
   <a class="btn btn-block btn-social btn-success" id="btn-lihat-kak">
-      <i class="fa fa-eye"></i> Lihat KAK 
-    </a> 
+      <i class="fa fa-eye"></i> Lihat KAK
+    </a>
 
   </div>
 
@@ -548,31 +548,31 @@ $(function () {
 </div>
 <div class="box-body">
   <div class="row">
-    <div class="col-md-2 col-sm-2 col-xs-12">  
+    <div class="col-md-2 col-sm-2 col-xs-12">
     </div>
     <div class="col-md-8 col-sm-8 col-xs-12">
      <h2 class="text-center">Target Fisik Belanja Modal</h2>
    </div>
    <div class="col-md-2 col-sm-2 col-xs-12">
-   </div> 
+   </div>
  </div>
  <div class="row">
-  <div class="col-md-2 col-sm-2 col-xs-12">  
+  <div class="col-md-2 col-sm-2 col-xs-12">
   </div>
   <div class="col-md-8 col-sm-8 col-xs-12">
    <h3 class="text-center"><?php echo $prog ?></h3>
  </div>
  <div class="col-md-2 col-sm-2 col-xs-12">
- </div> 
+ </div>
 </div>
 <hr>
 <div class="row">
-  <div class="col-md-1 col-sm-1 col-xs-12">        
+  <div class="col-md-1 col-sm-1 col-xs-12">
   </div>
-  <div class="col-md-1 col-sm-1 col-xs-12">  
+  <div class="col-md-1 col-sm-1 col-xs-12">
    <h4 class="text-left text-muted">Kegiatan</h4>
  </div>
- <div class="col-md-1 col-sm-1 col-xs-12">  
+ <div class="col-md-1 col-sm-1 col-xs-12">
   <h4 class="text-center text-muted">:</h4>
 </div>
 <div class="col-md-6 col-sm-8 col-xs-12">
@@ -581,53 +581,53 @@ $(function () {
   <h4 class="text-left text-muted"><?php echo $keg ?></h4>
 </div>
 <div class="col-md-2 col-sm-2 col-xs-12">
-</div> 
+</div>
 </div>
 <div class="row">
-  <div class="col-md-1 col-sm-1 col-xs-12">  
+  <div class="col-md-1 col-sm-1 col-xs-12">
 
   </div>
-  <div class="col-md-1 col-sm-1 col-xs-12">  
+  <div class="col-md-1 col-sm-1 col-xs-12">
    <h4 class="text-left text-muted">Nilai</h4>
  </div>
- <div class="col-md-1 col-sm-1 col-xs-12">  
+ <div class="col-md-1 col-sm-1 col-xs-12">
   <h4 class="text-center text-muted">:</h4>
 </div>
 <div class="col-md-6 col-sm-8 col-xs-12">
  <h4 class="text-left text-muted"><?php echo $this->template->rupiah($nl) ?></h4>
 </div>
 <div class="col-md-2 col-sm-2 col-xs-12">
-</div> 
+</div>
 </div>
 <div class="row">
-  <div class="col-md-1 col-sm-1 col-xs-12">        
+  <div class="col-md-1 col-sm-1 col-xs-12">
   </div>
-  <div class="col-md-1 col-sm-1 col-xs-12">  
+  <div class="col-md-1 col-sm-1 col-xs-12">
    <h4 class="text-left text-muted">PPTK</h4>
  </div>
- <div class="col-md-1 col-sm-1 col-xs-12">  
+ <div class="col-md-1 col-sm-1 col-xs-12">
   <h4 class="text-center text-muted">:</h4>
 </div>
 <div class="col-md-6 col-sm-8 col-xs-12">
  <h4 class="text-left text-muted"><?php echo $pptk ?></h4>
 </div>
 <div class="col-md-2 col-sm-2 col-xs-12">
-</div> 
+</div>
 </div>
 <div class="row">
-  <div class="col-md-1 col-sm-1 col-xs-12">        
+  <div class="col-md-1 col-sm-1 col-xs-12">
   </div>
-  <div class="col-md-1 col-sm-1 col-xs-12">  
+  <div class="col-md-1 col-sm-1 col-xs-12">
    <h4 class="text-left text-muted">PPK</h4>
  </div>
- <div class="col-md-1 col-sm-1 col-xs-12">  
+ <div class="col-md-1 col-sm-1 col-xs-12">
   <h4 class="text-center text-muted">:</h4>
 </div>
 <div class="col-md-6 col-sm-8 col-xs-12">
  <h4 class="text-left text-muted"><?php echo $ppk ?></h4>
 </div>
 <div class="col-md-2 col-sm-2 col-xs-12">
-</div> 
+</div>
 </div>
 <hr>
 
@@ -636,8 +636,8 @@ $(function () {
       <thead>
         <tr>
           <th class="text-left"  width="2%"><b>#</b></th>
-          <th >mtgkey</th>  
-          <th class="col-xs-2 text-left" >Kode Rekening</th>                   
+          <th >mtgkey</th>
+          <th class="col-xs-2 text-left" >Kode Rekening</th>
           <th class="col-xs-6 text-left" >Nama Rekening</th>
       <!--      <th class="col-xs-2 text-left" >Status</th>  -->
           <th class=" td-actions text-center" >Aksi</th>
@@ -648,7 +648,7 @@ $(function () {
                 <thead>
                     <tr>
                         <th class="text-left"  width="2%"><b>#</b></th>
-                        <th class="col-xs-2 text-left" >Kode Rekening</th>                   
+                        <th class="col-xs-2 text-left" >Kode Rekening</th>
                         <th class="col-xs-8 text-left" >Nama Rekening</th>
                         <th class=" td-actions text-center" ></th>
                     </tr>
@@ -664,18 +664,18 @@ $(function () {
                       if($statbm->row()->stat_draft==1){
 
                       $ada='<button type="button" class="btnkak btn btn-block btn-primary btn-flat disabled"data-toggle="tooltip"
-                              title="Target Belanja Modal Sudah Di entri">Entri Target <i class="fa fa-check text-success"></i></button>';  
+                              title="Target Belanja Modal Sudah Di entri">Entri Target <i class="fa fa-check text-success"></i></button>';
                       }else{
                         $ada='<button type="button" class="btnkak btn btn-block btn-primary btn-flat" data-toggle="tooltip"
                               title="Silahkan Ubah Target Belanja Modal">Ubah Target <i class="fa fa-spinner fa-pulse fa-fw text-danger"></i></button> ';
                       }
-                      
+
                     }else{
-                      // $ada=0; lanjut karna belum ada 
+                      // $ada=0; lanjut karna belum ada
                       $ada='<button type="button" class="btnblnjamodal btn btn-block btn-primary btn-flat" data-toggle="tooltip"
                               title="Target Belanja Modal Belum di Tetapkan">Entri Targget <i class="fa fa-hourglass-start text-danger"></i></button>';
                     }
-                  
+
                    // style="display:none;"
                     echo'<tr>
                     <td>'.$i.'</td>
@@ -683,7 +683,7 @@ $(function () {
                     <td class="mtgkey" style="display:none;">'.$row['mtgkey'].'</td>
                     <td class="col-xs-2">'.$row['kdper'].'</td>
                     <td class="col-xs-5">'.$row['nmper'].'</td>
-                   
+
                     <td class="td-actions text-center">'.$ada.'</td>
                     </tr>';
 
@@ -697,11 +697,11 @@ $(function () {
         </div>
         <!-- /.box-body -->
         <div class="box-footer">
-        
+
           <div class="row">
 
   <div class="col-md-3 col-sm-6 col-xs-12">
-   
+
   </div>
   <div class="col-md-3 col-sm-6 col-xs-12">
   </div>
@@ -728,23 +728,23 @@ $(function () {
 <div class="modal fade" id="modal-target" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-           <form id="formtargetfisik" enctype="multipart/form-data" role="form" autocomplete="off"> 
+           <form id="formtargetfisik" enctype="multipart/form-data" role="form" autocomplete="off">
 
            <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">×</span></button>
                 <h4 class="modal-title">Info Modal</h4>
-                
+
                  <p id="mtgkey" hidden></p>
 
               </div>
 
             <div class="modal-body">
-             
+
               <div class="row">
-                        <div class="col-md-1 col-sm-1 col-xs-12">        
+                        <div class="col-md-1 col-sm-1 col-xs-12">
                         </div>
-                        <div class="col-md-5 col-sm-5 col-xs-12">  
+                        <div class="col-md-5 col-sm-5 col-xs-12">
 
                          <div class="form-group">
                            <label class="text-left text-muted" for="metode"><b>METODE PELAKSANAAN</b></label>
@@ -753,11 +753,11 @@ $(function () {
                             <div class="input-group-addon">
                               <i class="fa fa-cubes"></i>
                             </div>
-                          
-                            <select class="form-control select2"  id="metode" name="metode" data-placeholder="Pilih Metode" style="width: 100%;"> 
+
+                            <select class="form-control select2"  id="metode" name="metode" data-placeholder="Pilih Metode" style="width: 100%;">
                                  <option value="0" selected="selected">Silahkan Pilih Metode</option>
                               <?php
-                               $metode= $this->User_model->getnama_metode();  
+                               $metode= $this->User_model->getnama_metode();
                               foreach ($metode as $k) {
                                   echo "<option value='{$k->id}'>{$k->nama_metode}</option>";
                               }
@@ -771,9 +771,9 @@ $(function () {
 
                     </div>
               <div class="row">
-                      <div class="col-md-1 col-sm-1 col-xs-12">        
+                      <div class="col-md-1 col-sm-1 col-xs-12">
                       </div>
-                      <div class="col-md-5 col-sm-5 col-xs-12">  
+                      <div class="col-md-5 col-sm-5 col-xs-12">
                         <div class="form-group">
                          <label class="text-left text-muted" for="awalkeg"><b>AWAL KEGIATAN</b></label>
 
@@ -786,7 +786,7 @@ $(function () {
                         <!-- /.input group -->
                       </div>
                       <!--    <div class="form-group">
-                          
+
                             <label class="text-left text-muted" for="awalkeg"><b>AWAL KEGIATAN</b></label>
                             <input type="text" class="form-control" id="awalkeg" placeholder="Awal Kegiatan">
                           </div> -->
@@ -795,9 +795,9 @@ $(function () {
 
                       </div>
                       <div class="row">
-                        <div class="col-md-1 col-sm-1 col-xs-12">        
+                        <div class="col-md-1 col-sm-1 col-xs-12">
                         </div>
-                        <div class="col-md-5 col-sm-5 col-xs-12">  
+                        <div class="col-md-5 col-sm-5 col-xs-12">
 
                          <div class="form-group">
                            <label class="text-left text-muted" for="awalkeg"><b>AKHIR KEGIATAN</b></label>
@@ -811,18 +811,18 @@ $(function () {
                           <button type="button" class="btn btn-info btn-flat btn-generate-fisik" >Generate</button>
                         </span>
                           </div>
-                           
+
                           <!-- /.input group -->
                         </div>
                       </div>
-                     
+
 
                     </div>
-                    
+
                     <div class="row">
-                        <div class="col-md-1 col-sm-1 col-xs-12">        
+                        <div class="col-md-1 col-sm-1 col-xs-12">
                         </div>
-                        <div class="col-md-10 col-sm-10 col-xs-12">  
+                        <div class="col-md-10 col-sm-10 col-xs-12">
                           <table class="table table-bordered tabel-bulan">
                                 <thead>
                                   <tr>
@@ -833,16 +833,16 @@ $(function () {
                                 </thead>
                                 <tbody>
 
-                                        
+
                                 </tbody>
                             </table>
-                     
+
                         </div>
 
 
                     </div>
-               
-               
+
+
 
             </div>
 

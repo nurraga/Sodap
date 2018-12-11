@@ -213,7 +213,7 @@
         var mm = d.getMonth()+1;
         var yyyy = d.getFullYear();
 
-        var skr   =new Date("02"+"/06/"+yyyy);
+        var skr   =new Date("04"+"/06/"+yyyy);
 
         var jsonData = JSON.parse(data.responseText);
         html+="<table class='table table-bordered'>\
@@ -244,7 +244,7 @@
                   var batasakr = new Date(nobln+"/05/"+yyyy);
 
                   var batasjn = new Date("2/05/"+yyyy);
-                  if(2 < no){
+                  if(4 < no){
                     //dibatasi bulan sekarang (tidak boleh lebih dari bulan sekarang)
                     tmb = "<button class='btn bg-maroon btn-flat disabled'>Realisasi<div class='ripple-container'></div></button>";
 

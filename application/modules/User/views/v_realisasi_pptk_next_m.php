@@ -1,4 +1,4 @@
-<script src="<?php echo base_url('assets/admin/plugins/input-mask/jquery.inputmask.bundle.js')?>"></script>
+
 <script src="<?php echo base_url('assets/admin/plugins/jquery-spinner/dist/js/jquery.spinner.js')?>"></script>
 
 <script type="text/javascript">
@@ -21,15 +21,17 @@
             self.Value('0');
           }
         });
+
         $(".realfisik").inputmask({
 
-           greedy: false,
-           definitions: {
-             '*': {
-               validator: "[0-9]"
-             }
-           },
-           rightAlign: true
+          mask: "[999]",
+          greedy: false,
+          definitions: {
+            '*': {
+              validator: "[0-9]"
+            }
+          },
+          rightAlign: true
          });
           //spiner volume
         $('.spinner').spinner('changed', function(e, newVal) {
@@ -65,6 +67,12 @@
               );
               row.find(".envol").val(0);
               row.find(".enharga-satuan").val(0);
+              var vol = row.find(".envol").val();
+              var hs  = row.find(".enharga-satuan").val();
+              var jumlah =hs.replace(",", ".")*vol;
+              var sisa= parseInt(sisavoltarif, 10) - parseInt(jumlah, 10);
+              row.find(".harga-jumlah").val(jumlah);
+              row.find(".sisadana").val(sisa);
               totperrek(rek);
               totkeu();
               totsisadana();
@@ -993,96 +1001,112 @@
         if (!localParams.send) {
           e.preventDefault();
         }
-        swal({
-          title: "Simpan Realisasi",
-          text: "Pastikan data sudah benar",
-          type: "info",
-          showCancelButton: true,
-          confirmButtonColor: "#367FA9",
-          confirmButtonText: "Ya, Simpan",
-          cancelButtonText: "Tidak, Batal!",
-          closeOnConfirm: false,
-          closeOnCancel: false
-        }, function (isConfirm) {
-          if (isConfirm) {
-            Pace.restart ();
-            Pace.track (function (){
-              var pertama =0;
-            var token   = localStorage.getItem("token");
-            var tab     = $('#idtab').html();
-            var botkeg  = $('#botkeg').html();
-            var bulan   = $('#idbulan').html();
-            var tahun   = $('#idtahun').html();
+        if ($('#realfisik').val() === '') {
+              swal(
+            'info',
+            'Field Realisasi Fisik Tidak Boleh Kosong',
+            'info'
+            );
+              return false;
+          }else{
+            swal({
+              title: "Simpan Realisasi",
+              text: "Pastikan data sudah benar",
+              type: "info",
+              showCancelButton: true,
+              confirmButtonColor: "#367FA9",
+              confirmButtonText: "Ya, Simpan",
+              cancelButtonText: "Tidak, Batal!",
+              closeOnConfirm: false,
+              closeOnCancel: false
+            }, function (isConfirm) {
 
-            var realkeu   = $('#realkeu').val();
-            var totsdana   = $('#totsdana').val();
-            var realfisik   = $('#realfisik').val();
-            var realbobot   = $('#realbobot').val();
-            var formData = new FormData($('#formrealisasi')[0]);
-            formData.append("token",token);
-            formData.append("pertama",pertama);
-            formData.append("idtab",tab);
-            formData.append("botkeg",botkeg);
-            formData.append("bulan",bulan);
-            formData.append("tahun",tahun);
-            formData.append("realkeu",realkeu);
-            formData.append("totsdana",totsdana);
-            formData.append("realfisik",realfisik);
-            formData.append("realbobot",realbobot);
-            $.ajax({
-              url: base_url+"User/simpanrealisasi",
-              type: 'POST',
-              data: formData,
-              mimeType: "multipart/form-data",
-              contentType: false,
-              cache: false,
-              processData: false,
-              success: function(result){
-                    console.log(result);
-                var jsonData = JSON.parse(result);
+              if (isConfirm) {
+                Pace.restart ();
+                Pace.track (function (){
 
-                  if (jsonData.data[0].status == false){
-                    swal(
-                      'info',
-                      'Terjadi Kesalahan saat simpan!!!',
-                      'info'
-                    );
-                    ajaxtoken();
-                  }else{
-                    ajaxtoken();
-                    swal({
-                      title: "Sukses",
-                      text: "Data berhasil disimpan!!!",
-                      type: "success",
-                      showCancelButton: false,
-                      confirmButtonColor: "#008D4C",
-                      confirmButtonText: "OK",
-                      cancelButtonText: "",
-                      closeOnConfirm: false,
-                      closeOnCancel: false
-                    },function(isConfirm){
-                      if(isConfirm){
-                        swal.close();
-                           window.location.href = base_url+"User/dafkeg/";
+                var token   = localStorage.getItem("token");
+                var idubah =$('#idubah').html();
+                var idreal =$('#idreal').html();
+                var pertama =0;
+                var tab     = $('#idtab').html();
+                var botkeg  = $('#botkeg').html();
+                var bulan   = $('#idbulan').html();
+                var tahun   = $('#idtahun').html();
+
+                var realkeu   = $('#realkeu').val();
+                var totsdana   = $('#totsdana').val();
+                var realfisik   = $('#realfisik').val();
+                var realbobot   = $('#realbobot').val();
+                var formData = new FormData($('#formrealisasi')[0]);
+                formData.append("token",token);
+                formData.append("pertama",pertama);
+                formData.append("idubah",idubah);
+                formData.append("idreal",idreal);
+                formData.append("idtab",tab);
+                formData.append("botkeg",botkeg);
+                formData.append("bulan",bulan);
+                formData.append("tahun",tahun);
+                formData.append("realkeu",realkeu);
+                formData.append("totsdana",totsdana);
+                formData.append("realfisik",realfisik);
+                formData.append("realbobot",realbobot);
+                $.ajax({
+                  url: base_url+"User/simpanrealisasi",
+                  type: 'POST',
+                  data: formData,
+                  mimeType: "multipart/form-data",
+                  contentType: false,
+                  cache: false,
+                  processData: false,
+                  success: function(result){
+                        console.log(result);
+                    var jsonData = JSON.parse(result);
+
+                      if (jsonData.data[0].status == false){
+                        swal(
+                          'info',
+                          'Terjadi Kesalahan saat simpan!!!',
+                          'info'
+                        );
+                        ajaxtoken();
+                      }else{
+                        ajaxtoken();
+                        swal({
+                          title: "Sukses",
+                          text: "Data berhasil disimpan!!!",
+                          type: "success",
+                          showCancelButton: false,
+                          confirmButtonColor: "#008D4C",
+                          confirmButtonText: "OK",
+                          cancelButtonText: "",
+                          closeOnConfirm: false,
+                          closeOnCancel: false
+                        },function(isConfirm){
+                          if(isConfirm){
+                            swal.close();
+                               window.location.href = base_url+"User/dafkeg/";
+                          }
+                        });
                       }
-                    });
+                  },
+                  error: function(jqXHR, textStatus, errorThrown){
+                    swal({
+                      title: 'Kesalahan !!',
+                      text: 'Gagal Simpan Data',
+                      type: 'error',
+                      confirmButtonClass: "btn btn-danger",
+                      buttonsStyling: false
+                    })
                   }
-              },
-              error: function(jqXHR, textStatus, errorThrown){
-                swal({
-                  title: 'Kesalahan !!',
-                  text: 'Gagal Simpan Data',
-                  type: 'error',
-                  confirmButtonClass: "btn btn-danger",
-                  buttonsStyling: false
-                })
+                });
+                });
+              } else {
+                swal("Batal", "Batal Simpan", "error");
               }
             });
-            });
-          } else {
-            swal("Batal", "Batal Simpan", "error");
           }
-        });
+
       });
 
 
@@ -1163,7 +1187,14 @@
       <form id="formrealisasi" enctype="multipart/form-data" role="form" autocomplete="off">
       <div class="box-header with-border">
         <i class="fa fa-text-width"></i>
-        <h3 class="box-title">Form Realisasi</h3>
+        <?php
+        if($ubah==1){
+          $textubah='Ubah ';
+        }else{
+          $textubah='';
+        }
+        ?>
+        <h3 class="box-title">Form <?php echo $textubah;?>Realisasi</h3>
       </div>
       <div class="box-body table-responsive">
         <div class="row">
@@ -1339,9 +1370,6 @@
                    if($ubah==1){
                      //ubah realisasi bulan sekarang
                      foreach ($header as $hrow){
-
-
-
                        $id       =$hrow['id'];
                        $unitkey  =$hrow['unitkey'];
                        $kdkegunit=$hrow['kdkegunit'];
@@ -1458,7 +1486,7 @@
                            <td></td>
                            <td style="display:none;"><b>'.$this->template->rupiah($nilai).'</b></td>
                            <td style="display:none;"><b>'.$this->template->rupiah($jumsdhreal).'</b></td>
-                           <td style="text-align:right"><b>'.$this->template->rupiah($sisablnskr).'</b></td>
+                           <td></td>
                            <td style="display:none;"><input type="text" class="form-control headtotsd"  readonly value='.$sisablnskr.'></td>
                            <td class="info" colspan="2"></td>
                            <td colspan="5"></td>
@@ -1543,7 +1571,7 @@
                             $beljh = $rowebulanlalu['jumlah_harga'];
                             $tottt+=$beljh;
                             $belsd = $rowebulanlalu['sisa_dana'];
-
+                            $besisavol=(int)$sisavol;
                              // jika type "H" (header)
                              if ($dettype =='H'){
                                echo "<tr class='active'>
@@ -1555,7 +1583,7 @@
                                      </tr>";
                              }else{
                                // $sisvoltarif = sisa volume di kali tarif per anak rincian
-                               $sisvoltarif=$sisavol*$dettarif;
+                               $sisvoltarif=$besisavol*$dettarif;
                                $jumtahun+=$sisvoltarif;
                                echo "<tr>
                                      <td class='totpagubln$clasrek' style='display:none;'>$sisablnskr</td>
@@ -1566,7 +1594,7 @@
                                      <td><ul class='list-unstyled'>
                                      <li><ul><li>$deturaian</li></ul></li>
                                      </ul></td>
-                                     <td class='sisvol' style='text-align:center'>$sisavol</td>
+                                     <td class='sisvol' style='text-align:center'>$besisavol</td>
                                      <td style='text-align:center'>$detsatuan</td>
                                      <td class='dettarif' style='display:none;'>$dettarif</td>
                                      <td style='text-align:right'>".$this->template->rupiah($dettarif)."</td>
@@ -1618,10 +1646,9 @@
                            echo"<tr>
                              <td colspan='4' style='vertical-align : middle;text-align:right'><b>Total Jumlah</b></td>
                              <td colspan='2' style='vertical-align : middle;text-align:right'><b>".$this->template->rupiah($jumtahun)."</b></td>
-
-                             <td class='active'></td>
+                             <td class='active' style='vertical-align : middle;text-align:right'><b>".$this->template->rupiah($sisablnskr)."</b></td>
                              <td class='info' colspan='2'></td>
-                             <td colspan='3' style='vertical-align : middle; text-align:right'><b>Total Jumlah</b></td>
+                             <td colspan='3' style='vertical-align : middle; text-align:right'></td>
                              <td><input type='text' class='format-rupiah form-control hr harga-rek".$clasrek."' readonly style='font-size: 11px' name='jumperrek[]' value='".$tottt."'></td>
                              <td></td>
                              </tr>";
@@ -1751,7 +1778,7 @@
                            <td></td>
                            <td style="display:none;"><b>'.$this->template->rupiah($nilai).'</b></td>
                            <td style="display:none;"><b>'.$this->template->rupiah($jumsdhreal).'</b></td>
-                           <td style="text-align:right"><b>'.$this->template->rupiah($sisablnskr).'</b></td>
+                           <td></td>
                            <td style="display:none;"><input type="text" class="form-control headtotsd"  readonly value='.$sisablnskr.'></td>
                            <td class="info" colspan="2"></td>
                            <td colspan="5"></td>
@@ -1887,10 +1914,9 @@
                            echo"<tr>
                              <td colspan='4' style='vertical-align : middle;text-align:right'><b>Total Jumlah</b></td>
                              <td colspan='2' style='vertical-align : middle;text-align:right'><b>".$this->template->rupiah($jumtahun)."</b></td>
-
-                             <td class='active'></td>
+                             <td class='active' style='vertical-align : middle; text-align:right'><b>".$this->template->rupiah($sisablnskr)."</b></td>
                              <td class='info' colspan='2'></td>
-                             <td colspan='3' style='vertical-align : middle; text-align:right'><b>Total Jumlah</b></td>
+                             <td colspan='3' style='vertical-align : middle; text-align:right'></td>
                              <td><input type='text' class='format-rupiah form-control hr harga-rek".$clasrek."' readonly style='font-size: 11px' name='jumperrek[]'></td>
                              <td></td>
                              </tr>";
@@ -1958,9 +1984,22 @@
        <div class="col-md-1 col-sm-1 col-xs-12">
         <h4 class="text-center text-muted">:</h4>
       </div>
+      <?php
+    if($ubah==1){
+
+      $rf = $real_fisik;
+      $br   =$bobot_real;
+      $per =$permasalahan;
+
+    }else{
+      $rf = '';
+      $br   = '';
+      $per ='';
+    }
+      ?>
        <div class="col-md-3 col-sm-3 col-xs-12">
         <div class="input-group">
-                      <input type="text" class="realfisik form-control" id="realfisik" >
+                      <input type="text" class="realfisik form-control" id="realfisik" value="<?php echo $rf ?>">
                       <div class="input-group-addon">
                       <i class="fa fa-percent"></i>
                       </div>
@@ -1981,7 +2020,7 @@
       </div>
        <div class="col-md-3 col-sm-3 col-xs-12">
          <div class="input-group">
-                      <input type="text" class="realbobot form-control" id="realbobot"  style="text-align: right;" readonly>
+                      <input type="text" class="realbobot form-control" id="realbobot"  style="text-align: right;" readonly value="<?php echo $br ?>">
                       <div class="input-group-addon">
                       <i class="fa fa-percent"></i>
                       </div>
@@ -2002,7 +2041,7 @@
       </div>
       <div class="col-md-7 col-sm-7 col-xs-12">
         <textarea class="textarea" id="masalah" name="masalah"  placeholder="Jika Ada Permasalahan"
-                           style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"></textarea>
+                           style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"><?php echo $per ?></textarea>
       </div>
       <div class="col-md-2 col-sm-2 col-xs-12">
       </div>
@@ -2019,9 +2058,15 @@
       <div class="col-md-3 col-sm-6 col-xs-12">
 
       </div>
-
+      <?php
+      if($ubah==1){
+        $textsimpan='Ubah Realisasi';
+      }else{
+        $textsimpan='Simpan Realisasi';
+      }
+      ?>
       <div class="col-md-3 col-sm-6 col-xs-12 button-all">
-     <button type="submit" class="btn btn-block btn-social btn-flat btn-success" data-toggle="tooltip" title="Simpan Semua Target Fisik"><i class="fa  fa-save"></i>Simpan Realisasi</button>
+     <button type="submit" class="btn btn-block btn-social btn-flat btn-success" data-toggle="tooltip" title="Simpan Semua Target Fisik"><i class="fa  fa-save"></i><?php echo $textsimpan?></button>
 
       </div>
 
