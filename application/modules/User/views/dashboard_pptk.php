@@ -79,7 +79,7 @@
       <!-- small box -->
       <div class="small-box bg-green">
         <div class="inner">
-          <h3>6</h3>
+          <h3>List</h3>
 
           <p>Kegiatan</p>
       </div>

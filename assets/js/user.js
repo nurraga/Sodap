@@ -262,11 +262,15 @@ function modalrealisasi(data) {
   $('#pagubmodalbln').html(data.paguprbln);
   var stat= data.status;
   $('#code').html(stat);
+  $('#totargetfisik').val(data.tottarfis);
+
   if(stat==1){
+    $('#totargetfisik').prop("disabled", "disabled");
     $('#nilaikontrak').prop("disabled", "disabled");
     $('#pbj').prop("disabled", "disabled");
     $('#awalktr').prop("disabled", "disabled");
     $('#akhirktr').prop("disabled", "disabled");
+    $('.realfissudah2').prop("hidden", false);
     $('#spmk').prop("disabled", "disabled");
     $('#nomorkontrak').prop("disabled", "disabled");
     $('#nilaikontrak').val(data.nlktrk);
@@ -276,14 +280,17 @@ function modalrealisasi(data) {
     $("#spmk").datepicker("setDate",new Date(data.spmk));
     $('#nomorkontrak').val(data.noktrk);
     $('#realfissudah').html(data.realfisik);
+    $('#realfissudah2').val(data.realfisik);
 
   }else if(stat==3 || stat==4){
+    $('#totargetfisik').prop("disabled", "disabled");
     $('#nilaikontrak').prop("disabled", "disabled");
     $('#pbj').prop("disabled", "disabled");
     $('#awalktr').prop("disabled", "disabled");
     $('#akhirktr').prop("disabled", "disabled");
     $('#spmk').prop("disabled", "disabled");
     $('#nomorkontrak').prop("disabled", "disabled");
+    $('.realfissudah2').prop("hidden", false);
     $('#nilaikontrak').val(data.nlktrk);
     $('#pbj').val(data.pbj);
     $("#awalktr").datepicker("setDate",new Date(data.awlktrk));
@@ -291,16 +298,21 @@ function modalrealisasi(data) {
     $("#spmk").datepicker("setDate",new Date(data.spmk));
     $('#nomorkontrak').val(data.noktrk);
     $('#realfissudah').html(data.realfisik);
+    $('#realfissudah2').val(data.realfisik);
+    $('#realfisedit').html(data.realbj);
+
     $('#realfisikbljmodal').val(data.realbj );
     $('#realbobotbljmodal').val(data.bbtbj);
     $('#iddet').html(data.iddet);
   }else{
+    $('#totargetfisik').prop("disabled", "disabled");
     $('#nilaikontrak').removeAttr("disabled");
     $('#pbj').removeAttr("disabled");
     $('#awalktr').removeAttr("disabled");
     $('#akhirktr').removeAttr("disabled");
     $('#spmk').removeAttr("disabled");
     $('#nomorkontrak').removeAttr("disabled");
+    $('.realfissudah2').prop("hidden", true);
     $('#realfissudah').html(0);
     $('#idbmodal').html(0);
     $('#iddet').html(0);
