@@ -278,17 +278,19 @@
                                         $no_target = '<span class="badge" style="background-color: red">belum ada target</span>';
                                         $total_target = array(0);
                                         $total_target_hbi = array(0);
-                                        foreach ($data_schedule as $ds){
-                                            for($i=1;$i<=12;$i++){
-                                                if($ds['kdkegunit']==$keg['kdkegunit']){
-                                                    $total_target[] += strlen($ds['bulan_'.$i]);
-                                                }
-                                            }
-                                            for($i=1;$i<=date('m');$i++){
-                                                if($ds['kdkegunit']==$keg['kdkegunit']){
-                                                    $total_target_hbi[] += strlen($ds['bulan_'.$i]);
-                                                }
-                                            }
+                                        if($data_schedule!=0){
+                                          foreach ($data_schedule as $ds){
+                                              for($i=1;$i<=12;$i++){
+                                                  if($ds['kdkegunit']==$keg['kdkegunit']){
+                                                      $total_target[] += strlen($ds['bulan_'.$i]);
+                                                  }
+                                              }
+                                              for($i=1;$i<=date('m');$i++){
+                                                  if($ds['kdkegunit']==$keg['kdkegunit']){
+                                                      $total_target_hbi[] += strlen($ds['bulan_'.$i]);
+                                                  }
+                                              }
+                                          }
                                         }
                                         $total = array_sum($total_target);
                                         $target_hbi = array_sum($total_target_hbi);

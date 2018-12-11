@@ -1189,13 +1189,14 @@ if($ubah==1){
 
      $(".realfisik").inputmask({
 
-        greedy: false,
-        definitions: {
-          '*': {
-            validator: "[0-9]"
-          }
-        },
-        rightAlign: true
+       mask: "[999]",
+       greedy: false,
+       definitions: {
+         '*': {
+           validator: "[0-9]"
+         }
+       },
+       rightAlign: true
       });
 
       // $("#nilaikontrak").focusout(function() {
@@ -1338,8 +1339,19 @@ if($ubah==1){
         var totjum = row.find(".totjum").text();
         var totpagu =  row.find(".totpagu").text();
         var totpagubln =  row.find(".totpagubln"+rek).text();
-
-        if(parseInt(vol, 10) > parseInt(jumyek, 10)){
+        if(parseInt(vol, 10)===0){
+          row.find(".vl").val(0);
+          row.find(".harga-satuan").val(0);
+          var vol = row.find(".vl").val();
+          var hs  = row.find(".harga-satuan").val();
+          var jumlah =hs.replace(",", ".")*vol;
+          var sisa= parseInt(totjum, 10) - parseInt(jumlah, 10);
+          row.find(".harga-jumlah").val(jumlah);
+          row.find(".sisadana").val(sisa);
+          totperrek(rek);
+          totkeu();
+          totsisadana();
+        }else if(parseInt(vol, 10) > parseInt(jumyek, 10)){
           swal(
             'info',
             'Volume Melebihi Yang di Tetapkan!!!',
@@ -1347,6 +1359,12 @@ if($ubah==1){
           );
           row.find(".vl").val(0);
           row.find(".harga-satuan").val(0);
+          var vol = row.find(".vl").val();
+          var hs  = row.find(".harga-satuan").val();
+          var jumlah =hs.replace(",", ".")*vol;
+          var sisa= parseInt(totjum, 10) - parseInt(jumlah, 10);
+          row.find(".harga-jumlah").val(jumlah);
+          row.find(".sisadana").val(sisa);
           totperrek(rek);
           totkeu();
           totsisadana();
@@ -2072,100 +2090,114 @@ $(function () {
     if (!localParams.send) {
       e.preventDefault();
     }
-    swal({
-      title: "Simpan Realisasi",
-      text: "Pastikan data sudah benar",
-      type: "info",
-      showCancelButton: true,
-      confirmButtonColor: "#367FA9",
-      confirmButtonText: "Ya, Simpan",
-      cancelButtonText: "Tidak, Batal!",
-      closeOnConfirm: false,
-      closeOnCancel: false
-    }, function (isConfirm) {
-      if (isConfirm) {
-        Pace.restart ();
-        Pace.track (function (){
-        var token   = localStorage.getItem("token");
-        var idubah =$('#idubah').html();
-        var idreal =$('#idreal').html();
-        var pertama =1;
-        var tab     = $('#idtab').html();
-        var botkeg  = $('#botkeg').html();
-        var bulan   = $('#idbulan').html();
-        var tahun   = $('#idtahun').html();
+    if ($('#realfisik').val() === '') {
 
-        var realkeu   = $('#realkeu').val();
-        var totsdana   = $('#totsdana').val();
-        var realfisik   = $('#realfisik').val();
-        var realbobot   = $('#realbobot').val();
-        var formData = new FormData($('#formrealisasi')[0]);
-        formData.append("token",token);
-        formData.append("pertama",pertama);
-        formData.append("idubah",idubah);
-        formData.append("idreal",idreal);
-        formData.append("idtab",tab);
-        formData.append("botkeg",botkeg);
-        formData.append("bulan",bulan);
-        formData.append("tahun",tahun);
-        formData.append("realkeu",realkeu);
-        formData.append("totsdana",totsdana);
-        formData.append("realfisik",realfisik);
-        formData.append("realbobot",realbobot);
-        $.ajax({
-          url: base_url+"User/simpanrealisasi",
-          type: 'POST',
-          data: formData,
-          mimeType: "multipart/form-data",
-          contentType: false,
-          cache: false,
-          processData: false,
-          success: function(result){
-                console.log(result);
-            var jsonData = JSON.parse(result);
+          swal(
+        'info',
+        'Field Realisasi Fisik Tidak Boleh Kosong',
+        'info'
+        );
+          return false;
+      }else{
 
-              if (jsonData.data[0].status == false){
-                swal(
-                  'info',
-                  'Terjadi Kesalahan saat simpan!!!',
-                  'info'
-                );
-                ajaxtoken();
-              }else{
-                ajaxtoken();
-                swal({
-                  title: "Sukses",
-                  text: "Data berhasil disimpan!!!",
-                  type: "success",
-                  showCancelButton: false,
-                  confirmButtonColor: "#008D4C",
-                  confirmButtonText: "OK",
-                  cancelButtonText: "",
-                  closeOnConfirm: false,
-                  closeOnCancel: false
-                },function(isConfirm){
-                  if(isConfirm){
-                    swal.close();
-                       window.location.href = base_url+"User/dafkeg/";
+        swal({
+          title: "Simpan Realisasi",
+          text: "Pastikan data sudah benar",
+          type: "info",
+          showCancelButton: true,
+          confirmButtonColor: "#367FA9",
+          confirmButtonText: "Ya, Simpan",
+          cancelButtonText: "Tidak, Batal!",
+          closeOnConfirm: false,
+          closeOnCancel: false
+        }, function (isConfirm) {
+
+          if (isConfirm) {
+            Pace.restart ();
+            Pace.track (function (){
+            var token   = localStorage.getItem("token");
+            var idubah =$('#idubah').html();
+            var idreal =$('#idreal').html();
+            var pertama =1;
+            var tab     = $('#idtab').html();
+            var botkeg  = $('#botkeg').html();
+            var bulan   = $('#idbulan').html();
+            var tahun   = $('#idtahun').html();
+
+            var realkeu   = $('#realkeu').val();
+            var totsdana   = $('#totsdana').val();
+            var realfisik   = $('#realfisik').val();
+            var realbobot   = $('#realbobot').val();
+            var formData = new FormData($('#formrealisasi')[0]);
+            formData.append("token",token);
+            formData.append("pertama",pertama);
+            formData.append("idubah",idubah);
+            formData.append("idreal",idreal);
+            formData.append("idtab",tab);
+            formData.append("botkeg",botkeg);
+            formData.append("bulan",bulan);
+            formData.append("tahun",tahun);
+            formData.append("realkeu",realkeu);
+            formData.append("totsdana",totsdana);
+            formData.append("realfisik",realfisik);
+            formData.append("realbobot",realbobot);
+            $.ajax({
+              url: base_url+"User/simpanrealisasi",
+              type: 'POST',
+              data: formData,
+              mimeType: "multipart/form-data",
+              contentType: false,
+              cache: false,
+              processData: false,
+              success: function(result){
+                    console.log(result);
+                var jsonData = JSON.parse(result);
+
+                  if (jsonData.data[0].status == false){
+                    swal(
+                      'info',
+                      'Terjadi Kesalahan saat simpan!!!',
+                      'info'
+                    );
+                    ajaxtoken();
+                  }else{
+                    ajaxtoken();
+                    swal({
+                      title: "Sukses",
+                      text: "Data berhasil disimpan!!!",
+                      type: "success",
+                      showCancelButton: false,
+                      confirmButtonColor: "#008D4C",
+                      confirmButtonText: "OK",
+                      cancelButtonText: "",
+                      closeOnConfirm: false,
+                      closeOnCancel: false
+                    },function(isConfirm){
+                      if(isConfirm){
+                        swal.close();
+                           window.location.href = base_url+"User/dafkeg/";
+                      }
+                    });
                   }
-                });
+              },
+              error: function(jqXHR, textStatus, errorThrown){
+                swal({
+                  title: 'Kesalahan !!',
+                  text: 'Gagal Simpan Data',
+                  type: 'error',
+                  confirmButtonClass: "btn btn-danger",
+                  buttonsStyling: false
+                })
               }
-          },
-          error: function(jqXHR, textStatus, errorThrown){
-            swal({
-              title: 'Kesalahan !!',
-              text: 'Gagal Simpan Data',
-              type: 'error',
-              confirmButtonClass: "btn btn-danger",
-              buttonsStyling: false
-            })
+            });
+            });
+          } else {
+            swal("Batal", "Batal Simpan", "error");
           }
         });
-        });
-      } else {
-        swal("Batal", "Batal Simpan", "error");
+
       }
-    });
+
   });
 
 

@@ -519,6 +519,7 @@ immediately after the control sidebar -->
 <script src="<?php echo base_url('assets/admin/plugins/input-mask/jquery.inputmask.date.extensions.js')?>"></script>
 <script src="<?php echo base_url('assets/admin/plugins/input-mask/jquery.inputmask.extensions.js')?>"></script>
 -->
+<script src="<?php echo base_url('assets/admin/plugins/input-mask/jquery.inputmask.bundle.js')?>"></script>
 <!-- Bootstrap WYSIHTML5 -->
 <script src="<?php echo base_url('assets/admin/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js')?>"></script>
 
