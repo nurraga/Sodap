@@ -59,6 +59,18 @@
 
   </div>
 
+<div class="col-md-2 col-sm-7 col-xs-12 pull-right">
+     <a class="btn btn-danger btn-social btn-success" target="_blank" href="<?php echo base_url("User/timeschedule/").$idtab; ?>">
+                     <i class="fa fa-print"></i> Cetak Time Schedule
+    </a> 
+ </div>
+
+  <div class="col-md-2 col-sm-7 col-xs-12 pull-right">
+     <a class="btn btn-danger btn-social btn-success" target="_blank" href="<?php echo base_url("User/lapkak/").$idtab; ?>">
+                     <i class="fa fa-print"></i> Cetak KAK
+    </a> 
+ </div>
+
 
 
 </div>
