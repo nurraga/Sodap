@@ -238,11 +238,13 @@
 
                                         $sisa_angkas_hbs = ($angkas - $trhbs); //sisa angkas hingga bulan sebelumnya
                                         $ta = $sisa_angkas_hbs + $tb;
+
                                         if($ta!=0){
                                             $persen = round((($jum+$totbmodalbi) / $ta) * 100, 2);
                                         }else{
                                             $persen = 0;
                                         }
+
                                         echo $persen; ?>
                                     </td>
                                     <td style="text-align: center;white-space: nowrap;width: 1%;vertical-align: middle">
@@ -295,11 +297,15 @@
                                         <?php
                                         $real_fisik = 0;
                                         if($data_real_fisik!=0){
-                                            foreach ($data_real_fisik as $drf){
-                                                if($drf['kdkegunit']==$keg['kdkegunit']){
-                                                    $real_fisik+=$drf['bobot_real'];
-                                                }
-                                            }
+
+                                          foreach ($data_real_fisik as $drf){
+                                              if($drf['kdkegunit']==$keg['kdkegunit']){
+                                                  $real_fisik+=$drf['bobot_real'];
+                                              }
+                                          }
+                                        }else{
+
+
                                         }
 
                                         echo $real_fisik.' %';
@@ -336,11 +342,13 @@
 
                                         $sisa_angkas_hbs = ($angkas - $trhbs); //sisa angkas hingga bulan sebelumnya
                                         $ta = $sisa_angkas_hbs + $tb;
+
                                         if($ta!=0){
                                             $persen = ($jum / $ta) * 100;
                                         }else{
                                             $persen=0;
                                         }
+
                                         if($persen>=80){
                                             $status = '<span class="badge" style="background-color: green">tercapai</span>';
                                         }else{

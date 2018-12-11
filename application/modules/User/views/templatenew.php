@@ -400,7 +400,9 @@
 
                   </div>
                   <div class="pull-right">
-                    <a href="<?php echo base_url('Home/logout');?>" class="btn btn-default btn-flat">Keluar</a>
+
+                    <a href="<?php echo base_url('User/logout');?>" class="btn btn-default btn-flat">Keluar</a>
+
                   </div>
                 </li>
               </ul>
