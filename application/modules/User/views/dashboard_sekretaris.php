@@ -6,6 +6,12 @@
                 window.location.href = base_url + "User/kakppk";
             });
         });
+        $("#dashrealopd").click(function () {
+            Pace.restart();
+            Pace.track(function () {
+                window.location.href = base_url + "User/dafallkeg";
+            });
+        });
     });
 
 </script>
@@ -55,6 +61,40 @@
                     <i class="ion ion-stats-bars"></i>
                 </div>
                 <a class="btn btn-block btn-social btn-success" id="dashkeg">
+                    <i class="fa fa-bars"></i> proses
+                </a>
+            </div>
+        </div>
+        <!-- ./col -->
+        <!-- ./col -->
+        <div class="col-lg-3 col-xs-6">
+            <!-- small box -->
+            <div class="small-box bg-green">
+                <div class="inner">
+                    <h3>LIST</h3>
+                    <p>Evaluasi realisasi Kegiatan PPTK</p>
+                </div>
+                <div class="icon">
+                    <i class="ion ion-stats-bars"></i>
+                </div>
+                <a class="btn btn-block btn-social btn-success" id="dashrealpptk">
+                    <i class="fa fa-bars"></i> proses
+                </a>
+            </div>
+        </div>
+        <!-- ./col -->
+        <!-- ./col -->
+        <div class="col-lg-3 col-xs-6">
+            <!-- small box -->
+            <div class="small-box bg-green">
+                <div class="inner">
+                    <h3>LIST</h3>
+                    <p>Tindak Lanjut Laporan Seluruh Kegiatan</p>
+                </div>
+                <div class="icon">
+                    <i class="ion ion-stats-bars"></i>
+                </div>
+                <a class="btn btn-block btn-social btn-success" id="dashrealopd">
                     <i class="fa fa-bars"></i> proses
                 </a>
             </div>
