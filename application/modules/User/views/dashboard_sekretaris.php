@@ -69,7 +69,7 @@
         <!-- ./col -->
         <div class="col-lg-3 col-xs-6">
             <!-- small box -->
-            <div class="small-box bg-green">
+            <div class="small-box bg-yellow">
                 <div class="inner">
                     <h3>LIST</h3>
                     <p>Evaluasi realisasi Kegiatan PPTK</p>
@@ -77,7 +77,7 @@
                 <div class="icon">
                     <i class="ion ion-stats-bars"></i>
                 </div>
-                <a class="btn btn-block btn-social btn-success" id="dashrealpptk">
+                <a class="btn btn-block btn-social btn-warning" id="dashrealpptk">
                     <i class="fa fa-bars"></i> proses
                 </a>
             </div>
@@ -86,7 +86,7 @@
         <!-- ./col -->
         <div class="col-lg-3 col-xs-6">
             <!-- small box -->
-            <div class="small-box bg-green">
+            <div class="small-box bg-aqua">
                 <div class="inner">
                     <h3>LIST</h3>
                     <p>Tindak Lanjut Laporan Seluruh Kegiatan</p>
@@ -94,7 +94,7 @@
                 <div class="icon">
                     <i class="ion ion-stats-bars"></i>
                 </div>
-                <a class="btn btn-block btn-social btn-success" id="dashrealopd">
+                <a class="btn btn-block btn-social btn-info" id="dashrealopd">
                     <i class="fa fa-bars"></i> proses
                 </a>
             </div>
@@ -271,7 +271,16 @@
                                                 $jum += $d_real['jumlah_harga'];
                                             }
                                         }
-                                        echo $this->template->rupiah($jum); ?>
+                                        $totbmodalbi = 0;
+                                        if($det_real_bmodalbi!=0){
+                                          foreach ($det_real_bmodalbi as $drbmbi) {
+                                            // code...
+                                            if($drbmbi['kdkegunit']==$keg['kdkegunit']){
+                                              $totbmodalbi+=$drbmbi['nilai_ktrk'];
+                                            }
+                                          }
+                                        }
+                                        echo $this->template->rupiah($jum+$totbmodalbi); ?>
                                     </td>
                                     <td style="text-align: center;white-space: nowrap;width: 1%;vertical-align: middle">
                                         <?php

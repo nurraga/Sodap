@@ -42,28 +42,6 @@
             </div>
         </div>
     </div>
-    <div class="row">
-
-          <div class="col-md-3 col-sm-6 col-xs-12">
-            <a class="btn btn-block btn-social btn-success" id="btn-kembali">
-              <i class="fa fa-arrow-left"></i> Kembali
-            </a>
-          </div>
-          <div class="col-md-3 col-sm-6 col-xs-12">
-            </div>
-            <div class="col-md-3 col-sm-6 col-xs-12">
-
-            </div>
-
-            <div class="col-md-3 col-sm-6 col-xs-12">
-
-
-            </div>
-
-
-
-          </div>
-          <br>
     <div class="row col-md-12 col-sm-12 col-xs-12">
         <div class="box box-primary">
             <div class="box-header with-border" style="font-size: 18px">

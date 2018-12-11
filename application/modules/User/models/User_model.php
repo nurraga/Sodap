@@ -1142,7 +1142,27 @@ FROM
         }
     }
     //end query untuk mendapatkan detail realisasi belanja modal bulan ini-->
-
+    //<--query untuk mendapatkan detail realisasi belanja modal bulan ini
+    function getdetrealbmodalbiOPD($idstrukturppk,$unitkey)
+    {
+        $query = 'SELECT
+    `tab_realisasi_bmodal`.`nilai_ktrk`
+    , `dpa221`.`mtgkey`
+    , `dpa221`.`kdkegunit`
+    FROM
+    `db_sodap`.`tab_realisasi_bmodal`
+    INNER JOIN `db_sodap`.`tab_struktur`
+        ON (`tab_realisasi_bmodal`.`admin_entri` = `tab_struktur`.`nip`)
+    INNER JOIN `db_sodap`.`dpa221`
+        ON (`dpa221`.`mtgkey` = `tab_realisasi_bmodal`.`mtgkey`)
+        WHERE `tab_realisasi_bmodal`.`id_struktur`='.$idstrukturppk.' AND `dpa221`.`unitkey`="'.$unitkey.'" AND MONTH(`tab_realisasi_bmodal`.`real_bulan`)=MONTH(NOW()) AND YEAR(`tab_realisasi_bmodal`.`real_bulan`)=YEAR(NOW());';
+        if($this->db->query($query)->num_rows()!=0){
+            return $this->db->query($query)->result_array();
+        }else{
+            return 0;
+        }
+    }
+    //end query untuk mendapatkan detail realisasi belanja modal bulan ini-->
     //<--query untuk mendapatkan data kegiatan pptk
     function getkegiatan($nipppk)
     {
