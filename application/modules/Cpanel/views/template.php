@@ -156,7 +156,7 @@
                 </div>
                 <ul class="nav">
                     <li class="active">
-                        <a href="dashboard.html">
+                        <a href="<?php echo base_url();?>">
                             <i class="material-icons">dashboard</i>
                             <p>Dashboard</p>
                         </a>
@@ -164,7 +164,7 @@
                     <li>
                         <a href="<?php echo base_url('Cpanel/raporOpd');?>">
                             <i class="material-icons">timeline</i>
-                            <p>Rapor Bulanan</p>
+                            <p>Laporan Bulanan</p>
                         </a>
                     </li>
                     <li>
@@ -174,7 +174,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="calendar.html">
+                        <a href="<?php echo base_url('Cpanel/dashboardpimpinan');?>">
                             <i class="material-icons">date_range</i>
                             <p>Calendar</p>
                         </a>
@@ -235,6 +235,11 @@
                                     <i class="material-icons">person</i>
                                     <p class="hidden-lg hidden-md">Profile</p>
                                 </a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a href="<?php echo base_url('Home/logout') ?>">Logout</a>
+                                    </li>
+                                </ul>
                             </li>
                             <li class="separator hidden-lg hidden-md"></li>
                         </ul>
@@ -335,6 +340,11 @@
 <script src="<?php echo base_url('assets/js/cpanel.js')?>"></script>
  <script type="text/javascript" src="<?php echo base_url('assets/orgchart/js/jquery.mockjax.min.js')?>"></script>
   <script type="text/javascript" src="<?php echo base_url('assets/orgchart/js/jquery.orgchart.js')?>"></script>
+
+  <script src="<?php echo base_url('assets/js/demo.js') ?>"></script>
+  <script src="<?php echo base_url('assets/js/chartist.min.js') ?>"></script>
+  <script src="<?php echo base_url('assets/js/chartist-plugin-pointlabels.js') ?>"></script>
+  <script src="<?php echo base_url('assets/js/chartist-plugin-pointlabels.min.js') ?>"></script>
 <!-- <script type="text/javascript">
     $(document).ready(function() {
 

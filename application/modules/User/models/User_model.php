@@ -282,27 +282,42 @@ class User_model extends CI_Model
         $this->db->trans_start();
         $this->db->insert('tab_realisasi', $data);
         $id_master  = $this->db->insert_id();
+        $iddpa     = $this->input->post('iddpa');
+        $mtgkey     = $this->input->post('mtgkey');
         $kdrek      = $this->input->post('kdrek');
         $sumberdana = $this->input->post('sumberdn');
         $volume     = $this->input->post('volume');
         $hrsatuan   = $this->input->post('hrsatuan');
         $jum        = $this->input->post('jum');
         $sisadn     = $this->input->post('sisadn');
-        $iddpa     = $this->input->post('iddpa');
+
+        $detpgblnskr     = $this->input->post('detpgblnskr');
+
         $list=array();
         for($i=0; $i < count ($kdrek); $i++){
           $var1 = str_replace("Rp ","",$hrsatuan[$i]);
           $var2 = str_replace("Rp ","",$jum[$i]);
           $var3 = str_replace("Rp ","",$sisadn[$i]);
+        //jika jumlah tidak sama dengan 0 dan hrsatuan =0 maka reset jumlah ke 0
+        if($volume[$i]!=0 && $var1==0){
+          $vol=0;
+
+        }else{
+          $vol=$volume[$i];
+
+
+        }
           $list[$i]=array(
             'id_tab_realisasi'=> $id_master,
             'id_dpa'          => $iddpa[$i],
+            'mtgkey'          => $mtgkey[$i],
             'kd_rek'          => $kdrek[$i],
             'sumber_dana'     => $sumberdana[$i],
-            'vol'             => $volume[$i],
+            'vol'             => $vol,
             'harga_satuan'    => str_replace(".","",$var1),
             'jumlah_harga'    => str_replace(".","",$var2),
-            'sisa_dana'       => str_replace(".","",$var3)
+            'sisa_dana'       => str_replace(".","",$var3),
+            'pagu_perbln'     => $detpgblnskr[$i]
           );
         }
 
@@ -357,6 +372,17 @@ class User_model extends CI_Model
               $this->db->trans_commit();
               return TRUE;
             }
+          }
+          function ubahrealisasibmodaldet($detail,$iddet)
+          {
+            $this->db->where('id', $iddet);
+            $updetbljmodal = $this->db->update('tab_realisasi_bmodal_det', $detail);
+            if($updetbljmodal)
+              return true;
+            else
+              return false;
+
+
           }
 
 //akhir pptk
@@ -851,6 +877,7 @@ FROM
     //<--query untuk mendapatkan data pagu tahun
     function getpagutahun($nipppk,$unitkey)
     {
+
         $query = 'SELECT
     SUM(`angkas`.`nilai`) AS `pagu_tahun`
 FROM
@@ -864,6 +891,7 @@ FROM
     //<--query untuk mendapatkan data angkas hingga bulan ini
     function getangkashinggabulanini($nipppk,$unitkey)
     {
+
         $query = 'SELECT
     SUM(`angkas`.`nilai`) AS `angkas_bulan`
 FROM
@@ -877,6 +905,7 @@ FROM
     //<--query untuk mendapatkan data angkas bulan ini
     function getangkasbulanini($nipppk,$unitkey)
     {
+
         $query = 'SELECT
     SUM(`angkas`.`nilai`) AS `angkas_bulan`
 FROM

@@ -499,7 +499,11 @@ $('#datepicker').datetimepicker( {
             }
 
     });
-
+    //!@#$%^&*AgungAGUNGAGUNG
+    $('.modal').on('click', '#btn-modal-batal',  function(e){
+      $('.modal').modal('hide');
+    });
+    //AgungAGUNGAGUNG!@#$%^&*()*&^%
 });
 
 $('#list-opd-entri').on( 'click', 'button.entriact', function (){

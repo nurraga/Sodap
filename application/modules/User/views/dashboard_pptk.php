@@ -45,7 +45,7 @@
 
 <!-- Main content -->
 <section class="content">
-    <div class="callout callout-info">
+    <div class="callout bg-blue">
       <div class="row">
           <div class="col-xs-12 col-md-12 col-md-offset-1">
              <br>

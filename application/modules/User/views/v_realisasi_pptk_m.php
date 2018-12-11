@@ -10,6 +10,7 @@
     ajaxtoken();
     totkeu();
     totsisadana();
+    headtotsd();
     $(".select2").select2();
     $('.textarea').wysihtml5()
     $('.harga-satuan').inputmask("numeric",{
@@ -100,6 +101,18 @@
       self.Value('0');
     }
   });
+  $('#headtotsdana').inputmask("numeric",{
+  radixPoint: ",",
+  groupSeparator: ".",
+  digits: 2,
+  autoGroup: true,
+  prefix: 'Rp ', //No Space, this will truncate the first character
+  rightAlign: false,
+  autoUnmask : true,
+  oncleared: function () {
+    self.Value('0');
+  }
+});
 
      $(".realfisik").inputmask({
 
@@ -117,7 +130,7 @@
         var pagu=$('#pagubmodalbln').html();
         var val= this.value;
         // newStr = parseInt(numbers.replace(/_/g, ""), 10);
-        console.log(val +'-'+ pagu);
+        // console.log(val +'-'+ pagu);
         if(parseInt(val,10) > parseInt(pagu,10)){
           swal(
             'Upss ',
@@ -227,6 +240,11 @@
             'Volume Melebihi Yang di Tetapkan!!!',
             'info'
           );
+          row.find(".vl").val(0);
+          row.find(".harga-satuan").val(0);
+          totperrek(rek);
+          totkeu();
+          totsisadana();
         }
         if(parseInt(jumlah, 10) > parseInt(totpagu, 10) ) {
             swal(
@@ -366,7 +384,7 @@
 
     });
     $(".btnrealfisik").click(function() {
-      ajaxtoken();
+
         var row = $(this).closest("tr");    // Find the row
         var res = row.find(".rekheader").text();
         var rek = res.replace(/\./g, "-");
@@ -375,12 +393,12 @@
         var totpagubln =  row.find(".totpagubln"+rek).text();
         var indexbln = $('#indexbulan').html();
         var idtab = $('#idtab').html();
-        var token   = localStorage.getItem("token");
+
         $.ajax({
           url: base_url+"User/cekrealbmodal/"+Math.random(),
           type: "POST",
           data: {
-            token   : token,
+
             idtab   : idtab,
             mtgkey  : mtgkey,
             indexbulan : indexbln
@@ -456,6 +474,43 @@
                   confirmButtonClass: "btn btn-danger",
                   buttonsStyling: false
                 })
+              }else if(result.data[0].code == 4){
+                //code 4 = realisasi masih bisa di edit
+                modalrealisasi({
+
+                      buttons: {
+                        batal: {
+                          id    : 'btn-modal-tutup',
+                          type  : 'button',
+                          css   : 'btn-danger btn-raised btn-flat ',
+                          label : 'Tutup'
+                        },
+                        simpan: {
+                          id    : 'btn-modal-simpan',
+                          type  : 'submit',
+                          css   : 'btn-info btn-raised btn-flat btn-bitbucket',
+                          label : 'Simpan'
+                        }
+                      },
+                      title: 'Ubah Realisasi Belanja Modal Bulan Sekarang',
+                      rek:res,
+                      nmrek:nmrek,
+                      mtgkey:mtgkey,
+                      paguprbln:totpagubln,
+                      nlktrk:result.data[0].nilai_ktrk,
+                      pbj:result.data[0].pbj,
+                      awlktrk : result.data[0].awlktrk,
+                      akrktrk : result.data[0].akrktrk,
+                      spmk    : result.data[0].spmk,
+                      noktrk  : result.data[0].noktrk,
+                      realbj  : result.data[0].realblj,
+                      bbtbj   :result.data[0].bobotrealblj,
+                      status  : result.data[0].code,
+                      realfisik : result.data[0].realfisik,
+                      idbmodal : result.data[0].idbmodal,
+                      iddet : result.data[0].iddet
+
+                    });
               }else{
                 //code 3 = realisasi belum 100 persen dan masih bisa tambah
                 modalrealisasi({
@@ -589,11 +644,29 @@ function totkeu(){
         if(parseInt(arr[i].value))
             tot += parseInt(arr[i].value);
     }
+    var arrx = $(".real5-2-3");
+    var tot523=0;
+    for(var i=0;i<arrx.length;i++){
+        if(parseInt(arrx[i].value))
+             tot523 += parseInt(arrx[i].value);
+    }
 
-    $(".totkeu").val(tot);
+
+    $(".totkeu").val(parseInt(tot, 10) + parseInt(tot523, 10));
 
 }
 
+function headtotsd(){
+    var arr = $(".headtotsd");
+    var tot=0;
+    for(var i=0;i<arr.length;i++){
+        if(parseInt(arr[i].value))
+            tot += parseInt(arr[i].value);
+    }
+
+    $("#headtotsdana").val(parseInt(tot, 10) );
+
+}
 function totsisadana(){
     var arr = $(".nsisadana");
     var tot=0;
@@ -601,8 +674,14 @@ function totsisadana(){
         if(parseInt(arr[i].value))
             tot += parseInt(arr[i].value);
     }
-      $(".totsisadana").val(tot);
+    var arrx = $(".real5-2-3");
+    var tot523=0;
+    for(var i=0;i<arrx.length;i++){
+        if(parseInt(arrx[i].value))
+             tot523 += parseInt(arrx[i].value);
+    }
 
+      $(".totsisadana").val(parseInt(tot, 10) - parseInt(tot523, 10));
 
 }
 
@@ -613,7 +692,10 @@ $(function () {
       e.preventDefault();
     }
     ajaxtoken();
-    var status =  $('#idbmodal').html();
+    var status =  $('#code').html();
+    var iddet =  $('#iddet').html();
+    var rekbmodal= $('#rekbmodal').html();
+    var rek = rekbmodal.replace(/\./g, "-");
     if(status==0){
       swal({
         title: "Simpan Realisasi Belanja Modal",
@@ -632,9 +714,9 @@ $(function () {
           var token   = localStorage.getItem("token");
           var tab     = $('#idtab').html();
           var mtgkey  = $('#mtgkey').html();
-            var bulan   = $('#idbulan').html();
-              var tahun   = $('#idtahun').html();
-                var nilaikontrak   = $('#nilaikontrak').val();
+          var bulan   = $('#idbulan').html();
+          var tahun   = $('#idtahun').html();
+          var nilaikontrak   = $('#nilaikontrak').val();
 
           var formData = new FormData($('#formrealisasibljmodal')[0]);
           formData.append("token",token);
@@ -663,10 +745,93 @@ $(function () {
                   );
                   ajaxtoken();
                 }else{
+
                   ajaxtoken();
+                  var nlktrk = jsonData.data[0].nilai;
                   swal({
                     title: "Sukses",
                     text: "Data berhasil disimpan!!!",
+                    type: "success",
+                    showCancelButton: false,
+                    confirmButtonColor: "#008D4C",
+                    confirmButtonText: "OK",
+                    cancelButtonText: "",
+                    closeOnConfirm: false,
+                    closeOnCancel: false
+                  },function(isConfirm){
+                    if(isConfirm){
+                      swal.close();
+
+                      $('#modalrealisasi').modal('hide');
+                      $(".harga-rek"+rek).val(nlktrk);
+                      totkeu();
+                      totsisadana();
+                    }
+                  });
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown){
+              swal({
+                title: 'Kesalahan !!',
+                text: 'Gagal Simpan Data',
+                type: 'error',
+                confirmButtonClass: "btn btn-danger",
+                buttonsStyling: false
+              })
+            }
+          });
+          });
+        } else {
+          swal("Batal", "Batal Simpan", "error");
+        }
+      });
+    }else if(status==4){
+      swal({
+        title: "Ubah Realisasi Belanja Modal Bulan Sekarang",
+        text: "Pastikan data sudah benar",
+        type: "info",
+        showCancelButton: true,
+        confirmButtonColor: "#367FA9",
+        confirmButtonText: "Ya, Ubah",
+        cancelButtonText: "Tidak, Batal!",
+        closeOnConfirm: false,
+        closeOnCancel: false
+       }, function (isConfirm) {
+        if (isConfirm) {
+          Pace.restart ();
+          Pace.track (function (){
+          var token   = localStorage.getItem("token");
+          var iddet     = $('#iddet').html();
+
+
+          var formData = new FormData($('#formrealisasibljmodal')[0]);
+          formData.append("token",token);
+          formData.append("iddet",iddet);
+
+          $.ajax({
+            url: base_url+"User/ubahrealisasibmodaldet",
+            type: 'POST',
+            data: formData,
+            mimeType: "multipart/form-data",
+            contentType: false,
+            cache: false,
+            processData: false,
+            success: function(result){
+
+              var jsonData = JSON.parse(result);
+
+                if (jsonData.data[0].status == false){
+                  swal(
+                    'info',
+                    'Terjadi Kesalahan saat simpan!!!',
+                    'info'
+                  );
+                  ajaxtoken();
+                }else{
+                  ajaxtoken();
+                  swal({
+                    title: "Sukses",
+                    text: "Data berhasil diubah!!!",
                     type: "success",
                     showCancelButton: false,
                     confirmButtonColor: "#008D4C",
@@ -810,6 +975,7 @@ $(function () {
         var realbobot   = $('#realbobot').val();
         var formData = new FormData($('#formrealisasi')[0]);
         formData.append("token",token);
+
         formData.append("idtab",tab);
         formData.append("botkeg",botkeg);
         formData.append("bulan",bulan);
@@ -890,19 +1056,16 @@ $(function () {
 </section>
 <section class="content">
 
-
-
-    <div class="callout callout-info">
+    <div class="callout bg-blue">
       <div class="row">
           <div class="col-xs-12 col-md-12 col-md-offset-1">
              <br>
-              <p id="kdunit"><?php echo $idopd ?></p>
-              <p id="kdkeg"><?php echo $kdkeg ?></p>
-              <p id="idtab"><?php echo $idtab ?></p>
-              <p id="idtahun"><?php echo $tahun ?></p>
-              <p id="indexbulan"><?php echo $indexbulan ?></p>
-
-              <p id="idbulan"><?php echo $bulan ?></p>
+              <p id="kdunit" hidden><?php echo $idopd ?></p>
+              <p id="kdkeg" hidden><?php echo $kdkeg ?></p>
+              <p id="idtab" hidden><?php echo $idtab ?></p>
+              <p id="idtahun" hidden><?php echo $tahun ?></p>
+              <p id="indexbulan" hidden><?php echo $indexbulan ?></p>
+              <p id="idbulan" hidden><?php echo $bulan ?></p>
              <div class="row">
                 <div class="col-md-2 col-sm-2" style="text-align: left">Organisasi</div>
                 <div class="col-md-1 col-sm-1" style="text-align: right;width: 5px">:</div>
@@ -928,7 +1091,7 @@ $(function () {
 <div class="row">
 
       <div class="col-md-3 col-sm-6 col-xs-12">
-        <a class="btn btn-block btn-social btn-success" id="btn-kembali">
+        <a class="btn btn-block btn-social btn-flat btn-success" id="btn-kembali">
           <i class="fa fa-arrow-left"></i> Kembali
         </a>
       </div>
@@ -954,7 +1117,7 @@ $(function () {
     <i class="fa fa-text-width"></i>
     <h3 class="box-title">Form Realisasi</h3>
   </div>
-  <div class="box-body">
+  <div class="box-body table-responsive">
     <form id="formrealisasi" enctype="multipart/form-data" role="form" autocomplete="off">
 
     <div class="row">
@@ -1052,8 +1215,24 @@ $(function () {
 <div class="col-md-2 col-sm-2 col-xs-12">
 </div>
 </div>
+<div class="row">
+  <div class="col-md-1 col-sm-1 col-xs-12">
+  </div>
+  <div class="col-md-2 col-sm-2 col-xs-12">
+   <h4 class="text-left text-muted">Pagu Dana s/d Bulan Sekarang</h4>
+ </div>
+ <div class="col-md-1 col-sm-1 col-xs-12">
+  <h4 class="text-center text-muted">:</h4>
+</div>
+<div class="col-md-2 col-sm-2 col-xs-12">
+ <h4 class="text-left text-muted"><input type="text" class="form-control "  id="headtotsdana"  readonly style="text-align:left; font-family: Arial, Helvetica, sans-serif; font-size: 18px; font-weight: bold;"></h4>
+</div>
+<div class="col-md-2 col-sm-2 col-xs-12">
+</div>
+</div>
+
 <hr>
-<table class="table table-bordered ">
+<table class="table table-bordered table-condensed " style="font-size: 11px">
   <thead >
     <tr>
       <th rowspan="3" style="vertical-align : middle;text-align:center; width: 100px">Kode Rekening</th>
@@ -1062,7 +1241,7 @@ $(function () {
        <th rowspan="3" style="vertical-align : middle;text-align:center; width: 130px">BULAN SEKARANG</th>
       <th rowspan="3" style="vertical-align : middle;text-align:center; width: 80px">SUMBER DANA</th>
       <th colspan="3" style="vertical-align : middle;text-align:center;">REALISASI</th>
-      <th rowspan="3" style="vertical-align : middle;text-align:center; width: 130px">SISA DANA</th>
+      <th rowspan="3" style="vertical-align : middle;text-align:center; width: 130px">SISA DANA / th</th>
 
     </tr>
     <tr>
@@ -1100,6 +1279,14 @@ $(function () {
                       $this->db->where('`dpa221`.`kdkegunit`', $kdkeg);
                       $this->db->where('`dpa221`.`mtgkey`', $mtgkey);
                       $nltahun=$this->db->get()->row();
+                      //cek realisasi belanja modal ke tabel tab_realisasi_bmodal
+                      //SELECT * FROM `tab_realisasi_bmodal` WHERE id_tab_pptk = '5' AND mtgkey='1326_'
+                      $nilaibmodal = $this->db->get_where('tab_realisasi_bmodal',array('id_tab_pptk'=>$idtab,'mtgkey'=>$mtgkey));
+                      if($nilaibmodal->num_rows()>0){
+                        $nlrealbmodal = $nilaibmodal->row()->nilai_ktrk;
+                      }else{
+                        $nlrealbmodal = 0;
+                      }
 
 
                       echo'<tr class ="'.$class.'">
@@ -1113,11 +1300,13 @@ $(function () {
                       <td style="text-align:right"><b>'.$this->template->rupiah($nltahun->nilai).'</b></td>
 
                       <td class="totpagubln'.$clasrek.'" style="display:none;">'.$hrow['nilai'].'</td>
-                        <td style="display:none;"><input type="text" class="form-control pg'.$clasrek.'"  readonly value='.$hrow['nilai'].'></td>
+                      <td style="display:none;"><input type="text" class="form-control pg'.$clasrek.'"  readonly value='.$hrow['nilai'].'></td>
                       <td style="text-align:right"><b>'.$this->template->rupiah($hrow['nilai']).'</b></td>
+                      <td style="display:none;"><input type="text" class="form-control headtotsd "  readonly value='.$hrow['nilai'].'></td>
                       <td style="display:none;"><input type="text" class="form-control nsisadana sisadana'.$clasrek.'"  readonly value='.$hrow['nilai'].'></td>
                       <td colspan="3"></td>
-                      <td colspan="2" style="vertical-align : middle;text-align:center;"><button type="button" class="btnrealfisik btn bg-blue btn-flat bm'.$clasrek.'">Entri Belanja Modal<div class="ripple-container"></div></button></td>
+                      <td style="vertical-align : middle;text-align:center;"><input type="text" class="form-control hr real5-2-3 harga-rek'.$clasrek.'" readonly name="jumperrek[]" value='.$nlrealbmodal.'></td>
+                      <td style="vertical-align : middle;text-align:center;"><button type="button" class="btnrealfisik btn bg-blue btn-flat bm'.$clasrek.'">Realisasi<div class="ripple-container"></div></button></td>
                       </tr>';
 
                         $this->db->where('`dpa221`.`tahun`', $tahun);
@@ -1140,31 +1329,30 @@ $(function () {
                               <td><input type="hidden" class="form-control exrek" readonly name="exkdrek[]"  value='.$hrow['kdper'].'></td>
                               <td style="display:none;"><input type="hidden" class="form-control" readonly name="iddpa[]"  value='.$row['id'].'></td>
                               <td class="tarif" style="display:none;">'.$tarif.'</td>
-                              <td class"text-muted"> - '.$row['uraian'].'</td>
+                              <td class"text-muted">'.$row['uraian'].'</td>
                               <td class="jumy" style="display:none;">'.$jumyek.'</td>
                               <td class="totpagu" style="display:none;">'.$total.'</td>
                               <td class"text-muted" style="text-align:right">'.$jumyek.'</td>
                               <td class"text-muted" style="text-align:center">'.$row['satuan'].'</td>
                               <td class"text-muted" style="text-align:right">'.$this->template->rupiah($tarif) .'</td>
                               <td class"text-muted" style="text-align:right">'.$this->template->rupiah($total) .'</td>
-                               <td class="totjum" style="display:none;">'.$total.'</td>
+                              <td class="totjum" style="display:none;">'.$total.'</td>
                              <td colspan="6"></td>
                           </tr>';
                         }
                       }else{
-
+                        //selain 5.2.3
                         $class='active';
+                        $this->db->select('
+                        ,SUM(`dpa221`.`jumbyek` *`dpa221`.`tarif`) as nilai');
+                        $this->db->from('dpa221');
+                        $this->db->where('`dpa221`.`tahun`', $tahun);
+                        $this->db->where('`dpa221`.`unitkey`', $idopd);
+                        $this->db->where('`dpa221`.`kdkegunit`', $kdkeg);
+                        $this->db->where('`dpa221`.`mtgkey`', $mtgkey);
+                        $nltahun=$this->db->get()->row();
 
-                      $this->db->select('
-                      ,SUM(`dpa221`.`jumbyek` *`dpa221`.`tarif`) as nilai');
-                      $this->db->from('dpa221');
-                      $this->db->where('`dpa221`.`tahun`', $tahun);
-                      $this->db->where('`dpa221`.`unitkey`', $idopd);
-                      $this->db->where('`dpa221`.`kdkegunit`', $kdkeg);
-                      $this->db->where('`dpa221`.`mtgkey`', $mtgkey);
-                      $nltahun=$this->db->get()->row();
-
-                      echo'<tr class ="'.$class.'">
+                        echo'<tr class ="'.$class.'">
 
                       <td class="unit" style="display:none;">'.$hrow['unitkey'].'</td>
                       <td class="keg" style="display:none;">'.$hrow['kdkegunit'].'</td>
@@ -1176,9 +1364,10 @@ $(function () {
                       <td class="totpagubln'.$clasrek.'" style="display:none;">'.$hrow['nilai'].'</td>
                       <td style="display:none;"><input type="text" class="form-control pg'.$clasrek.'"  readonly value='.$hrow['nilai'].'></td>
                       <td style="text-align:right"><b>'.$this->template->rupiah($hrow['nilai']).'</b></td>
+                      <td style="display:none;"><input type="text" class="form-control headtotsd "  readonly value='.$hrow['nilai'].'></td>
                       <td style="display:none;"><input type="text" class="form-control nsisadana sisadana'.$clasrek.'"  readonly value='.$hrow['nilai'].'></td>
                       <td colspan="3"></td>
-                     <td><input type="text" class="form-control hr harga-rek'.$clasrek.'" readonly name="jumperrek[]"></td>
+                     <td style="vertical-align : middle;text-align:center;"><input type="text" class="form-control hr harga-rek'.$clasrek.'" readonly name="jumperrek[]"></td>
                       <td ></td>
                       </tr>';
 
@@ -1204,7 +1393,7 @@ $(function () {
                               <td style="display:none;"><input type="hidden" class="form-control" readonly name="iddpa[]"  value='.$row['id'].'></td>
                               <td style="display:none;"><input type="hidden" class="form-control" readonly name="mtgkey[]"  value='.$mtgkey.'></td>
                               <td class="tarif" style="display:none;">'.$tarif.'</td>
-                              <td class"text-muted"> - '.$row['uraian'].'</td>
+                              <td class"text-muted">'.$row['uraian'].'</td>
                               <td class="jumy" style="display:none;">'.$jumyek.'</td>
                               <td class="totpagu" style="display:none;">'.$total.'</td>
                               <td class"text-muted" style="text-align:right">'.$jumyek.'</td>
@@ -1213,7 +1402,7 @@ $(function () {
                               <td class"text-muted" style="text-align:right">'.$this->template->rupiah($total) .'</td>
                                <td class="totjum" style="display:none;">'.$total.'</td>
                                <td class="active"></td>
-                              <td >  <select class="form-control select2" name="sumberdn[]" style="width: 100%;">';
+                              <td >  <select class="form-control select2" name="sumberdn[]" style="font-size: 11px;width: 100%;">';
                                $sdana= $this->User_model->sumberdana();
                               foreach ($sdana as $k) {
                                 if($k['id']==1){
@@ -1225,15 +1414,16 @@ $(function () {
 
                               echo'</select></td>
                               <td><div class="input-group spinner" data-trigger="spinner">
-                                <input type="text" class="form-control text-center vl" value="0" name="volume[]" data-rule="quantity">
+                                <input type="text" class="form-control text-center vl" style="font-size: 11px" value="0" name="volume[]" data-rule="quantity">
                                 <div class="input-group-addon">
                                   <a href="javascript:;" class="spin-up" data-spin="up"><i class="fa fa-caret-up"></i></a>
                                   <a href="javascript:;" class="spin-down" data-spin="down"><i class="fa fa-caret-down"></i></a>
                                 </div>
                               </div></td>
-                                <td><input type="text" class="form-control harga-satuan" name="hrsatuan[]"></td>
-                                <td><input type="text" class="form-control harga-jumlah '.$clasrek.'" readonly name="jum[]"></td>
-                                <td><input type="text" class="form-control sisadana" readonly name="sisadn[]"value='.$total.'></td>
+
+                                <td><input type="text" class="form-control harga-satuan" name="hrsatuan[]" style="font-size: 11px;"></td>
+                                <td><input type="text" class="form-control harga-jumlah '.$clasrek.'" readonly name="jum[]" style="font-size: 11px;"></td>
+                                <td><input type="text" class="form-control sisadana" readonly name="sisadn[]"value='.$total.' style="font-size: 11px;"></td>
                           </tr>';
                         }
                       }
@@ -1283,7 +1473,7 @@ $(function () {
     <div class="col-md-1 col-sm-1 col-xs-12">
     </div>
     <div class="col-md-2 col-sm-2 col-xs-12">
-     <h4 class="text-left text-muted">Total Sisa Dana</h4>
+     <h4 class="text-left text-muted">Total Sisa Dana Bulan Sekarang</h4>
    </div>
    <div class="col-md-1 col-sm-1 col-xs-12">
     <h4 class="text-center text-muted">:</h4>
@@ -1391,9 +1581,11 @@ $(function () {
 
         <div class="row">
           <div class="col-md-12">
+            <p id="iddet"></p>
             <p id="code"></p>
             <p id="idbmodal"></p>
             <p id="realfissudah"></p>
+            <!-- <p id="rek"></p> -->
             <p id="pagubmodalbln" hidden></p>
             <p id="mtgkey" hidden></p>
             <p id="pagukegiatan" hidden><?php echo $nl; ?></p>
