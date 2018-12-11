@@ -86,15 +86,16 @@ class User extends MX_Controller
                     $lskeg = $this->User_model->getdetlistkegiatan_ppk($nip);
                     $unitkeyppk = $this->User_model->getunitkeyppk($nip);
                     $data = $this->User_model->getdatappk($unitkeyppk, $nip);
-                    $pgthn = $this->User_model->getpagutahun($nip);
-                    $angkas = $this->User_model->getangkashinggabulanini($nip);
+                    $pgthn = $this->User_model->getpagutahun($nip,$unitkeyppk);
+                    $angkas = $this->User_model->getangkashinggabulanini($nip,$unitkeyppk);
                     $totreal = $this->User_model->gettotalrealisasi($nip); //total realisasi hingga bulan sebelumnya
-                    $angkasbulanini = $this->User_model->getangkasbulanini($nip) + (($angkas - $this->User_model->getangkasbulanini($nip)) - $totreal);
-                    $detangkasbulanini = $this->User_model->getdetangkasbulanini($nip);
-                    $realisasibulanini = $this->User_model->getrealisasibulanini($this->User_model->getidstrukturppk($nip));
+                    $totrealbmodalhbs = $this->User_model->gettotalrealbmodalhbs($this->User_model->getidstrukturppk($nip)); //total realisasi belanja modal hingga bulan sebelumnya
+                    $totrealbmodalbi = $this->User_model->gettotalrealbmodalbi($this->User_model->getidstrukturppk($nip)); //total realisasi belanja modal bulan ini
+                    $angkasbulanini = $this->User_model->getangkasbulanini($nip,$unitkeyppk) + (($angkas - $this->User_model->getangkasbulanini($nip,$unitkeyppk)) - $totreal - $totrealbmodalhbs);
+                    $detangkasbulanini = $this->User_model->getdetangkasbulanini($nip,$unitkeyppk);
+                    $realisasibulanini = ($this->User_model->getrealisasibulanini($this->User_model->getidstrukturppk($nip)))+$totrealbmodalbi;
                     $persenrealisasibulanini = ($realisasibulanini / $angkasbulanini) * 100;
                     $lspptk = $this->User_model->getnipstrukturpptk($this->User_model->getidstrukturppk($nip));
-
                     //var_dump($detangkasbulanini).exit;
                     //echo $this->template->rupiah($pgthn);
                     //var_dump($this->User_model->getdetangkashbs($nip)).exit;
@@ -108,17 +109,17 @@ class User extends MX_Controller
                         'angkas_bulan' => $this->template->rupiah($angkas),
                         'angkas_bulan_ini' => $this->template->rupiah($angkasbulanini),
                         'det_angkas_bulan_ini' => $detangkasbulanini,
-                        'det_angkas_satu_tahun' => $this->User_model->getdetangkassatutahun($nip),
+                        'det_angkas_satu_tahun' => $this->User_model->getdetangkassatutahun($nip,$unitkeyppk),
                         'realisasi_bulan_ini' => $this->template->rupiah($realisasibulanini),
                         'persen_realisasi' => round($persenrealisasibulanini, 2) . ' %',
                         'lspptk' => $lspptk,
                         'kegiatan' => $this->User_model->getkegiatan($nip),
                         'data_realisasi' => $this->User_model->getdatarealisasi($nip), //data realisasi bulan ini
                         'data_realisasi_hbs' => $this->User_model->getdatarealisasihbs($nip), //data realisasi hingga bulan sebelumnya
-                        'data_angkas_hbs' => $this->User_model->getdetangkashbs($nip), //data angkas hingga bulan sebelumnya
+                        'data_angkas_hbs' => $this->User_model->getdetangkashbs($nip,$unitkeyppk), //data angkas hingga bulan sebelumnya
                         'data_schedule' => $this->User_model->getdataschedule($nip), //data schedule satu tahun
                         'data_real_fisik' => $this->User_model->getrealfisik($nip), //data realisasi fisik bulan ini
-
+                        'det_real_bmodalbi' => $this->User_model->getdetrealbmodalbi($this->User_model->getidstrukturppk($nip),$unitkeyppk), //detail realisasi belanja modal bulan ini
                     );
                     $this->template->load('templatenew', 'dashboard_ppk', $this->data);
 
@@ -3435,12 +3436,107 @@ function getWeeks($date, $rollover)
     function getjsonrealisasi($kdkegunit)
     {
         //echo $kdbulan;
-        $kdbulan = date('m');
-        //$kdbulan = 1;
-        $data = $this->User_model->rincianrealisasi($kdkegunit,$kdbulan);
+
+        //$kdbulan = date('m');
+        $nip=$this->ion_auth->user()->row()->username;
+        $unitkeyppk = $this->User_model->getunitkeyppk($nip);
+        $data = $this->User_model->rincianrealisasi($kdkegunit);
+        $databmodal = $this->User_model->getmatangrbmodal($kdkegunit);
+
         $jsondata = array();
-        if($data!=0){
-            $matangr = $this->User_model->getmatangr($kdkegunit,$kdbulan);
+        if($data!=0&&$databmodal!=0){
+            $matangr = $this->User_model->getmatangr($kdkegunit);
+            $realbmodal = $this->User_model->getrealbmodal($kdkegunit);
+            $angkasbmodal = $this->User_model->getangkasbmodal($kdkegunit,$unitkeyppk);
+            foreach ($matangr as $m){
+                $datamatangr[] = array(
+                    'kdper' => $m['kdper'],
+                    'nmper' => $m['nmper'],
+                    'mtgkey' => $m['mtgkey'],
+                    'sisa_dana' => $this->template->rupiah($m['sisa_dana'])
+                );
+            }
+            foreach ($data as $d){
+                $jsondata[] = array(
+                    'mtgkey' => $d['mtgkey'],
+                    'nmper' => $d['nmper'],
+                    'kdper' => $d['kdper'],
+                    'real_bulan' => $d['real_bulan'],
+                    'bobot_real' => $d['bobot_real'],
+                    'tgl_entri' => $d['tgl_entri'],
+                    'nm_dana' => $d['nm_dana'],
+                    'harga_satuan' => $this->template->rupiah($d['harga_satuan']),
+                    'jumlah_harga' => $this->template->rupiah($d['jumlah_harga']),
+                    'sisa_dana' => $this->template->rupiah($d['sisa_dana']),
+                    'vol' => $d['vol'],
+                    'satuan' => $d['satuan'],
+                    'urn' => $d['uraian']
+
+                );
+            }
+
+            foreach ($realbmodal as $rbm) {
+              // code...
+              $jsondatabmodal[] = array(
+                'mtgkey' => $rbm['mtgkey'],
+                'urn' => $rbm['uraian'],
+                'satuan' => $rbm['satuan'],
+                'vol' => $rbm['vol'],
+                'harga_satuan' => $this->template->rupiah($rbm['harga_satuan']),
+                'jumlah_harga' => $this->template->rupiah($rbm['jumlah_harga']),
+
+              );
+            }
+            foreach ($angkasbmodal as $abm ) {
+              // code...
+              $jsonangkasbmodal[] = array(
+                'nilai' => $abm['nilai'],
+                'mtgkey' => $abm['mtgkey'],
+
+              );
+            }
+            for($i=0;$i<count($databmodal);$i++){
+              $totalnilaiangkas=0;
+              for($j=0;$j<count($jsonangkasbmodal);$j++){
+                if($databmodal[$i]['mtgkey']==$jsonangkasbmodal[$j]['mtgkey']){
+                  $totalnilaiangkas+=$jsonangkasbmodal[$j]['nilai'];
+              }
+            }
+            $jsonmatangrbmodal[] = array(
+              'kdper' => $databmodal[$i]['kdper'],
+              'nmper' => $databmodal[$i]['nmper'],
+              'mtgkey' => $databmodal[$i]['mtgkey'],
+              'total' => $totalnilaiangkas,
+            );
+            }
+            for($i=0;$i<count($jsonmatangrbmodal);$i++) {
+              // code...
+              $jumlahharga=0;
+              for($j=0;$j<count($realbmodal);$j++){
+                if($jsonmatangrbmodal[$i]['mtgkey']==$realbmodal[$j]['mtgkey']){
+                  $jumlahharga+=$realbmodal[$j]['jumlah_harga'];
+                }
+              }
+              $fixmatangrbmodal[]=array(
+                'kdper' => $jsonmatangrbmodal[$i]['kdper'],
+                'nmper' => $jsonmatangrbmodal[$i]['nmper'],
+                'mtgkey' => $jsonmatangrbmodal[$i]['mtgkey'],
+                'sisa_dana' => $this->template->rupiah($jsonmatangrbmodal[$i]['total']-$jumlahharga),
+              );
+            }
+
+
+            $json = array(
+                'matangr' => $datamatangr,
+                'matangrbmodal' => $fixmatangrbmodal,
+                'datar' => $jsondata,
+                'datarbmodal' => $jsondatabmodal,
+                'angkasbmodal' => $jsonangkasbmodal,
+
+            );
+            echo json_encode($json);
+        }elseif ($data!=0&&$databmodal==0){
+            $matangr = $this->User_model->getmatangr($kdkegunit);
             foreach ($matangr as $m){
                 $datamatangr[] = array(
                     'kdper' => $m['kdper'],
@@ -3469,7 +3565,73 @@ function getWeeks($date, $rollover)
             }
             $json = array(
                 'matangr' => $datamatangr,
-                'datar' => $jsondata
+                'matangrbmodal' => 0,
+                'datar' => $jsondata,
+                'datarbmodal' => 0,
+                'angkasbmodal' => 0,
+
+            );
+            echo json_encode($json);
+        }elseif($data==0&&$databmodal!=0){
+          $realbmodal = $this->User_model->getrealbmodal($kdkegunit);
+          $angkasbmodal = $this->User_model->getangkasbmodal($kdkegunit,$unitkeyppk);
+          foreach ($realbmodal as $rbm) {
+            // code...
+            $jsondatabmodal[] = array(
+              'mtgkey' => $rbm['mtgkey'],
+              'urn' => $rbm['uraian'],
+              'satuan' => $rbm['satuan'],
+              'vol' => $rbm['vol'],
+              'harga_satuan' => $this->template->rupiah($rbm['harga_satuan']),
+              'jumlah_harga' => $this->template->rupiah($rbm['jumlah_harga']),
+
+            );
+          }
+          foreach ($angkasbmodal as $abm ) {
+            // code...
+            $jsonangkasbmodal[] = array(
+              'nilai' => $abm['nilai'],
+              'mtgkey' => $abm['mtgkey'],
+
+            );
+          }
+          for($i=0;$i<count($databmodal);$i++){
+            $totalnilaiangkas=0;
+            for($j=0;$j<count($jsonangkasbmodal);$j++){
+              if($databmodal[$i]['mtgkey']==$jsonangkasbmodal[$j]['mtgkey']){
+                $totalnilaiangkas+=$jsonangkasbmodal[$j]['nilai'];
+            }
+          }
+          $jsonmatangrbmodal[] = array(
+            'kdper' => $databmodal[$i]['kdper'],
+            'nmper' => $databmodal[$i]['nmper'],
+            'mtgkey' => $databmodal[$i]['mtgkey'],
+            'total' => $totalnilaiangkas,
+          );
+          }
+          for($i=0;$i<count($jsonmatangrbmodal);$i++) {
+            // code...
+            $jumlahharga=0;
+            for($j=0;$j<count($realbmodal);$j++){
+              if($jsonmatangrbmodal[$i]['mtgkey']==$realbmodal[$j]['mtgkey']){
+                $jumlahharga+=$realbmodal[$j]['jumlah_harga'];
+              }
+            }
+            $fixmatangrbmodal[]=array(
+              'kdper' => $jsonmatangrbmodal[$i]['kdper'],
+              'nmper' => $jsonmatangrbmodal[$i]['nmper'],
+              'mtgkey' => $jsonmatangrbmodal[$i]['mtgkey'],
+              'sisa_dana' => $this->template->rupiah($jsonmatangrbmodal[$i]['total']-$jumlahharga),
+            );
+          }
+
+            $json = array(
+                'matangr' => 0,
+                'matangrbmodal' => $fixmatangrbmodal,
+                'datar' => 0,
+                'datarbmodal' => $jsondatabmodal,
+                'angkasbmodal' => $jsonangkasbmodal,
+
             );
             echo json_encode($json);
         }else{
