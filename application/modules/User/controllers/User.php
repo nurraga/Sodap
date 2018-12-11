@@ -2991,6 +2991,7 @@ function getWeeks($date, $rollover)
         $unitkeyppk = $this->User_model->getunitkeyppk($nip);
         $data = $this->User_model->rincianrealisasi($kdkegunit);
         $databmodal = $this->User_model->getmatangrbmodal($kdkegunit);
+        $idstrukturppk = $this->User_model->getidstrukturppk($nip);
         $jsondata = array();
         if($data!=0&&$databmodal!=0){
             $matangr = $this->User_model->getmatangr($kdkegunit);
@@ -3006,6 +3007,8 @@ function getWeeks($date, $rollover)
             }
             foreach ($data as $d){
                 $jsondata[] = array(
+                    'id_tab_realisasi' => $d['id_tab_realisasi'],
+                    'id_struktur' => $d['id_struktur'],
                     'mtgkey' => $d['mtgkey'],
                     'nmper' => $d['nmper'],
                     'kdper' => $d['kdper'],
@@ -3026,6 +3029,8 @@ function getWeeks($date, $rollover)
             foreach ($realbmodal as $rbm) {
               // code...
               $jsondatabmodal[] = array(
+                'id_tab_realisasi_bmodal' => $rbm['id_tab_realisasi_bmodal'],
+                'id_struktur' => $rbm['id_struktur'],
                 'mtgkey' => $rbm['mtgkey'],
                 'urn' => $rbm['uraian'],
                 'satuan' => $rbm['satuan'],
@@ -3080,6 +3085,7 @@ function getWeeks($date, $rollover)
                 'datar' => $jsondata,
                 'datarbmodal' => $jsondatabmodal,
                 'angkasbmodal' => $jsonangkasbmodal,
+                'idstrukturppk' => $idstrukturppk
 
             );
             echo json_encode($json);
@@ -3095,6 +3101,8 @@ function getWeeks($date, $rollover)
             }
             foreach ($data as $d){
                 $jsondata[] = array(
+                  'id_tab_realisasi' => $d['id_tab_realisasi'],
+                  'id_struktur' => $d['id_struktur'],
                     'mtgkey' => $d['mtgkey'],
                     'nmper' => $d['nmper'],
                     'kdper' => $d['kdper'],
@@ -3117,6 +3125,7 @@ function getWeeks($date, $rollover)
                 'datar' => $jsondata,
                 'datarbmodal' => 0,
                 'angkasbmodal' => 0,
+                'idstrukturppk' => $idstrukturppk
 
             );
             echo json_encode($json);
@@ -3126,6 +3135,8 @@ function getWeeks($date, $rollover)
           foreach ($realbmodal as $rbm) {
             // code...
             $jsondatabmodal[] = array(
+              'id_tab_realisasi_bmodal' => $rbm['id_tab_realisasi_bmodal'],
+              'id_struktur' => $rbm['id_struktur'],
               'mtgkey' => $rbm['mtgkey'],
               'urn' => $rbm['uraian'],
               'satuan' => $rbm['satuan'],
@@ -3179,6 +3190,7 @@ function getWeeks($date, $rollover)
                 'datar' => 0,
                 'datarbmodal' => $jsondatabmodal,
                 'angkasbmodal' => $jsonangkasbmodal,
+                'idstrukturppk' => $idstrukturppk
 
             );
             echo json_encode($json);
@@ -3186,6 +3198,72 @@ function getWeeks($date, $rollover)
             echo json_encode($data);
         }
     }
-    //-->
+
+    public function update_id_struktur()
+    {
+      $nip=$this->ion_auth->user()->row()->username;
+      $parent = $this->User_model->getidparent($this->User_model->getidstrukturppk($nip));
+      $idstruktur = $this->input->post('idstruktur');
+      $idstrukturbmodal = $this->input->post('idstrukturbmodal');
+      $idstrukturppk = $this->input->post('idstrukturppk');
+      if($idstruktur==$idstrukturppk && $idstrukturbmodal==$idstrukturppk){
+        $id = $this->input->post('id');
+        $idbmodal = $this->input->post('idbmodal');
+
+        $value = array(
+          'id_struktur' => $parent
+        );
+
+        $valuebmodal = array(
+          'id_struktur' => $parent
+        );
+
+        $where = array(
+          'id' => $id
+        );
+        $wherebmodal = array(
+          'id' => $idbmodal
+        );
+        $table = 'tab_realisasi';
+        $tablebmodal = 'tab_realisasi_bmodal';
+
+        $this->User_model->update_id_struktur($value,$where,$table);
+        $this->User_model->update_id_struktur($valuebmodal,$wherebmodal,$tablebmodal);
+
+      }elseif($idstruktur==$idstrukturppk && $idstrukturbmodal!=$idstrukturppk){
+
+        $id = $this->input->post('id');
+
+        $value = array(
+          'id_struktur' => $parent
+        );
+
+        $where = array(
+          'id' => $id
+        );
+
+        $table = 'tab_realisasi';
+
+        $this->User_model->update_id_struktur($value,$where,$table);
+
+      }elseif($idstruktur!=$idstrukturppk && $idstrukturbmodal==$idstrukturppk){
+        $idbmodal = $this->input->post('idbmodal');
+
+        $valuebmodal = array(
+          'id_struktur' => $parent
+        );
+
+        $wherebmodal = array(
+          'id' => $idbmodal
+        );
+        $tablebmodal = 'tab_realisasi_bmodal';
+
+        $this->User_model->update_id_struktur($valuebmodal,$wherebmodal,$tablebmodal);
+      }else{
+        //do nothing
+      }
+
+    }
+    //function created by ragaa -->
 
 }
