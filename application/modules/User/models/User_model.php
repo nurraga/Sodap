@@ -237,7 +237,23 @@ class User_model extends CI_Model
       return $this->db->get()->result();
 
     }
-
+function getttdkak($idtabpptk){
+     $this->db->select('`tab_kak`.*
+                         , `tab_kak`.`id` AS id
+                         ,`tab_pptk_master`.`unitkey` AS unit
+             ,`tab_struktur`.`peran` as peran
+             , `tab_pns`.`nama` AS nama
+             , `tab_pns`.`nip` AS nip
+                        ');
+      $this->db->from('tab_pptk');
+      $this->db->join('tab_kak', '`tab_pptk`.`id` = `tab_kak`.`idtab_pptk`');
+    $this->db->join('`tab_pptk_master`', '`tab_pptk`.`id_pptk_master` = `tab_pptk_master`.`id`');
+     $this->db->join('`tab_struktur` ', '`tab_pptk_master`.`unitkey` = `tab_struktur`.`id_unit`');
+      $this->db->join('`tab_pns`', '`tab_struktur`.`nip` = `tab_pns`.`nip`');
+    $this->db->where('`tab_struktur`.`peran`', 1);
+      $this->db->where('`tab_kak`.`idtab_pptk`', $idtabpptk);
+      return $this->db->get()->row();
+    }
     /*Sampai agung*/
 
      function kegperbulan($idkeg,$unitkey){
@@ -278,48 +294,118 @@ class User_model extends CI_Model
         return $this->db->get('tab_kak');
       }
 
-    function simpanrealisasi($data){
-        $this->db->trans_start();
-        $this->db->insert('tab_realisasi', $data);
-        $id_master  = $this->db->insert_id();
-        $kdrek      = $this->input->post('kdrek');
-        $sumberdana = $this->input->post('sumberdn');
-        $volume     = $this->input->post('volume');
-        $hrsatuan   = $this->input->post('hrsatuan');
-        $jum        = $this->input->post('jum');
-        $sisadn     = $this->input->post('sisadn');
-        $iddpa     = $this->input->post('iddpa');
-        $list=array();
-        for($i=0; $i < count ($kdrek); $i++){
-          $var1 = str_replace("Rp ","",$hrsatuan[$i]);
-          $var2 = str_replace("Rp ","",$jum[$i]);
-          $var3 = str_replace("Rp ","",$sisadn[$i]);
-          $list[$i]=array(
-            'id_tab_realisasi'=> $id_master,
-            'id_dpa'          => $iddpa[$i],
-            'kd_rek'          => $kdrek[$i],
-            'sumber_dana'     => $sumberdana[$i],
-            'vol'             => $volume[$i],
-            'harga_satuan'    => str_replace(".","",$var1),
-            'jumlah_harga'    => str_replace(".","",$var2),
-            'sisa_dana'       => str_replace(".","",$var3)
-          );
+    function simpanrealisasi($data,$idubah){
+
+        if($idubah==1){
+            $idreal = $this->input->post('idreal');
+            $this->db->trans_start();
+            $this->db->where('id', $idreal);
+            $this->db->update('tab_realisasi', $data);
+
+            $iddpa     = $this->input->post('iddpa');
+            $mtgkey     = $this->input->post('mtgkey');
+            $kdrek      = $this->input->post('kdrek');
+            $sumberdana = $this->input->post('sumberdn');
+            $volume     = $this->input->post('volume');
+            $hrsatuan   = $this->input->post('hrsatuan');
+            $jum        = $this->input->post('jum');
+            $sisadn     = $this->input->post('sisadn');
+            $detpgblnskr     = $this->input->post('detpgblnskr');
+            $list=array();
+            for($i=0; $i < count ($kdrek); $i++){
+              $var1 = str_replace("Rp ","",$hrsatuan[$i]);
+              $var2 = str_replace("Rp ","",$jum[$i]);
+              $var3 = str_replace("Rp ","",$sisadn[$i]);
+            //jika jumlah tidak sama dengan 0 dan hrsatuan =0 maka reset jumlah ke 0
+            if($volume[$i]!=0 && $var1==0){
+              $vol=0;
+
+            }else{
+              $vol=$volume[$i];
+
+
+            }
+              $list[$i]=array(
+
+                'id_dpa'          => $iddpa[$i],
+                'mtgkey'          => $mtgkey[$i],
+                'kd_rek'          => $kdrek[$i],
+                'sumber_dana'     => $sumberdana[$i],
+                'vol'             => $vol,
+                'harga_satuan'    => str_replace(".","",$var1),
+                'jumlah_harga'    => str_replace(".","",$var2),
+                'sisa_dana'       => str_replace(".","",$var3),
+                'pagu_perbln'     => $detpgblnskr[$i]
+              );
+            }
+            $this->db->where('id_tab_realisasi', $idreal);
+            $this->db->update_batch('tab_realisasi_det', $list,'id_dpa');
+            $this->db->trans_complete();
+
+            if ($this->db->trans_status() === FALSE){
+              $this->db->trans_rollback();
+              return FALSE;
+            }else{
+              $this->db->trans_commit();
+              return TRUE;
+            }
+
+        }else{
+
+          $this->db->trans_start();
+          $this->db->insert('tab_realisasi', $data);
+          $id_master  = $this->db->insert_id();
+          $iddpa     = $this->input->post('iddpa');
+          $mtgkey     = $this->input->post('mtgkey');
+          $kdrek      = $this->input->post('kdrek');
+          $sumberdana = $this->input->post('sumberdn');
+          $volume     = $this->input->post('volume');
+          $hrsatuan   = $this->input->post('hrsatuan');
+          $jum        = $this->input->post('jum');
+          $sisadn     = $this->input->post('sisadn');
+          $detpgblnskr     = $this->input->post('detpgblnskr');
+          $list=array();
+          for($i=0; $i < count ($kdrek); $i++){
+            $var1 = str_replace("Rp ","",$hrsatuan[$i]);
+            $var2 = str_replace("Rp ","",$jum[$i]);
+            $var3 = str_replace("Rp ","",$sisadn[$i]);
+          //jika jumlah tidak sama dengan 0 dan hrsatuan =0 maka reset jumlah ke 0
+          if($volume[$i]!=0 && $var1==0){
+            $vol=0;
+
+          }else{
+            $vol=$volume[$i];
+
+
+          }
+            $list[$i]=array(
+              'id_tab_realisasi'=> $id_master,
+              'id_dpa'          => $iddpa[$i],
+              'mtgkey'          => $mtgkey[$i],
+              'kd_rek'          => $kdrek[$i],
+              'sumber_dana'     => $sumberdana[$i],
+              'vol'             => $vol,
+              'harga_satuan'    => str_replace(".","",$var1),
+              'jumlah_harga'    => str_replace(".","",$var2),
+              'sisa_dana'       => str_replace(".","",$var3),
+              'pagu_perbln'     => $detpgblnskr[$i]
+            );
+          }
+
+          $this->db->insert_batch('tab_realisasi_det', $list);
+
+          $this->db->trans_complete();
+
+          if ($this->db->trans_status() === FALSE){
+            $this->db->trans_rollback();
+            return FALSE;
+          }else{
+            $this->db->trans_commit();
+            return TRUE;
+          }
+
         }
 
-        $this->db->insert_batch('tab_realisasi_det', $list);
-
-        $this->db->trans_complete();
-
-        if ($this->db->trans_status() === FALSE)
-        {
-          $this->db->trans_rollback();
-          return FALSE;
-        }
-        else
-        {
-          $this->db->trans_commit();
-          return TRUE;
-        }
       }
 
       function simpanrealisasibmodal($data,$detail){
@@ -357,6 +443,17 @@ class User_model extends CI_Model
               $this->db->trans_commit();
               return TRUE;
             }
+          }
+          function ubahrealisasibmodaldet($detail,$iddet)
+          {
+            $this->db->where('id', $iddet);
+            $updetbljmodal = $this->db->update('tab_realisasi_bmodal_det', $detail);
+            if($updetbljmodal)
+              return true;
+            else
+              return false;
+
+
           }
 
 //akhir pptk
@@ -487,6 +584,26 @@ function getdetlistkegiatan_detppk($nip,$kdkegunit){
       	return $this->db->get()->result();
 
 	}
+
+
+//untuk laporan tcpdf
+   function getnamappk($idtabpptk){
+     $this->db->select('`tab_kak`.*
+                         , `tab_kak`.`id` AS id
+                         , `tab_pptk`.`idpnsppk` AS idppk
+             , `tab_pns`.`nama` AS nama
+                        ');
+      $this->db->from('tab_pptk');
+      $this->db->join('tab_kak', '`tab_pptk`.`id` = `tab_kak`.`idtab_pptk`');
+      $this->db->join('`tab_pns`', '`tab_pptk`.`idpnsppk` = `tab_pns`.`nip`');
+      $this->db->where('`tab_kak`.`idtab_pptk`', $idtabpptk);
+      return $this->db->get()->row();
+    }
+
+//// endddddd
+
+
+
 	function listppk($idunit){
 		/*peran=2 untuk ppk*/
 		$this->db->select('tab_pns.nip,tab_pns.nama');
@@ -862,6 +979,7 @@ FROM
     //<--query untuk mendapatkan data pagu tahun
     function getpagutahun($nipppk,$unitkey)
     {
+
         $query = 'SELECT
     SUM(`angkas`.`nilai`) AS `pagu_tahun`
 FROM
@@ -875,6 +993,7 @@ FROM
     //<--query untuk mendapatkan data angkas hingga bulan ini
     function getangkashinggabulanini($nipppk,$unitkey)
     {
+
         $query = 'SELECT
     SUM(`angkas`.`nilai`) AS `angkas_bulan`
 FROM
@@ -888,6 +1007,7 @@ FROM
     //<--query untuk mendapatkan data angkas bulan ini
     function getangkasbulanini($nipppk,$unitkey)
     {
+
         $query = 'SELECT
     SUM(`angkas`.`nilai`) AS `angkas_bulan`
 FROM
@@ -1160,7 +1280,9 @@ FROM
     INNER JOIN `db_sodap`.`mkegiatan`
         ON (`angkas`.`kdkegunit` = `mkegiatan`.`kdkegunit`)
     INNER JOIN `db_sodap`.`tab_pptk`
+
         ON (`tab_pptk`.`kdkegunit` = `mkegiatan`.`kdkegunit`) WHERE `tab_pptk`.`idpnsppk` = '.$nipppk.' AND `angkas`.`tahun`=YEAR(NOW()) AND `angkas`.`unitkey`="'.$unitkey.'" GROUP BY `angkas`.`kdkegunit`;';
+
 
         if($this->db->query($query)->num_rows()!=0){
             return $this->db->query($query)->result_array();

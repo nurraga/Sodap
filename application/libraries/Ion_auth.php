@@ -71,7 +71,7 @@ class Ion_auth
 		$this->load->model('ion_auth_model');
 
 		$this->_cache_user_in_group =& $this->ion_auth_model->_cache_user_in_group;
-	
+
 		$email_config = $this->config->item('email_config', 'ion_auth');
 
 		if ($this->config->item('use_ci_email', 'ion_auth') && isset($email_config) && is_array($email_config))
@@ -488,6 +488,14 @@ class Ion_auth
 		$admin_group = $this->config->item('admin_group', 'ion_auth');
 
 		return $this->in_group($admin_group, $id);
+	}
+	public function is_walikota($id=false)
+	{
+		$this->ion_auth_model->trigger_events('is_walikota');
+
+		$walikota_group = $this->config->item('walikota_group', 'ion_auth');
+
+		return $this->in_group($walikota_group, $id);
 	}
 	public function is_kasubag($id=false)
 	{

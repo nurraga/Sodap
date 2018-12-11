@@ -45,7 +45,7 @@
 
 <!-- Main content -->
 <section class="content">
-    <div class="callout callout-info">
+    <div class="callout bg-blue">
       <div class="row">
           <div class="col-xs-12 col-md-12 col-md-offset-1">
              <br>
@@ -79,7 +79,7 @@
       <!-- small box -->
       <div class="small-box bg-green">
         <div class="inner">
-          <h3>6</h3>
+          <h3>List</h3>
 
           <p>Kegiatan</p>
       </div>
