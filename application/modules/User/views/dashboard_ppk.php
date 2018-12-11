@@ -157,11 +157,14 @@
                                             }
                                         }
                                         $angkas = 0;
-                                        foreach ($data_angkas_hbs as $a) {
-                                            if ($a['kdkegunit'] == $keg['kdkegunit']) {
-                                                $angkas += $a['total_angkas'];
-                                            }
+                                        if($data_angkas_hbs!=0){
+                                          foreach ($data_angkas_hbs as $a) {
+                                              if ($a['kdkegunit'] == $keg['kdkegunit']) {
+                                                  $angkas += $a['total_angkas'];
+                                              }
+                                          }
                                         }
+
                                         $angkastahun = 0;
                                         foreach ($det_angkas_satu_tahun as $dast){
                                             if($dast['kdkegunit']==$keg['kdkegunit']){
@@ -170,7 +173,7 @@
                                         }
 
                                         $target = $tb+$angkas;
-                                        $persen = ($target/$angkastahun)*100;
+                                        $persen = round(($target/$angkastahun)*100,2);
                                         echo $persen;
                                         ?>
                                     </td>
@@ -183,11 +186,14 @@
                                             }
                                         }
                                         $angkas = 0;
-                                        foreach ($data_angkas_hbs as $a) {
-                                            if ($a['kdkegunit'] == $keg['kdkegunit']) {
-                                                $angkas += $a['total_angkas'];
-                                            }
+                                        if($data_angkas_hbs!=0){
+                                          foreach ($data_angkas_hbs as $a) {
+                                              if ($a['kdkegunit'] == $keg['kdkegunit']) {
+                                                  $angkas += $a['total_angkas'];
+                                              }
+                                          }
                                         }
+
                                         $target = $tb+$angkas;
                                         echo $this->template->rupiah($target);
                                         ?>
@@ -213,14 +219,32 @@
                                             }
                                         }
                                         $angkas = 0;
-                                        foreach ($data_angkas_hbs as $a) {
-                                            if ($a['kdkegunit'] == $keg['kdkegunit']) {
-                                                $angkas += $a['total_angkas'];
-                                            }
+                                        if($data_angkas_hbs!=0){
+                                          foreach ($data_angkas_hbs as $a) {
+                                              if ($a['kdkegunit'] == $keg['kdkegunit']) {
+                                                  $angkas += $a['total_angkas'];
+                                              }
+                                          }
                                         }
+                                        $totbmodalbi = 0;
+                                        if($det_real_bmodalbi!=0){
+                                          foreach ($det_real_bmodalbi as $drbmbi) {
+                                            // code...
+                                            if($drbmbi['kdkegunit']==$keg['kdkegunit']){
+                                              $totbmodalbi+=$drbmbi['nilai_ktrk'];
+                                            }
+                                          }
+                                        }
+
                                         $sisa_angkas_hbs = ($angkas - $trhbs); //sisa angkas hingga bulan sebelumnya
                                         $ta = $sisa_angkas_hbs + $tb;
-                                        $persen = round(($jum / $ta) * 100, 2);
+
+                                        if($ta!=0){
+                                            $persen = round((($jum+$totbmodalbi) / $ta) * 100, 2);
+                                        }else{
+                                            $persen = 0;
+                                        }
+
                                         echo $persen; ?>
                                     </td>
                                     <td style="text-align: center;white-space: nowrap;width: 1%;vertical-align: middle">
@@ -230,7 +254,17 @@
                                                 $jum += $d_real['jumlah_harga'];
                                             }
                                         }
-                                        echo $this->template->rupiah($jum); ?>
+                                        $totbmodalbi = 0;
+                                        if($det_real_bmodalbi!=0){
+                                          foreach ($det_real_bmodalbi as $drbmbi) {
+                                            // code...
+                                            if($drbmbi['kdkegunit']==$keg['kdkegunit']){
+                                              $totbmodalbi+=$drbmbi['nilai_ktrk'];
+                                            }
+                                          }
+                                        }
+
+                                        echo $this->template->rupiah($jum+$totbmodalbi); ?>
                                     </td>
                                     <td style="text-align: center;white-space: nowrap;width: 1%;vertical-align: middle">
                                         <?php
@@ -262,10 +296,16 @@
                                     <td style="text-align: center;white-space: nowrap;width: 1%;vertical-align: middle">
                                         <?php
                                         $real_fisik = 0;
-                                        foreach ($data_real_fisik as $drf){
-                                            if($drf['kdkegunit']==$keg['kdkegunit']){
-                                                $real_fisik+=$drf['bobot_real'];
-                                            }
+                                        if($data_real_fisik!=0){
+
+                                          foreach ($data_real_fisik as $drf){
+                                              if($drf['kdkegunit']==$keg['kdkegunit']){
+                                                  $real_fisik+=$drf['bobot_real'];
+                                              }
+                                          }
+                                        }else{
+
+
                                         }
 
                                         echo $real_fisik.' %';
@@ -292,14 +332,23 @@
                                             }
                                         }
                                         $angkas = 0;
-                                        foreach ($data_angkas_hbs as $a) {
-                                            if ($a['kdkegunit'] == $keg['kdkegunit']) {
-                                                $angkas += $a['total_angkas'];
-                                            }
+                                        if($data_angkas_hbs!=0){
+                                          foreach ($data_angkas_hbs as $a) {
+                                              if ($a['kdkegunit'] == $keg['kdkegunit']) {
+                                                  $angkas += $a['total_angkas'];
+                                              }
+                                          }
                                         }
+
                                         $sisa_angkas_hbs = ($angkas - $trhbs); //sisa angkas hingga bulan sebelumnya
                                         $ta = $sisa_angkas_hbs + $tb;
-                                        $persen = ($jum / $ta) * 100;
+
+                                        if($ta!=0){
+                                            $persen = ($jum / $ta) * 100;
+                                        }else{
+                                            $persen=0;
+                                        }
+
                                         if($persen>=80){
                                             $status = '<span class="badge" style="background-color: green">tercapai</span>';
                                         }else{
@@ -307,7 +356,7 @@
                                         }
                                         echo $status; ?>
                                     </td>
-                                    <td style="text-align: center;white-space: nowrap;width: 1%">
+                                    <td style="text-align: center;white-space: nowrap;width: 1%;vertical-align: middle">
                                         <button id="<?php echo $keg['kdkegunit']; ?>"
                                                 onclick="detail('<?php echo $keg['kdkegunit']; ?>')"
                                                 class="btn btn-primary btn-flat btn-sm btn-social"><i
@@ -339,84 +388,274 @@
             type: 'GET',
             success: function (data) {
                 if (JSON.parse(data) != 0) {
-                    console.log(JSON.parse(data).datar);
-                    var tr = '';
-                    for (i = 0; i < JSON.parse(data).matangr.length; i++) {
-                        tr += '<tr style="background-color: #f7f3f7">' +
-                            '<td style="text-align:center;vertical-align: middle"><strong>' + JSON.parse(data).matangr[i].kdper + '</strong></td>' +
-                            '<td><strong>' + JSON.parse(data).matangr[i].nmper + '</strong></td>' +
-                            '<td></td>' +
-                            '<td></td>' +
-                            '<td></td>' +
-                            '<td></td>' +
-                            '<td></td>' +
-                            '<td style="text-align:center;vertical-align: middle"><strong>' + JSON.parse(data).matangr[i].sisa_dana + '</strong></td>' +
-                            '</tr>';
-                        for (j = 0; j < JSON.parse(data).datar.length; j++) {
-                            if ((JSON.parse(data).matangr[i].mtgkey) == (JSON.parse(data).datar[j].mtgkey)) {
-                                tr += '<tr>' +
-                                    '<td></td>' +
-                                    '<td style="text-align:left">' + JSON.parse(data).datar[j].urn + '</td>' +
-                                    '<td style="text-align:center;vertical-align:middle">' + JSON.parse(data).datar[j].vol + '</td>' +
-                                    '<td style="text-align:center;vertical-align:middle">' + JSON.parse(data).datar[j].satuan + '</td>' +
-                                    '<td style="text-align:center;vertical-align:middle">' + JSON.parse(data).datar[j].harga_satuan + '</td>' +
-                                    '<td style="text-align:center;vertical-align:middle">' + JSON.parse(data).datar[j].jumlah_harga + '</td>' +
-                                    '<td style="text-align:center;vertical-align:middle">' + JSON.parse(data).datar[j].nm_dana + '</td>' +
-                                    '<td style="text-align:center;vertical-align:middle">' + JSON.parse(data).datar[j].sisa_dana + '</td>' +
-                                    '</tr>';
+                    if(JSON.parse(data).matangr!=0 && JSON.parse(data).matangrbmodal!=0){
+                        console.log('kondisi 1');
+                        var tr = '';
+                        for (i = 0; i < JSON.parse(data).matangr.length; i++) {
+                            tr += '<tr style="background-color: #f7f3f7">' +
+                                '<td style="text-align:center;vertical-align: middle"><strong>' + JSON.parse(data).matangr[i].kdper + '</strong></td>' +
+                                '<td><strong>' + JSON.parse(data).matangr[i].nmper + '</strong></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td style="text-align:right;vertical-align: middle"><strong>' + JSON.parse(data).matangr[i].sisa_dana + '</strong></td>' +
+                                '</tr>';
+                            for (j = 0; j < JSON.parse(data).datar.length; j++) {
+                                if ((JSON.parse(data).matangr[i].mtgkey) == (JSON.parse(data).datar[j].mtgkey)) {
+                                    tr += '<tr>' +
+                                        '<td></td>' +
+                                        '<td style="text-align:left">' + JSON.parse(data).datar[j].urn + '</td>' +
+                                        '<td style="text-align:center;vertical-align:middle">' + JSON.parse(data).datar[j].vol + '</td>' +
+                                        '<td style="text-align:center;vertical-align:middle">' + JSON.parse(data).datar[j].satuan + '</td>' +
+                                        '<td style="text-align:right;vertical-align:middle">' + JSON.parse(data).datar[j].harga_satuan + '</td>' +
+                                        '<td style="text-align:right;vertical-align:middle">' + JSON.parse(data).datar[j].jumlah_harga + '</td>' +
+                                        '<td style="text-align:center;vertical-align:middle">' + JSON.parse(data).datar[j].nm_dana + '</td>' +
+                                        '<td style="text-align:right;vertical-align:middle">' + JSON.parse(data).datar[j].sisa_dana + '</td>' +
+                                        '</tr>';
+                                }
                             }
                         }
+                        for(i=0;i<JSON.parse(data).matangrbmodal.length;i++){
+                            tr += '<tr style="background-color: #f2dede">' +
+                                '<td style="text-align:center;vertical-align: middle"><strong>' + JSON.parse(data).matangrbmodal[i].kdper + '</strong></td>' +
+                                '<td><strong>' + JSON.parse(data).matangrbmodal[i].nmper + '</strong></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td style="text-align:center;vertical-align: middle"><strong>'+JSON.parse(data).matangrbmodal[i].sisa_dana+'</strong></td>' +
+                                '</tr>';
+                                for(j=0;j<JSON.parse(data).datarbmodal.length;j++){
+                                  if(JSON.parse(data).matangrbmodal[i].mtgkey==JSON.parse(data).datarbmodal[j].mtgkey){
+                                    tr += '<tr>' +
+                                        '<td></td>' +
+                                        '<td style="text-align:left">' + JSON.parse(data).datarbmodal[j].urn + '</td>' +
+                                        '<td style="text-align:center;vertical-align:middle">' + JSON.parse(data).datarbmodal[j].vol + '</td>' +
+                                        '<td style="text-align:center;vertical-align:middle">' + JSON.parse(data).datarbmodal[j].satuan + '</td>' +
+                                        '<td style="text-align:right;vertical-align:middle">' + JSON.parse(data).datarbmodal[j].harga_satuan + '</td>' +
+                                        '<td style="text-align:right;vertical-align:middle">' + JSON.parse(data).datarbmodal[j].jumlah_harga + '</td>' +
+                                        '<td style="text-align:center;vertical-align:middle"></td>' +
+                                        '<td style="text-align:center;vertical-align:middle"></td>' +
+                                        '</tr>';
+                                  }
+                                }
+                        }
+                        var header = document.getElementById('keg' + kdkegunit).innerHTML;
+                        var tb = '<table class="table table-bordered table-condensed table-hover" width="100%">\n' +
+                            '                        <thead>\n' +
+                            '                        <tr>\n' +
+                            '                           <td rowspan="3" style="text-align: center;vertical-align: middle;white-space: nowrap;width: 1%"><strong>Kode\n' +
+                            '                                    Rekening</strong></td>\n' +
+                            '                            <td colspan="5" style="text-align: center;vertical-align: middle"><strong>Realisasi</strong>\n' +
+                            '                            </td>\n' +
+                            '                            <td rowspan="3"\n' +
+                            '                                style="text-align: center;vertical-align: middle;white-space: nowrap;width: 1%"><strong>Sumber\n' +
+                            '                                    Dana</strong></td>\n' +
+                            '                            <td rowspan="3"\n' +
+                            '                                style="text-align: center;vertical-align: middle;white-space: nowrap;width: 1%"><strong>Sisa\n' +
+                            '                                    Dana</strong></td>\n' +
+                            '                        </tr>\n' +
+                            '                        <tr>\n' +
+                            '                            <td rowspan="2"\n' +
+                            '                                style="text-align: center;vertical-align: middle;white-space: nowrap;width: 1%"><strong>Uraian</strong>\n' +
+                            '                            </td>\n' +
+                            '                            <td rowspan="2"\n' +
+                            '                                style="text-align: center;vertical-align: middle;white-space: nowrap;width: 1%"><strong>Volumes</strong>\n' +
+                            '                            </td>\n' +
+                            '                            <td rowspan="2"\n' +
+                            '                                style="text-align: center;vertical-align: middle;white-space: nowrap;width: 1%"><strong>Satuan</strong>\n' +
+                            '                            </td>\n' +
+                            '                            <td rowspan="2"\n' +
+                            '                                style="text-align: center;vertical-align: middle;white-space: nowrap;width: 1%"><strong>Harga\n' +
+                            '                                    Satuan</strong></td>\n' +
+                            '                            <td rowspan="2"\n' +
+                            '                                style="text-align: center;vertical-align: middle;white-space: nowrap;width: 1%"><strong>Jumlah</strong>\n' +
+                            '                            </td>\n' +
+                            '                        </tr>\n' +
+                            '                        <tr>\n' +
+                            '\n' +
+                            '                        </tr>\n' +
+                            '                        </thead>\n' +
+                            '                        <tbody id="tb-data">\n' +
+                            '\n' +
+                            '                        </tbody>\n' +
+                            '                    </table>';
+                        alertify.defaults.glossary.title = '<center>Detail Realisasi <strong>' + header + '</strong></center>';
+                        alertify.confirm(tb, function () {
+                            alertify.success('Telah Dikonfirmasi!')
+                        }, function () {
+                            alertify.error('Dibatalkan!')
+                        }).set({transition: 'zoom'}).maximize().set({
+                            labels: {ok: 'Konfirmasi', cancel: 'Batal'},
+                            padding: false
+                        }).set('defaultFocus', 'cancel');
+                        document.getElementById('tb-data').innerHTML = tr;
+
+                    }else if(JSON.parse(data).matangr!=0 && JSON.parse(data).matangrbmodal==0){
+                        console.log('kondisi 2');
+                        var tr = '';
+                        for (i = 0; i < JSON.parse(data).matangr.length; i++) {
+                            tr += '<tr style="background-color: #f7f3f7">' +
+                                '<td style="text-align:center;vertical-align: middle"><strong>' + JSON.parse(data).matangr[i].kdper + '</strong></td>' +
+                                '<td><strong>' + JSON.parse(data).matangr[i].nmper + '</strong></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td style="text-align:right;vertical-align: middle"><strong>' + JSON.parse(data).matangr[i].sisa_dana + '</strong></td>' +
+                                '</tr>';
+                            for (j = 0; j < JSON.parse(data).datar.length; j++) {
+                                if ((JSON.parse(data).matangr[i].mtgkey) == (JSON.parse(data).datar[j].mtgkey)) {
+                                    tr += '<tr>' +
+                                        '<td></td>' +
+                                        '<td style="text-align:left">' + JSON.parse(data).datar[j].urn + '</td>' +
+                                        '<td style="text-align:center;vertical-align:middle">' + JSON.parse(data).datar[j].vol + '</td>' +
+                                        '<td style="text-align:center;vertical-align:middle">' + JSON.parse(data).datar[j].satuan + '</td>' +
+                                        '<td style="text-align:right;vertical-align:middle">' + JSON.parse(data).datar[j].harga_satuan + '</td>' +
+                                        '<td style="text-align:right;vertical-align:middle">' + JSON.parse(data).datar[j].jumlah_harga + '</td>' +
+                                        '<td style="text-align:center;vertical-align:middle">' + JSON.parse(data).datar[j].nm_dana + '</td>' +
+                                        '<td style="text-align:right;vertical-align:middle">' + JSON.parse(data).datar[j].sisa_dana + '</td>' +
+                                        '</tr>';
+                                }
+                            }
+                        }
+
+                        var header = document.getElementById('keg' + kdkegunit).innerHTML;
+                        var tb = '<table class="table table-bordered table-condensed table-hover" width="100%">\n' +
+                            '                        <thead>\n' +
+                            '                        <tr>\n' +
+                            '                           <td rowspan="3" style="text-align: center;vertical-align: middle;white-space: nowrap;width: 1%"><strong>Kode\n' +
+                            '                                    Rekening</strong></td>\n' +
+                            '                            <td colspan="5" style="text-align: center;vertical-align: middle"><strong>Realisasi</strong>\n' +
+                            '                            </td>\n' +
+                            '                            <td rowspan="3"\n' +
+                            '                                style="text-align: center;vertical-align: middle;white-space: nowrap;width: 1%"><strong>Sumber\n' +
+                            '                                    Dana</strong></td>\n' +
+                            '                            <td rowspan="3"\n' +
+                            '                                style="text-align: center;vertical-align: middle;white-space: nowrap;width: 1%"><strong>Sisa\n' +
+                            '                                    Dana</strong></td>\n' +
+                            '                        </tr>\n' +
+                            '                        <tr>\n' +
+                            '                            <td rowspan="2"\n' +
+                            '                                style="text-align: center;vertical-align: middle;white-space: nowrap;width: 1%"><strong>Uraian</strong>\n' +
+                            '                            </td>\n' +
+                            '                            <td rowspan="2"\n' +
+                            '                                style="text-align: center;vertical-align: middle;white-space: nowrap;width: 1%"><strong>Volumes</strong>\n' +
+                            '                            </td>\n' +
+                            '                            <td rowspan="2"\n' +
+                            '                                style="text-align: center;vertical-align: middle;white-space: nowrap;width: 1%"><strong>Satuan</strong>\n' +
+                            '                            </td>\n' +
+                            '                            <td rowspan="2"\n' +
+                            '                                style="text-align: center;vertical-align: middle;white-space: nowrap;width: 1%"><strong>Harga\n' +
+                            '                                    Satuan</strong></td>\n' +
+                            '                            <td rowspan="2"\n' +
+                            '                                style="text-align: center;vertical-align: middle;white-space: nowrap;width: 1%"><strong>Jumlah</strong>\n' +
+                            '                            </td>\n' +
+                            '                        </tr>\n' +
+                            '                        <tr>\n' +
+                            '\n' +
+                            '                        </tr>\n' +
+                            '                        </thead>\n' +
+                            '                        <tbody id="tb-data">\n' +
+                            '\n' +
+                            '                        </tbody>\n' +
+                            '                    </table>';
+                        alertify.defaults.glossary.title = '<center>Detail Realisasi <strong>' + header + '</strong></center>';
+                        alertify.confirm(tb, function () {
+                            alertify.success('Telah Dikonfirmasi!')
+                        }, function () {
+                            alertify.error('Dibatalkan!')
+                        }).set({transition: 'zoom'}).maximize().set({
+                            labels: {ok: 'Konfirmasi', cancel: 'Batal'},
+                            padding: false
+                        }).set('defaultFocus', 'cancel');
+                        document.getElementById('tb-data').innerHTML = tr;
+
+                    }else if(JSON.parse(data).matangr==0 && JSON.parse(data).matangrbmodal!=0){
+                        console.log('kondisi 3');
+                        var tr = '';
+                        for(i=0;i<JSON.parse(data).matangrbmodal.length;i++){
+                            tr += '<tr style="background-color: #f2dede">' +
+                                '<td style="text-align:center;vertical-align: middle"><strong>' + JSON.parse(data).matangrbmodal[i].kdper + '</strong></td>' +
+                                '<td><strong>' + JSON.parse(data).matangrbmodal[i].nmper + '</strong></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td style="text-align:center;vertical-align: middle"><strong>'+JSON.parse(data).matangrbmodal[i].sisa_dana+'</strong></td>' +
+                                '</tr>';
+                                for(j=0;j<JSON.parse(data).datarbmodal.length;j++){
+                                  if(JSON.parse(data).matangrbmodal[i].mtgkey==JSON.parse(data).datarbmodal[j].mtgkey){
+                                    tr += '<tr>' +
+                                        '<td></td>' +
+                                        '<td style="text-align:left">' + JSON.parse(data).datarbmodal[j].urn + '</td>' +
+                                        '<td style="text-align:center;vertical-align:middle">' + JSON.parse(data).datarbmodal[j].vol + '</td>' +
+                                        '<td style="text-align:center;vertical-align:middle">' + JSON.parse(data).datarbmodal[j].satuan + '</td>' +
+                                        '<td style="text-align:right;vertical-align:middle">' + JSON.parse(data).datarbmodal[j].harga_satuan + '</td>' +
+                                        '<td style="text-align:right;vertical-align:middle">' + JSON.parse(data).datarbmodal[j].jumlah_harga + '</td>' +
+                                        '<td style="text-align:center;vertical-align:middle"></td>' +
+                                        '<td style="text-align:center;vertical-align:middle"></td>' +
+                                        '</tr>';
+                                  }
+                                }
+                        }
+                        var header = document.getElementById('keg' + kdkegunit).innerHTML;
+                        var tb = '<table class="table table-bordered table-condensed table-hover" width="100%">\n' +
+                            '                        <thead>\n' +
+                            '                        <tr>\n' +
+                            '                           <td rowspan="3" style="text-align: center;vertical-align: middle;white-space: nowrap;width: 1%"><strong>Kode\n' +
+                            '                                    Rekening</strong></td>\n' +
+                            '                            <td colspan="5" style="text-align: center;vertical-align: middle"><strong>Realisasi</strong>\n' +
+                            '                            </td>\n' +
+                            '                            <td rowspan="3"\n' +
+                            '                                style="text-align: center;vertical-align: middle;white-space: nowrap;width: 1%"><strong>Sumber\n' +
+                            '                                    Dana</strong></td>\n' +
+                            '                            <td rowspan="3"\n' +
+                            '                                style="text-align: center;vertical-align: middle;white-space: nowrap;width: 1%"><strong>Sisa\n' +
+                            '                                    Dana</strong></td>\n' +
+                            '                        </tr>\n' +
+                            '                        <tr>\n' +
+                            '                            <td rowspan="2"\n' +
+                            '                                style="text-align: center;vertical-align: middle;white-space: nowrap;width: 1%"><strong>Uraian</strong>\n' +
+                            '                            </td>\n' +
+                            '                            <td rowspan="2"\n' +
+                            '                                style="text-align: center;vertical-align: middle;white-space: nowrap;width: 1%"><strong>Volumes</strong>\n' +
+                            '                            </td>\n' +
+                            '                            <td rowspan="2"\n' +
+                            '                                style="text-align: center;vertical-align: middle;white-space: nowrap;width: 1%"><strong>Satuan</strong>\n' +
+                            '                            </td>\n' +
+                            '                            <td rowspan="2"\n' +
+                            '                                style="text-align: center;vertical-align: middle;white-space: nowrap;width: 1%"><strong>Harga\n' +
+                            '                                    Satuan</strong></td>\n' +
+                            '                            <td rowspan="2"\n' +
+                            '                                style="text-align: center;vertical-align: middle;white-space: nowrap;width: 1%"><strong>Jumlah</strong>\n' +
+                            '                            </td>\n' +
+                            '                        </tr>\n' +
+                            '                        <tr>\n' +
+                            '\n' +
+                            '                        </tr>\n' +
+                            '                        </thead>\n' +
+                            '                        <tbody id="tb-data">\n' +
+                            '\n' +
+                            '                        </tbody>\n' +
+                            '                    </table>';
+                        alertify.defaults.glossary.title = '<center>Detail Realisasi <strong>' + header + '</strong></center>';
+                        alertify.confirm(tb, function () {
+                            alertify.success('Telah Dikonfirmasi!')
+                        }, function () {
+                            alertify.error('Dibatalkan!')
+                        }).set({transition: 'zoom'}).maximize().set({
+                            labels: {ok: 'Konfirmasi', cancel: 'Batal'},
+                            padding: false
+                        }).set('defaultFocus', 'cancel');
+                        document.getElementById('tb-data').innerHTML = tr;
                     }
-                    var header = document.getElementById('keg' + kdkegunit).innerHTML;
-                    var tb = '<table class="table table-bordered table-condensed table-hover" width="100%">\n' +
-                        '                        <thead>\n' +
-                        '                        <tr>\n' +
-                        '                           <td rowspan="3" style="text-align: center;vertical-align: middle;white-space: nowrap;width: 1%"><strong>Kode\n' +
-                        '                                    Rekening</strong></td>\n' +
-                        '                            <td colspan="5" style="text-align: center;vertical-align: middle"><strong>Realisasi</strong>\n' +
-                        '                            </td>\n' +
-                        '                            <td rowspan="3"\n' +
-                        '                                style="text-align: center;vertical-align: middle;white-space: nowrap;width: 1%"><strong>Sumber\n' +
-                        '                                    Dana</strong></td>\n' +
-                        '                            <td rowspan="3"\n' +
-                        '                                style="text-align: center;vertical-align: middle;white-space: nowrap;width: 1%"><strong>Sisa\n' +
-                        '                                    Dana</strong></td>\n' +
-                        '                        </tr>\n' +
-                        '                        <tr>\n' +
-                        '                            <td rowspan="2"\n' +
-                        '                                style="text-align: center;vertical-align: middle;white-space: nowrap;width: 1%"><strong>Uraian</strong>\n' +
-                        '                            </td>\n' +
-                        '                            <td rowspan="2"\n' +
-                        '                                style="text-align: center;vertical-align: middle;white-space: nowrap;width: 1%"><strong>Volumes</strong>\n' +
-                        '                            </td>\n' +
-                        '                            <td rowspan="2"\n' +
-                        '                                style="text-align: center;vertical-align: middle;white-space: nowrap;width: 1%"><strong>Satuan</strong>\n' +
-                        '                            </td>\n' +
-                        '                            <td rowspan="2"\n' +
-                        '                                style="text-align: center;vertical-align: middle;white-space: nowrap;width: 1%"><strong>Harga\n' +
-                        '                                    Satuan</strong></td>\n' +
-                        '                            <td rowspan="2"\n' +
-                        '                                style="text-align: center;vertical-align: middle;white-space: nowrap;width: 1%"><strong>Jumlah</strong>\n' +
-                        '                            </td>\n' +
-                        '                        </tr>\n' +
-                        '                        <tr>\n' +
-                        '\n' +
-                        '                        </tr>\n' +
-                        '                        </thead>\n' +
-                        '                        <tbody id="tb-data">\n' +
-                        '\n' +
-                        '                        </tbody>\n' +
-                        '                    </table>';
-                    alertify.defaults.glossary.title = '<center>Detail Realisasi <strong>' + header + '</strong></center>';
-                    alertify.confirm(tb, function () {
-                        alertify.success('Telah Dikonfirmasi!')
-                    }, function () {
-                        alertify.error('Dibatalkan!')
-                    }).set({transition: 'zoom'}).maximize().set({
-                        labels: {ok: 'Konfirmasi', cancel: 'Batal'},
-                        padding: false
-                    }).set('defaultFocus', 'cancel');
-                    document.getElementById('tb-data').innerHTML = tr;
+                    //console.log(JSON.parse(data).datar);
                 } else {
                     var header = document.getElementById('keg' + kdkegunit).innerHTML;
                     alertify.defaults.glossary.title = 'Info!';
@@ -427,12 +666,3 @@
     }
 </script>
 <!-- /.content -->
-
-
-
-
-
-
-
-
-
