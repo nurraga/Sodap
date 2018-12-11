@@ -357,8 +357,8 @@
                       // }style='display:none;'
                   }
               tbody +="<tr>\
-                    <td class='stat' style='display:none;' >"+stat+"</td>\
-                    <td class='pertama' style='display:none;' >"+pertama+"</td>\
+                    <td class='stat' style='display:none;'>"+stat+"</td>\
+                    <td class='pertama' style='display:none;'>"+pertama+"</td>\
                     <td class='indexbl' style='display:none;'>"+x+"</td>\
                     <td class='bl' style='display:none;'>"+no+"</td>\
                     <td>"+no+"</td>\
@@ -436,12 +436,21 @@
                          Pace.restart ();
                          Pace.track (function (){
                            $('#modaldafkeg').modal('hide');
+                               window.location.href = base_url+"User/realisasipptk?unit="+unit+"&keg="+kegiatan+"&tab="+tab+"&pr="+pertama+"&indexbl="+indexbl+"&bl="+bl+"&ub="+stat;
+
                            });
 
-                          window.location.href = base_url+"User/realisasipptk?unit="+unit+"&keg="+kegiatan+"&tab="+tab+"&pr="+pertama+"&indexbl="+indexbl+"&bl="+bl;
+
 
                       }else if(stat==1){
-                        alert("ubah realisasi?");
+                        Pace.restart ();
+                        Pace.track (function (){
+                          $('#modaldafkeg').modal('hide');
+
+                              window.location.href = base_url+"User/realisasipptk?unit="+unit+"&keg="+kegiatan+"&tab="+tab+"&pr="+pertama+"&indexbl="+indexbl+"&bl="+bl+"&ub="+stat;
+
+                          });
+
 
                       }else{
                         console.log('terjadi Kesalahan');
@@ -710,7 +719,7 @@
                                 <br>
 
                                 <div class="row">
-                                    <div class="col-md-2 col-sm-2 text-muted" style="text-align: left">Nama PPK</div>
+                                    <div class="col-md-2 col-sm-2 text-muted" style="text-align: left">Nama KPA</div>
                                     <div class="col-md-1 col-sm-1 text-muted" style="text-align: right;width: 5px">:</div>
                                     <div class="col-md-9 col-sm-9 text-muted" style="padding-left: 25px"><p id="namappk"></p></div>
                                 </div>
