@@ -771,7 +771,7 @@ function realisasipptk(){
                 /*jika peran 2 maka PPK*/
                 $encryptionMethod = "AES-256-ECB";
                 $secretHash = "aS9P0RNoKY9QcmvGDWwcZcjw6OuZKJK2VrR4Hv9UMms=";
-                if(!isset($_GET['unit'], $_GET['keg'], $_GET['tab'],$_GET['pr'],$_GET['indexbl'],$_GET['bl'])) {
+                if(!isset($_GET['unit'], $_GET['keg'], $_GET['tab'],$_GET['pr'],$_GET['indexbl'],$_GET['bl'],$_GET['ub'])) {
                   redirect('User/kakppk', 'refresh');
                 }else{
                     $un=$_GET['unit'];
@@ -780,6 +780,7 @@ function realisasipptk(){
                     $pertama=$_GET['pr'];
                     $indexbl=$_GET['indexbl'];
                     $bl =$_GET['bl'];
+                    $ubah =$_GET['ub'];
                     if (base64_encode(base64_decode($un)) === $un && base64_encode(base64_decode($keg)) === $keg && base64_encode(base64_decode($tab)) === $tab  ){
                         $unit       =openssl_decrypt($un, $encryptionMethod, $secretHash);
                         $kegiatan   =openssl_decrypt($keg, $encryptionMethod, $secretHash);
@@ -799,140 +800,287 @@ function realisasipptk(){
                     }else{
                         $arraybuln = array('Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember' );
                         $lskeg = $this->User_model->getdetlistkegiatan_detpptk($nip,$kegiatan);
-                        if($pertama==1){
-                                    //$header=$this->User_model->getheader_realisasipptk($idopd,$lskeg->kdkeg);
-                                    $header=$this->User_model->getheader_realisasipptk_angkas($idopd,$lskeg->kdkeg,$bl);
 
-                                    //cek ke aliran kas
-                                    // var_dump($idopd,$lskeg->kdkeg,$bl);exit();
-                                    $anggaranopd = $this->User_model->anggaranopd($idopd);
-                                    $bobotkeg=$lskeg->nl/$anggaranopd->anggranopd*100;
-                                    $this->data= array(
-                                        'idopd'     => $idopd,
-                                        'idtab'     => $idtab,
-                                        'nmopd'     => $namaopd,
-                                        'tahun'     => date('Y'),
-                                        'prog'      => $lskeg->prog,
-                                        'kdkeg'     => $lskeg->kdkeg,
-                                        'keg'       => $lskeg->keg,
-                                        'nl'        => $lskeg->nl,
-                                        'bobot'     => number_format($bobotkeg,2),
-                                        'pptk'      => $lskeg->pptk,
-                                        'ppk'       => $lskeg->ppk,
-                                        'bulan'     => $arraybuln[$indexbl],
-                                        'indexbulan'=> $indexbl+1,
-                                        'header'    => $header
+                        if($ubah==1){
 
-                                    );
-
-                                    $this->template->load('templatenew','v_realisasi_pptk_m', $this->data);
-                        }elseif($pertama==0){
-                          //jika entrian Bulan selanjutnya bukan yang pertama
-
-                          $wherein = array();
-
-                          for($i = 1; $i <= $bl; $i++){
-                            $wherein[]=$i;
+                          // jika ubah = 1 , load data yang akan di ubah
+                          //cek ke tab realisasi berdasarkan id tab pptk dan bulan realisasi
+                          $this->db->where('MONTH(real_bulan)', $bl);
+                          $this->db->where('id_tabpptk', $idtab);
+                          $treal = $this->db->get('tab_realisasi');
+                          if($treal->num_rows() > 0){
+                            //idreal sekarang
+                            $idreals= $treal->row_array()['id'];
+                            $real_fisik = $treal->row_array()['real_fisik'];
+                            $bobot_real = $treal->row_array()['bobot_real'];
+                            $permasalahan = $treal->row_array()['permasalahan'];
+                            $pert = $treal->row_array()['pertama'];
+                          }else{
+                            redirect('User/dafkeg', 'refresh');
                           }
 
-                          //cheat
-                          //SELECT * FROM angkas WHERE `unitkey`='80_' AND `kdkegunit`!='0_' AND `kdkegunit`='11338_' AND `nilai`!='0' AND `kd_bulan` IN ('1','2','3','4')
-                          //cheat
-                          $this->db->select('`angkas`.`id`
-                          , `angkas`.`unitkey`
-                          , `angkas`.`kdkegunit`
-                          , `angkas`.`kd_bulan`
-                          , sum(`angkas`.`nilai`) AS nilai
-                          , `angkas`.`mtgkey`
-                          , `matangr`.`kdper`
-                          , `matangr`.`nmper`
-                          , `angkas`.`tahun`');
-                          $this->db->from('angkas');
-                          $this->db->join('matangr', '`angkas`.`mtgkey` = `matangr`.`mtgkey`');
-                          $this->db->where('unitkey', $idopd);
-                          $this->db->where('kdkegunit', $lskeg->kdkeg);
-                          $this->db->where('kdkegunit !=', '0_');
-                          $this->db->where('nilai !=', '0');
-                          $this->db->where_in('kd_bulan', $wherein);
-                          $this->db->group_by('`matangr`.`kdper`');
-                          $headerlist = $this->db->get()->result_array();
-                          //---------------------------------------------------//
-                          $wherein_real_m = array();
-                          $this->db->select('`id`
-                          , `id_tabpptk`
-                          , `real_bulan`');
-                          $this->db->from('tab_realisasi');
-                          $this->db->where('id_tabpptk', $idtab);
-                          $idreal = $this->db->get()->result_array();
-                          //$idreal = ambil id realisasi di tab_realisasi yang sudah ada di entri ke tabel
-                          //kemudian di tampung ke dalam array $wherein_real_m yang akan digunakan di where_in
-                          foreach ($idreal as $x) {
-
-                            $wherein_real_m[]=$x['id'];
-
-                          }
-
-                          //realisasi bulan sebelumnya
-                          $this->db->where('id_tabpptk', $idtab);
-                          $this->db->order_by('real_bulan','DESC');
-                          $this->db->limit(1);
-                          $bulanlalu = $this->db->get('tab_realisasi');
-                          $idbl=$bulanlalu->row()->id;
-                          $rbbl=$bulanlalu->row()->real_bulan;
-                          $pecahawal = explode('-', $rbbl);
-                          $thnawal  = $pecahawal[0];
-                          $blnawal  = $pecahawal[1];
-                          $nmbln    = $arraybuln[(int)$blnawal-1];
+                            if($pert==1){
 
 
-                          $anggaranopd = $this->User_model->anggaranopd($idopd);
-                          $bobotkeg=$lskeg->nl/$anggaranopd->anggranopd*100;
-                          $this->data= array(
-                            'idopd'     => $idopd,
-                            'idtab'     => $idtab,
-                            'nmopd'     => $namaopd,
-                            'tahun'     => date('Y'),
-                            'prog'      => $lskeg->prog,
-                            'kdkeg'     => $lskeg->kdkeg,
-                            'keg'       => $lskeg->keg,
-                            'nl'        => $lskeg->nl,
-                            'bobot'     => number_format($bobotkeg,2),
-                            'pptk'      => $lskeg->pptk,
-                            'ppk'       => $lskeg->ppk,
-                            'bulan'     => $arraybuln[$indexbl],
-                            'indexbulan'=> $indexbl+1,
-                            //realisasi bulan lalu data id dan nama bulan
-                            'idreal'    => $idbl,
-                            'bulanlalu' => $nmbln,
-                            //-----------------------------------------//
-                            'header'    => $headerlist,
-                            'idmreal'   => $wherein_real_m
-                          );
 
-                          $this->template->load('templatenew','v_realisasi_pptk_next_m', $this->data);
+                                  //$header=$this->User_model->getheader_realisasipptk($idopd,$lskeg->kdkeg);
+                                  $header=$this->User_model->getheader_realisasipptk_angkas($idopd,$lskeg->kdkeg,$bl);
+                                  //cek ke aliran kas
+                                  // var_dump($idopd,$lskeg->kdkeg,$bl);exit();
+                                  $anggaranopd = $this->User_model->anggaranopd($idopd);
+                                  $bobotkeg=$lskeg->nl/$anggaranopd->anggranopd*100;
+                                  $this->data= array(
+                                      'idopd'     => $idopd,
+                                      'idtab'     => $idtab,
+                                      'nmopd'     => $namaopd,
+                                      'tahun'     => date('Y'),
+                                      'prog'      => $lskeg->prog,
+                                      'kdkeg'     => $lskeg->kdkeg,
+                                      'keg'       => $lskeg->keg,
+                                      'nl'        => $lskeg->nl,
+                                      'bobot'     => number_format($bobotkeg,2),
+                                      'pptk'      => $lskeg->pptk,
+                                      'ppk'       => $lskeg->ppk,
+                                      'bulan'     => $arraybuln[$indexbl],
+                                      'indexbulan'=> $indexbl+1,
+                                      'header'    => $header,
+                                      'ubah'      => $ubah,
+                                      //yang sudah di realisasi dan di edit kembali
+                                      'idreals'    =>$idreals,
+                                      'real_fisik'    =>$real_fisik,
+                                      'bobot_real'    =>$bobot_real,
+                                      'permasalahan'    =>$permasalahan
+
+                                );
+                                $this->template->load('templatenew','v_realisasi_pptk_m', $this->data);
+                            }else{
+                              $wherein = array();
+
+                              for($i = 1; $i <= $bl; $i++){
+                                $wherein[]=$i;
+                              }
+
+                              //cheat
+                              //SELECT * FROM angkas WHERE `unitkey`='80_' AND `kdkegunit`!='0_' AND `kdkegunit`='11338_' AND `nilai`!='0' AND `kd_bulan` IN ('1','2','3','4')
+                              //cheat
+                              $this->db->select('`angkas`.`id`
+                              , `angkas`.`unitkey`
+                              , `angkas`.`kdkegunit`
+                              , `angkas`.`kd_bulan`
+                              , sum(`angkas`.`nilai`) AS nilai
+                              , `angkas`.`mtgkey`
+                              , `matangr`.`kdper`
+                              , `matangr`.`nmper`
+                              , `angkas`.`tahun`');
+                              $this->db->from('angkas');
+                              $this->db->join('matangr', '`angkas`.`mtgkey` = `matangr`.`mtgkey`');
+                              $this->db->where('unitkey', $idopd);
+                              $this->db->where('kdkegunit', $lskeg->kdkeg);
+                              $this->db->where('kdkegunit !=', '0_');
+                              $this->db->where('nilai !=', '0');
+                              $this->db->where_in('kd_bulan', $wherein);
+                              $this->db->group_by('`matangr`.`kdper`');
+                              $headerlist = $this->db->get()->result_array();
+                              //---------------------------------------------------//
+
+                              $wherein_real_m = array();
+                              $this->db->select('`id`
+                              , `id_tabpptk`
+                              , `real_bulan`');
+                              $this->db->from('tab_realisasi');
+                              $this->db->where('id_tabpptk', $idtab);
+                              $idreal = $this->db->get()->result_array();
+                              //$idreal = ambil id realisasi di tab_realisasi yang sudah ada di entri ke tabel
+                              //kemudian di tampung ke dalam array $wherein_real_m yang akan digunakan di where_in
+                              foreach ($idreal as $x) {
+
+                                $wherein_real_m[]=$x['id'];
+
+                              }
+
+                              //realisasi bulan sebelumnya
+                              $this->db->where('id_tabpptk', $idtab);
+                              $this->db->where('MONTH(real_bulan)!=', $bl);
+                              $this->db->order_by('real_bulan','DESC');
+                              $this->db->limit(1);
+                              $bulanlalu = $this->db->get('tab_realisasi');
+                              $idbl=$bulanlalu->row()->id;
+                              $rbbl=$bulanlalu->row()->real_bulan;
+                              $pecahawal = explode('-', $rbbl);
+                              $thnawal  = $pecahawal[0];
+                              $blnawal  = $pecahawal[1];
+                              $nmbln    = $arraybuln[(int)$blnawal-1];
+
+
+                              $anggaranopd = $this->User_model->anggaranopd($idopd);
+                              $bobotkeg=$lskeg->nl/$anggaranopd->anggranopd*100;
+                              $this->data= array(
+                                'idopd'     => $idopd,
+                                'idtab'     => $idtab,
+                                'nmopd'     => $namaopd,
+                                'tahun'     => date('Y'),
+                                'prog'      => $lskeg->prog,
+                                'kdkeg'     => $lskeg->kdkeg,
+                                'keg'       => $lskeg->keg,
+                                'nl'        => $lskeg->nl,
+                                'bobot'     => number_format($bobotkeg,2),
+                                'pptk'      => $lskeg->pptk,
+                                'ppk'       => $lskeg->ppk,
+                                'bulan'     => $arraybuln[$indexbl],
+                                'indexbulan'=> $indexbl+1,
+                                'ubah'      => $ubah,
+                                //realisasi bulan lalu data id dan nama bulan
+                                'idreal'    => $idbl,
+                                'bulanlalu' => $nmbln,
+                                //-----------------------------------------//
+                                'header'    => $headerlist,
+                                'idmreal'   => $wherein_real_m,
+                                //id realisasi bulan sekarang
+                                'idreals'   => $idreals
+                              );
+                              $this->template->load('templatenew','v_realisasi_pptk_next_m', $this->data);
+                            }
+
                         }else{
-                                     $anggaranopd = $this->User_model->anggaranopd($idopd);
-                                    $bobotkeg=$lskeg->nl/$anggaranopd->anggranopd*100;
-                                     $this->data= array(
-                                        'idopd'     => $idopd,
-                                        'idtab'     => $idtab,
-                                        'nmopd'     => $namaopd,
-                                        'tahun'     => date('Y'),
-                                        'prog'      => $lskeg->prog,
-                                        'kdkeg'     => $lskeg->kdkeg,
-                                        'keg'       => $lskeg->keg,
-                                        'nl'        => $lskeg->nl,
-                                        'bobot'     => number_format($bobotkeg,2),
-                                        'pptk'      => $lskeg->pptk,
-                                        'ppk'       => $lskeg->ppk,
+                          //entri
+                          if($pertama==1){
+                              //$header=$this->User_model->getheader_realisasipptk($idopd,$lskeg->kdkeg);
+                              $header=$this->User_model->getheader_realisasipptk_angkas($idopd,$lskeg->kdkeg,$bl);
+
+                              //cek ke aliran kas
+                              // var_dump($idopd,$lskeg->kdkeg,$bl);exit();
+                              $anggaranopd = $this->User_model->anggaranopd($idopd);
+                              $bobotkeg=$lskeg->nl/$anggaranopd->anggranopd*100;
+                              $this->data= array(
+                                  'idopd'     => $idopd,
+                                  'idtab'     => $idtab,
+                                  'nmopd'     => $namaopd,
+                                  'tahun'     => date('Y'),
+                                  'prog'      => $lskeg->prog,
+                                  'kdkeg'     => $lskeg->kdkeg,
+                                  'keg'       => $lskeg->keg,
+                                  'nl'        => $lskeg->nl,
+                                  'bobot'     => number_format($bobotkeg,2),
+                                  'pptk'      => $lskeg->pptk,
+                                  'ppk'       => $lskeg->ppk,
+                                  'bulan'     => $arraybuln[$indexbl],
+                                  'indexbulan'=> $indexbl+1,
+                                  'header'    => $header,
+                                  'ubah'      => $ubah
+                              );
 
 
-                                    );
 
-                                    $this->template->load('templatenew','v_realisasi_pptk_list', $this->data);
 
-                                }
+                              $this->template->load('templatenew','v_realisasi_pptk_m', $this->data);
+                          }elseif($pertama==0){
+                            //jika entrian Bulan selanjutnya bukan yang pertama
 
+                            $wherein = array();
+
+                            for($i = 1; $i <= $bl; $i++){
+                              $wherein[]=$i;
+                            }
+
+                            //cheat
+                            //SELECT * FROM angkas WHERE `unitkey`='80_' AND `kdkegunit`!='0_' AND `kdkegunit`='11338_' AND `nilai`!='0' AND `kd_bulan` IN ('1','2','3','4')
+                            //cheat
+                            $this->db->select('`angkas`.`id`
+                            , `angkas`.`unitkey`
+                            , `angkas`.`kdkegunit`
+                            , `angkas`.`kd_bulan`
+                            , sum(`angkas`.`nilai`) AS nilai
+                            , `angkas`.`mtgkey`
+                            , `matangr`.`kdper`
+                            , `matangr`.`nmper`
+                            , `angkas`.`tahun`');
+                            $this->db->from('angkas');
+                            $this->db->join('matangr', '`angkas`.`mtgkey` = `matangr`.`mtgkey`');
+                            $this->db->where('unitkey', $idopd);
+                            $this->db->where('kdkegunit', $lskeg->kdkeg);
+                            $this->db->where('kdkegunit !=', '0_');
+                            $this->db->where('nilai !=', '0');
+                            $this->db->where_in('kd_bulan', $wherein);
+                            $this->db->group_by('`matangr`.`kdper`');
+                            $headerlist = $this->db->get()->result_array();
+                            //---------------------------------------------------//
+                            $wherein_real_m = array();
+                            $this->db->select('`id`
+                            , `id_tabpptk`
+                            , `real_bulan`');
+                            $this->db->from('tab_realisasi');
+                            $this->db->where('id_tabpptk', $idtab);
+                            $idreal = $this->db->get()->result_array();
+                            //$idreal = ambil id realisasi di tab_realisasi yang sudah ada di entri ke tabel
+                            //kemudian di tampung ke dalam array $wherein_real_m yang akan digunakan di where_in
+                            foreach ($idreal as $x) {
+
+                              $wherein_real_m[]=$x['id'];
+
+                            }
+
+                            //realisasi bulan sebelumnya
+                            $this->db->where('id_tabpptk', $idtab);
+                            $this->db->order_by('real_bulan','DESC');
+                            $this->db->limit(1);
+                            $bulanlalu = $this->db->get('tab_realisasi');
+                            $idbl=$bulanlalu->row()->id;
+                            $rbbl=$bulanlalu->row()->real_bulan;
+                            $pecahawal = explode('-', $rbbl);
+                            $thnawal  = $pecahawal[0];
+                            $blnawal  = $pecahawal[1];
+                            $nmbln    = $arraybuln[(int)$blnawal-1];
+
+
+                            $anggaranopd = $this->User_model->anggaranopd($idopd);
+                            $bobotkeg=$lskeg->nl/$anggaranopd->anggranopd*100;
+                            $this->data= array(
+                              'idopd'     => $idopd,
+                              'idtab'     => $idtab,
+                              'nmopd'     => $namaopd,
+                              'tahun'     => date('Y'),
+                              'prog'      => $lskeg->prog,
+                              'kdkeg'     => $lskeg->kdkeg,
+                              'keg'       => $lskeg->keg,
+                              'nl'        => $lskeg->nl,
+                              'bobot'     => number_format($bobotkeg,2),
+                              'pptk'      => $lskeg->pptk,
+                              'ppk'       => $lskeg->ppk,
+                              'bulan'     => $arraybuln[$indexbl],
+                              'indexbulan'=> $indexbl+1,
+                              'ubah'      => $ubah,
+                              //realisasi bulan lalu data id dan nama bulan
+                              'idreal'    => $idbl,
+                              'bulanlalu' => $nmbln,
+                              //-----------------------------------------//
+                              'header'    => $headerlist,
+                              'idmreal'   => $wherein_real_m
+                            );
+
+                            $this->template->load('templatenew','v_realisasi_pptk_next_m', $this->data);
+                          }else{
+                                       $anggaranopd = $this->User_model->anggaranopd($idopd);
+                                      $bobotkeg=$lskeg->nl/$anggaranopd->anggranopd*100;
+                                       $this->data= array(
+                                          'idopd'     => $idopd,
+                                          'idtab'     => $idtab,
+                                          'nmopd'     => $namaopd,
+                                          'tahun'     => date('Y'),
+                                          'prog'      => $lskeg->prog,
+                                          'kdkeg'     => $lskeg->kdkeg,
+                                          'keg'       => $lskeg->keg,
+                                          'nl'        => $lskeg->nl,
+                                          'bobot'     => number_format($bobotkeg,2),
+                                          'pptk'      => $lskeg->pptk,
+                                          'ppk'       => $lskeg->ppk,
+
+
+                                      );
+
+                                      $this->template->load('templatenew','v_realisasi_pptk_list', $this->data);
+
+                                  }
+                        }
 
 
 
@@ -1298,6 +1446,8 @@ function simpanrealisasi(){
                 'November'  => 11,
                 'Desember'  => 12
             );
+            $idubah         = $this->input->post('idubah');
+            $pertama        = $this->input->post('pertama');
             $id_tabpptk     = $this->input->post('idtab');
             $bobot_keg      = $this->input->post('botkeg');
             $real_bulan     = $this->input->post('bulan');
@@ -1321,11 +1471,12 @@ function simpanrealisasi(){
                 'bobot_real'    => $bobot_real,
                 'permasalahan'  => $permasalahan,
                 'admin_entri'   => $adminentri,
-                'tgl_entri'     => $tgl_entri
+                'tgl_entri'     => $tgl_entri,
+                'pertama'       => $pertama
 
             );
 
-            $result=$this->User_model->simpanrealisasi($data );
+            $result=$this->User_model->simpanrealisasi($data,$idubah);
 
             if($result){
 
@@ -2153,10 +2304,10 @@ function viewkakppk(){
   }
 }
 
-// LAPORAN KAK 
+// LAPORAN KAK
 
 function lapkak($idtab){
-    
+
        if (!$this->ion_auth->logged_in()){
         redirect('Home/login', 'refresh');
     }elseif ($this->ion_auth->is_admin()){
@@ -2171,10 +2322,11 @@ function lapkak($idtab){
         $idopd =$getopd->unitkey;
         $namaopd=$getopd->nmunit;
         $namappk = $this->User_model->getnamappk($idtab);
+        $ttd = $this->User_model->getttdkak($idtab);
         $lskak = $this->User_model->getkak_by($idtab);
         $schedule = $this->User_model->getSchedule_by($lskak->id);
         $schedule_blj_modal = $this->User_model->getBljModal_by($idtab);
-//        var_dump($lskak);exit;        
+//        var_dump($lskak);exit;
         $this->data= array(
 
                          'idopd'     => $idopd,
@@ -2182,19 +2334,18 @@ function lapkak($idtab){
                         'idtab' => $idtab,
                         'tahun'     => date('Y'),
                         'nama'   => $namappk,
+                        'ttd'  => $ttd,
                         'list'      => $lskak
-                    
-                                                                    
+
+
 
         );
-      //    echo json_encode ($this->data); 
+      //    echo json_encode ($this->data);
         $this->load->view('lap_kak',$this->data);
 
     }
-
-
 function timeschedule($idtab){
-    
+
        if (!$this->ion_auth->logged_in()){
         redirect('Home/login', 'refresh');
     }elseif ($this->ion_auth->is_admin()){
@@ -2211,7 +2362,7 @@ function timeschedule($idtab){
 
         $lskak = $this->User_model->getkak_by($idtab);
         $schedule = $this->User_model->getSchedule_by($lskak->id);
-        $schedule_blj_modal = $this->User_model->getBljModal_by($idtab);       
+        $schedule_blj_modal = $this->User_model->getBljModal_by($idtab);
         $this->data= array(
 
                          'idopd'     => $idopd,
@@ -2219,17 +2370,15 @@ function timeschedule($idtab){
                         'idtab' => $idtab,
                         'tahun'     => date('Y'),
                          'schedule'      => $schedule,
-                        'list'      => $lskak                                        
+                          'schbelanja'      => $schedule_blj_modal,
+
+                        'list'      => $lskak
         );
         //
-        //echo json_encode ($schedule);
+        //echo json_encode ($schedule[0]);
       $this->load->view('lap_timeschedule',$this->data);
-
     }
-
-    
-
-//end laporan
+    //end laporan
 
 
 

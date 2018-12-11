@@ -1007,6 +1007,7 @@
           if (isConfirm) {
             Pace.restart ();
             Pace.track (function (){
+              var pertama =0;
             var token   = localStorage.getItem("token");
             var tab     = $('#idtab').html();
             var botkeg  = $('#botkeg').html();
@@ -1019,7 +1020,7 @@
             var realbobot   = $('#realbobot').val();
             var formData = new FormData($('#formrealisasi')[0]);
             formData.append("token",token);
-
+            formData.append("pertama",pertama);
             formData.append("idtab",tab);
             formData.append("botkeg",botkeg);
             formData.append("bulan",bulan);
@@ -1104,7 +1105,17 @@
   <div class="callout bg-blue">
     <div class="row">
       <div class="col-xs-12 col-md-12 col-md-offset-1">
+        <?php
+        if($ubah==1){
+          //idreal sekarang
+          $idrealb=$idreals;
+        }else{
+          $idrealb='';
+        }
+         ?>
            <br>
+           <p id="idubah" hidden><?php echo $ubah ?></p>
+           <p id="idreal" hidden><?php echo $idrealb ?></p>
             <p id="kdunit" hidden><?php echo $idopd ?></p>
             <p id="kdkeg" hidden><?php echo $kdkeg ?></p>
             <p id="idtab" hidden><?php echo $idtab ?></p>
@@ -1325,271 +1336,570 @@
               </thead>
                 <tbody>
                   <?php
-                  foreach ($header as $hrow){
-
-                    $id       =$hrow['id'];
-                    $unitkey  =$hrow['unitkey'];
-                    $kdkegunit=$hrow['kdkegunit'];
-                    $kd_bulan =$hrow['kdkegunit'];
-                    $nilai    =$hrow['nilai'];
-                    $mtgkey   =$hrow['mtgkey'];
-                    $kdper    =$hrow['kdper'];
-                    $nmper    =$hrow['nmper'];
-                    $tahun    =$hrow['tahun'];
-                    //ambil sum jumlah_harga ke tab_realisasi_det berdasarkan id_tab_realisasi(yang tadi disimpan di array)
-                    //dan berdasarkan mtgkey
-                    $this->db->select('SUM(`jumlah_harga`) AS jumsdhreal');
-                    $this->db->from('tab_realisasi_det');
-                    $this->db->where_in('id_tab_realisasi', $idmreal);
-                    $this->db->where('mtgkey', $mtgkey);
-                    $tabdetreal = $this->db->get()->row();
-                    $jumsdhreal=$tabdetreal->jumsdhreal;
-                    $sisablnskr = (int)$nilai - (int)$jumsdhreal;
-                    $jkrek=substr($kdper,0,6);
-                    $clasrek=str_replace(".","-",$kdper);
-                    if($jkrek=='5.2.3.'){
-                      //jika rekening 5.2.3
-                      //cek realisasi belanja modal ke tabel tab_realisasi_bmodal
-                      //SELECT * FROM `tab_realisasi_bmodal` WHERE id_tab_pptk = '5' AND mtgkey='1326_'
-                      $nilaibmodal = $this->db->get_where('tab_realisasi_bmodal',array('id_tab_pptk'=>$idtab,'mtgkey'=>$mtgkey));
-                      if($nilaibmodal->num_rows()>0){
-                        $nlrealbmodal = $nilaibmodal->row()->nilai_ktrk;
-                      }else{
-                        $nlrealbmodal = 0;
-                      }
-
-                      $bmsisablnskr = (int)$nilai - (int)$nlrealbmodal;
-
-                      $class='danger';
-                      echo'<tr class ="'.$class.'">
-                        <td class="totpagubln'.$clasrek.'" style="display:none;">'.$nilai.'</td>
-                        <td class="id" style="display:none;">'.$id.'</td>
-                        <td class="unitkey" style="display:none;">'.$unitkey.'</td>
-                        <td class="kdkegunit" style="display:none;">'.$kdkegunit.'</td>
-                        <td class="mtgkey" style="display:none;">'.$mtgkey.'</td>
-                        <td class="rekheader"><b>'.$kdper.'</b></td>
-                        <td class="nmrekheader"><b>'.$nmper.'</b></td>
-                        <td colspan="4"></td>
-                        <td style="display:none;"><b>'.$this->template->rupiah($nilai).'</b></td>
-                        <td style="display:none;"><b>'.$this->template->rupiah($jumsdhreal).'</b></td>
-                        <td class="sisaentribm'.$clasrek.'"style="text-align:right"><b>'.$this->template->rupiah($bmsisablnskr).'</b></td>
-                        <td style="display:none;"><input type="text" class="form-control headtotsd"  readonly value='.$bmsisablnskr.'></td>
-                        <td style="vertical-align : middle;text-align:center;"><u><b><i>Nilai Kontrak</i></b></u></td>
-                        <td colspan="2"style="vertical-align : middle;text-align:center;"><input type="text" class="format-rupiah form-control" readonly value='.$nlrealbmodal.' id="nlrealbmodal'.$clasrek.'"></td>
-                        <td colspan="3"></td>
-                        <td style="vertical-align : middle;text-align:right; display:none;"><input type="text" class="format-rupiah form-control hr real5-2-3 harga-rek'.$clasrek.'" readonly ></td>
-                        <td style="vertical-align : middle;text-align:center;"><button type="button" class="btnrealfisik btn bg-blue btn-flat bm'.$clasrek.'">Realisasi<div class="ripple-container"></div></button></td>
-                        </tr>';
-                        //ambil detail(anak rincian) rekening ke table dpa221 berdasarkan tahun, unit, kdkegunit, mtgkey,
-                        $this->db->where('`dpa221`.`tahun`', $tahun);
-                        $this->db->where('`dpa221`.`unitkey`', $unitkey);
-                        $this->db->where('`dpa221`.`kdkegunit`', $kdkegunit);
-                        $this->db->where('`dpa221`.`mtgkey`', $mtgkey);
-                        $detail=$this->db->get('dpa221')->result_array();
-                        foreach ($detail as $row){
-                          $detid        = $row['id'];
-                          $dettahun     = $row['tahun'];
-                          $detunitkey   = $row['unitkey'];
-                          $detkdkegunit = $row['kdkegunit'];
-                          $detmtgkey    = $row['mtgkey'];
-                          $deturaianx   = str_replace("-","",$row['uraian']);
-                          $deturaian    = str_replace("  ","",$deturaianx);
-                          $detsatuan    = $row['satuan'];
-                          $dettarif     = $row['tarif'];
-                          $detjumbyek   = $row['jumbyek'];
-                          $detkdjabar   = $row['kdjabar'];
-                          $dettype      = $row['type'];
-                          if ($dettype=='H'){
-                            echo "<tr class='active'>
-                                  <td></td>
-                                  <td>$deturaian</td>
-                                  <td colspan='4'></td>
-                                  <td class='info' colspan='4'></td>
-                                  <td colspan='5'></td>
-                                  </tr>";
-                          }else{
-                              $sisvoltarif=$detjumbyek*$dettarif;
-                            echo "<tr class='warning'>
-
-                                  <td></td>
-                                  <td><ul class='list-unstyled'>
-                                  <li><ul><li>$deturaian</li></ul></li>
-                                  </ul></td>
-                                  <td class='sisvol' style='text-align:center;'>$detjumbyek</td>
-                                  <td style='text-align:center;'>$detsatuan</td>
-                                  <td class='dettarif' style='display:none;'>$dettarif</td>
-                                  <td style='text-align:right'><b>".$this->template->rupiah($dettarif)."</b></td>
-                                  <td class='sisavoltarif' style='display:none;'>$sisvoltarif</td>
-                                  <td style='text-align:right'><b>".$this->template->rupiah($sisvoltarif)."</b></td>
-                                  <td colspan='8'></td>
-                                </tr>";
-                          }
-                        }
-
-                    }else{
-                      //selain rekening 5.2.3
-                      $jumtahun=0;
-                      $class='active';
-                      echo'<tr class ="'.$class.'">
-                        <td class="id" style="display:none;">'.$id.'</td>
-                        <td class="unitkey" style="display:none;">'.$unitkey.'</td>
-                        <td class="kdkegunit" style="display:none;">'.$kdkegunit.'</td>
-                        <td class="mtgkey" style="display:none;">'.$mtgkey.'</td>
-                        <td><b>'.$kdper.'</b></td>
-                        <td><b>'.$nmper.'</b></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td style="display:none;"><b>'.$this->template->rupiah($nilai).'</b></td>
-                        <td style="display:none;"><b>'.$this->template->rupiah($jumsdhreal).'</b></td>
-                        <td style="text-align:right"><b>'.$this->template->rupiah($sisablnskr).'</b></td>
-                        <td style="display:none;"><input type="text" class="form-control headtotsd"  readonly value='.$sisablnskr.'></td>
-                        <td class="info" colspan="2"></td>
-                        <td colspan="5"></td>
-
-                        </tr>';
-                        //ambil detail(anak rincian) rekening ke table dpa221 berdasarkan tahun, unit, kdkegunit, mtgkey,
-                        $this->db->where('`dpa221`.`tahun`', $tahun);
-                        $this->db->where('`dpa221`.`unitkey`', $unitkey);
-                        $this->db->where('`dpa221`.`kdkegunit`', $kdkegunit);
-                        $this->db->where('`dpa221`.`mtgkey`', $mtgkey);
-                        $detail=$this->db->get('dpa221')->result_array();
-                        foreach ($detail as $row){
-                          $detid        = $row['id'];
-                          $dettahun     = $row['tahun'];
-                          $detunitkey   = $row['unitkey'];
-                          $detkdkegunit = $row['kdkegunit'];
-                          $detmtgkey    = $row['mtgkey'];
-                          $deturaianx   = str_replace("-","",$row['uraian']);
-                          $deturaian    = str_replace("  ","",$deturaianx);
-                          $detsatuan    = $row['satuan'];
-                          $dettarif     = $row['tarif'];
-                          $detjumbyek   = $row['jumbyek'];
-                          $detkdjabar   = $row['kdjabar'];
-                          $dettype      = $row['type'];
-
-                          //bandingkan volume dpa221 dengan volume yang sudah di realisasikan
-                          //ambil ke tab_realisasi_det berdasarkan id dpa221 ,id ta
-                          //SELECT SUM(vol)  as jumvol FROM `tab_realisasi_det` WHERE `id_tab_realisasi` IN('1','2') AND `id_dpa`='30873'
-                          $this->db->select('SUM(vol) as jumvol');
-                          $this->db->from('tab_realisasi_det');
-                          $this->db->where_in('id_tab_realisasi', $idmreal);
-                          $this->db->where('id_dpa', $detid );
-                          $jumvolsdh = $this->db->get()->row();
-                          $exvol = $jumvolsdh->jumvol;
-                          $sisavol = (int)$detjumbyek - (int)$exvol;
+                   if($ubah==1){
+                     //ubah realisasi bulan sekarang
+                     foreach ($header as $hrow){
 
 
-                          //select data realiasasi bulan sebelumnya
-                          //ambil ke tab_realisasi_det berdasarkan id_tab_realisasi dan mtgkey
 
-                          $this->db->select('`tab_sumber_dana`.`id`
-                          ,`tab_sumber_dana`.`nm_dana`
-                          , `tab_realisasi_det`.`vol`
-                          , `tab_realisasi_det`.`harga_satuan`
-                          , `tab_realisasi_det`.`jumlah_harga`');
-                          $this->db->from('tab_realisasi_det');
-                          $this->db->join('tab_sumber_dana', '`tab_realisasi_det`.`sumber_dana` = `tab_sumber_dana`.`id`');
-                          $this->db->where_in('id_tab_realisasi', $idreal);
-                          $this->db->where('mtgkey', $detmtgkey);
-                          $this->db->where('id_dpa', $detid);
-                          $rowbulanlalu = $this->db->get()->row_array();
-                        //print_r($rowbulanlalu);
-                        //ini aneh tidak bisa row() seperti biasa harus row_array /sajam untuk iko se
-                        $bliddana=$rowbulanlalu['id'];
-                        $blnmdana=$rowbulanlalu['nm_dana'];
-                        $blvol=$rowbulanlalu['vol'];
-                        $blhs = $rowbulanlalu['harga_satuan'];
-                        $bljh = $rowbulanlalu['jumlah_harga'];
-// ".$rowbulanlalu->nm_dana."".$rowbulanlalu->vol."".$this->template->rupiah($rowbulanlalu->harga_satuan)."".$this->template->rupiah($rowbulanlalu->jumlah_harga)."
+                       $id       =$hrow['id'];
+                       $unitkey  =$hrow['unitkey'];
+                       $kdkegunit=$hrow['kdkegunit'];
+                       $kd_bulan =$hrow['kdkegunit'];
+                       $nilai    =$hrow['nilai'];
+                       $mtgkey   =$hrow['mtgkey'];
+                       $kdper    =$hrow['kdper'];
+                       $nmper    =$hrow['nmper'];
+                       $tahun    =$hrow['tahun'];
+                       //ambil sum jumlah_harga ke tab_realisasi_det berdasarkan id_tab_realisasi(yang tadi disimpan di array)
+                       //dan berdasarkan mtgkey
+                       $this->db->select('SUM(`jumlah_harga`) AS jumsdhreal');
+                       $this->db->from('tab_realisasi_det');
+                       $this->db->where_in('id_tab_realisasi', $idmreal);
+                       $this->db->where('mtgkey', $mtgkey);
+                       $tabdetreal = $this->db->get()->row();
+                       $jumsdhreal=$tabdetreal->jumsdhreal;
+                       $sisablnskr = (int)$nilai - (int)$jumsdhreal;
+                       $jkrek=substr($kdper,0,6);
+                       $clasrek=str_replace(".","-",$kdper);
+                       if($jkrek=='5.2.3.'){
+                         //jika rekening 5.2.3
+                         //cek realisasi belanja modal ke tabel tab_realisasi_bmodal
+                         //SELECT * FROM `tab_realisasi_bmodal` WHERE id_tab_pptk = '5' AND mtgkey='1326_'
+                         $nilaibmodal = $this->db->get_where('tab_realisasi_bmodal',array('id_tab_pptk'=>$idtab,'mtgkey'=>$mtgkey));
+                         if($nilaibmodal->num_rows()>0){
+                           $nlrealbmodal = $nilaibmodal->row()->nilai_ktrk;
+                         }else{
+                           $nlrealbmodal = 0;
+                         }
+
+                         $bmsisablnskr = (int)$nilai - (int)$nlrealbmodal;
+
+                         $class='danger';
+                         echo'<tr class ="'.$class.'">
+                           <td class="totpagubln'.$clasrek.'" style="display:none;">'.$nilai.'</td>
+                           <td class="id" style="display:none;">'.$id.'</td>
+                           <td class="unitkey" style="display:none;">'.$unitkey.'</td>
+                           <td class="kdkegunit" style="display:none;">'.$kdkegunit.'</td>
+                           <td class="mtgkey" style="display:none;">'.$mtgkey.'</td>
+                           <td class="rekheader"><b>'.$kdper.'</b></td>
+                           <td class="nmrekheader"><b>'.$nmper.'</b></td>
+                           <td colspan="4"></td>
+                           <td style="display:none;"><b>'.$this->template->rupiah($nilai).'</b></td>
+                           <td style="display:none;"><b>'.$this->template->rupiah($jumsdhreal).'</b></td>
+                           <td class="sisaentribm'.$clasrek.'"style="text-align:right"><b>'.$this->template->rupiah($bmsisablnskr).'</b></td>
+                           <td style="display:none;"><input type="text" class="form-control headtotsd"  readonly value='.$bmsisablnskr.'></td>
+                           <td style="vertical-align : middle;text-align:center;"><u><b><i>Nilai Kontrak</i></b></u></td>
+                           <td colspan="2"style="vertical-align : middle;text-align:center;"><input type="text" class="format-rupiah form-control" readonly value='.$nlrealbmodal.' id="nlrealbmodal'.$clasrek.'"></td>
+                           <td colspan="3"></td>
+                           <td style="vertical-align : middle;text-align:right; display:none;"><input type="text" class="format-rupiah form-control hr real5-2-3 harga-rek'.$clasrek.'" readonly ></td>
+                           <td style="vertical-align : middle;text-align:center;"><button type="button" class="btnrealfisik btn bg-blue btn-flat bm'.$clasrek.'">Realisasi<div class="ripple-container"></div></button></td>
+                           </tr>';
+                           //ambil detail(anak rincian) rekening ke table dpa221 berdasarkan tahun, unit, kdkegunit, mtgkey,
+                           $this->db->where('`dpa221`.`tahun`', $tahun);
+                           $this->db->where('`dpa221`.`unitkey`', $unitkey);
+                           $this->db->where('`dpa221`.`kdkegunit`', $kdkegunit);
+                           $this->db->where('`dpa221`.`mtgkey`', $mtgkey);
+                           $detail=$this->db->get('dpa221')->result_array();
+                           foreach ($detail as $row){
+                             $detid        = $row['id'];
+                             $dettahun     = $row['tahun'];
+                             $detunitkey   = $row['unitkey'];
+                             $detkdkegunit = $row['kdkegunit'];
+                             $detmtgkey    = $row['mtgkey'];
+                             $deturaianx   = str_replace("-","",$row['uraian']);
+                             $deturaian    = str_replace("  ","",$deturaianx);
+                             $detsatuan    = $row['satuan'];
+                             $dettarif     = $row['tarif'];
+                             $detjumbyek   = $row['jumbyek'];
+                             $detkdjabar   = $row['kdjabar'];
+                             $dettype      = $row['type'];
+                             if ($dettype=='H'){
+                               echo "<tr class='active'>
+                                     <td></td>
+                                     <td>$deturaian</td>
+                                     <td colspan='4'></td>
+                                     <td class='info' colspan='4'></td>
+                                     <td colspan='5'></td>
+                                     </tr>";
+                             }else{
+                                 $sisvoltarif=$detjumbyek*$dettarif;
+                               echo "<tr class='warning'>
+
+                                     <td></td>
+                                     <td><ul class='list-unstyled'>
+                                     <li><ul><li>$deturaian</li></ul></li>
+                                     </ul></td>
+                                     <td class='sisvol' style='text-align:center;'>$detjumbyek</td>
+                                     <td style='text-align:center;'>$detsatuan</td>
+                                     <td class='dettarif' style='display:none;'>$dettarif</td>
+                                     <td style='text-align:right'><b>".$this->template->rupiah($dettarif)."</b></td>
+                                     <td class='sisavoltarif' style='display:none;'>$sisvoltarif</td>
+                                     <td style='text-align:right'><b>".$this->template->rupiah($sisvoltarif)."</b></td>
+                                     <td colspan='8'></td>
+                                   </tr>";
+                             }
+                           }
+
+                       }else{
+                         //selain rekening 5.2.3
+                         $jumtahun=0;
+                         $class='active';
+                         echo'<tr class ="'.$class.'">
+                           <td class="id" style="display:none;">'.$id.'</td>
+                           <td class="unitkey" style="display:none;">'.$unitkey.'</td>
+                           <td class="kdkegunit" style="display:none;">'.$kdkegunit.'</td>
+                           <td class="mtgkey" style="display:none;">'.$mtgkey.'</td>
+                           <td><b>'.$kdper.'</b></td>
+                           <td><b>'.$nmper.'</b></td>
+                           <td></td>
+                           <td></td>
+                           <td></td>
+                           <td></td>
+                           <td style="display:none;"><b>'.$this->template->rupiah($nilai).'</b></td>
+                           <td style="display:none;"><b>'.$this->template->rupiah($jumsdhreal).'</b></td>
+                           <td style="text-align:right"><b>'.$this->template->rupiah($sisablnskr).'</b></td>
+                           <td style="display:none;"><input type="text" class="form-control headtotsd"  readonly value='.$sisablnskr.'></td>
+                           <td class="info" colspan="2"></td>
+                           <td colspan="5"></td>
+
+                           </tr>';
+                           //ambil detail(anak rincian) rekening ke table dpa221 berdasarkan tahun, unit, kdkegunit, mtgkey,
+                           $this->db->where('`dpa221`.`tahun`', $tahun);
+                           $this->db->where('`dpa221`.`unitkey`', $unitkey);
+                           $this->db->where('`dpa221`.`kdkegunit`', $kdkegunit);
+                           $this->db->where('`dpa221`.`mtgkey`', $mtgkey);
+                           $detail=$this->db->get('dpa221')->result_array();
+                            $tottt=0;
+                           foreach ($detail as $row){
+                             $detid        = $row['id'];
+                             $dettahun     = $row['tahun'];
+                             $detunitkey   = $row['unitkey'];
+                             $detkdkegunit = $row['kdkegunit'];
+                             $detmtgkey    = $row['mtgkey'];
+                             $deturaianx   = str_replace("-","",$row['uraian']);
+                             $deturaian    = str_replace("  ","",$deturaianx);
+                             $detsatuan    = $row['satuan'];
+                             $dettarif     = $row['tarif'];
+                             $detjumbyek   = $row['jumbyek'];
+                             $detkdjabar   = $row['kdjabar'];
+                             $dettype      = $row['type'];
+
+                             //bandingkan volume dpa221 dengan volume yang sudah di realisasikan
+                             //ambil ke tab_realisasi_det berdasarkan id dpa221 ,id ta
+                             //SELECT SUM(vol)  as jumvol FROM `tab_realisasi_det` WHERE `id_tab_realisasi` IN('1','2') AND `id_dpa`='30873'
+                             $this->db->select('SUM(vol) as jumvol');
+                             $this->db->from('tab_realisasi_det');
+                             $this->db->where_in('id_tab_realisasi', $idmreal);
+                             $this->db->where('id_dpa', $detid );
+                             $jumvolsdh = $this->db->get()->row();
+                             $exvol = $jumvolsdh->jumvol;
+                             $sisavol = (int)$detjumbyek - (int)$exvol;
 
 
-                          // jika type "H" (header)
-                          if ($dettype =='H'){
-                            echo "<tr class='active'>
-                                  <td></td>
-                                  <td>$deturaian</td>
-                                  <td colspan='4'></td>
-                                  <td class='info' colspan='4'></td>
-                                  <td colspan='5'></td>
-                                  </tr>";
-                          }else{
-                            // $sisvoltarif = sisa volume di kali tarif per anak rincian
-                            $sisvoltarif=$sisavol*$dettarif;
-                            $jumtahun+=$sisvoltarif;
-                            echo "<tr>
-                                  <td class='totpagubln$clasrek' style='display:none;'>$sisablnskr</td>
-                                    <td style='display:none;'><input type='hidden' class='form-control' readonly name='detpgblnskr[]'  value=".$sisablnskr."></td>
-                                  <td style='display:none;'><input type='hidden' class='form-control' readonly name='iddpa[]'  value=".$detid."></td>
-                                  <td style='display:none;'><input type='hidden' class='form-control' readonly name='mtgkey[]'  value=".$detmtgkey."></td>
-                                  <td><input type='hidden' class='form-control rek' readonly name='kdrek[]''  value=".$kdper."></td>
-                                  <td><ul class='list-unstyled'>
-                                  <li><ul><li>$deturaian</li></ul></li>
-                                  </ul></td>
-                                  <td class='sisvol' style='text-align:center'>$sisavol</td>
-                                  <td style='text-align:center'>$detsatuan</td>
-                                  <td class='dettarif' style='display:none;'>$dettarif</td>
-                                  <td style='text-align:right'>".$this->template->rupiah($dettarif)."</td>
-                                  <td class='sisavoltarif' style='display:none;'>$sisvoltarif</td>
-                                  <td style='text-align:right'>".$this->template->rupiah($sisvoltarif)."</td>
-                                  <td class='active'></td>
+                             //select data realiasasi bulan sebelumnya
+                             //ambil ke tab_realisasi_det berdasarkan id_tab_realisasi dan mtgkey
 
-                                  <td class='info' style='text-align:center'>".$blvol."</td>
-                                  <td class='info' style='text-align:center'>".$this->template->rupiah($blhs)."</td>
+                             $this->db->select('`tab_sumber_dana`.`id`
+                             ,`tab_sumber_dana`.`nm_dana`
+                             , `tab_realisasi_det`.`vol`
+                             , `tab_realisasi_det`.`harga_satuan`
+                             , `tab_realisasi_det`.`jumlah_harga`');
+                             $this->db->from('tab_realisasi_det');
+                             $this->db->join('tab_sumber_dana', '`tab_realisasi_det`.`sumber_dana` = `tab_sumber_dana`.`id`');
+                             $this->db->where_in('id_tab_realisasi', $idmreal);
+                             $this->db->where('mtgkey', $detmtgkey);
+                             $this->db->where('id_dpa', $detid);
+                             $rowbulanlalu = $this->db->get()->row_array();
+                             //print_r($rowbulanlalu);
+                             //ini aneh tidak bisa row() seperti biasa harus row_array /sajam untuk iko se
+                             $bliddana=$rowbulanlalu['id'];
+                             $blnmdana=$rowbulanlalu['nm_dana'];
+                             $blvol=$rowbulanlalu['vol'];
+                             $blhs = $rowbulanlalu['harga_satuan'];
+                             $bljh = $rowbulanlalu['jumlah_harga'];
 
-                                  <td ><select class='form-control select2' name='sumberdn[]' style='width: 100%;font-size: 11px;'>";
-                                   $sdana= $this->User_model->sumberdana();
+   // ".$rowbulanlalu->nm_dana."".$rowbulanlalu->vol."".$this->template->rupiah($rowbulanlalu->harga_satuan)."".$this->template->rupiah($rowbulanlalu->jumlah_harga)."
+                            //yang akan di ubah
 
-                                   // jika exvol(jumlah vol realisasi) = 0 maka tampilkan semua sumber dana,
-                                   // jika lebih dari nol maka acuan ke yang sudah di entri pertama kali
-                                   if($exvol==0){
-                                     foreach ($sdana as $k) {
-                                       if($k['id']==1){
-                                          echo "<option selected='selected' value='{$k['id']}' style='font-size: 11px;' >{$k['nm_dana']}</option>";
-                                       }else{
-                                         echo "<option value='{$k['id']}' style='font-size: 11px;'>{$k['nm_dana']}</option>";
-                                       }
-                                     }
-                                   }else{
-                                     foreach ($sdana as $k) {
-                                       if($k['id']==$bliddana){
-                                          echo "<option selected='selected' value='{$k['id']}' style='font-size: 11px;'>{$k['nm_dana']}</option>";
-                                       }else{
-                                         echo "<option value='{$k['id']}' disabled style='font-size: 11px;'>{$k['nm_dana']}</option>";
-                                       }
-                                     }
-                                   }
+                            $this->db->select('`tab_sumber_dana`.`id`
+                            ,`tab_sumber_dana`.`nm_dana`
+                            , `tab_realisasi_det`.`vol`
+                            , `tab_realisasi_det`.`harga_satuan`
+                            , `tab_realisasi_det`.`jumlah_harga`
+                            , `tab_realisasi_det`.`sisa_dana`');
+                            $this->db->from('tab_realisasi_det');
+                            $this->db->join('tab_sumber_dana', '`tab_realisasi_det`.`sumber_dana` = `tab_sumber_dana`.`id`');
+                            $this->db->where('id_tab_realisasi', $idreals);
+                            $this->db->where('mtgkey', $detmtgkey);
+                            $this->db->where('id_dpa', $detid);
+                            $rowebulanlalu = $this->db->get()->row_array();
+                            //print_r($rowbulanlalu);
+                            //ini aneh tidak bisa row() seperti biasa harus row_array /sajam untuk iko se
+                            $beliddana=$rowebulanlalu['id'];
+                            $belnmdana=$rowebulanlalu['nm_dana'];
+                            $belvol=$rowebulanlalu['vol'];
+                            $belhs = $rowebulanlalu['harga_satuan'];
+                            $beljh = $rowebulanlalu['jumlah_harga'];
+                            $tottt+=$beljh;
+                            $belsd = $rowebulanlalu['sisa_dana'];
 
-                                  echo"</select></td>
-                                  <td><div class='input-group spinner' data-trigger='spinner'>
-                                    <input type='text' class='form-control text-center envol' style='font-size: 11px' value='0' name='volume[]' data-rule='quantity'>
-                                  <div class='input-group-addon'>
-                                    <a href='javascript:;' class='spin-up' data-spin='up'><i class='fa fa-caret-up'></i></a>
-                                    <a href='javascript:;' class='spin-down' data-spin='down'><i class='fa fa-caret-down'></i></a>
-                                  </div>
-                                </div></td>
-                                <td><input type='text' class='format-rupiah form-control enharga-satuan' style='font-size: 11px' name='hrsatuan[]'></td>
-                                <td><input type='text' class='format-rupiah form-control harga-jumlah $clasrek' readonly style='font-size: 11px' name='jum[]'></td>
-                                <td><input type='text' class='format-rupiah form-control sisadana' style='font-size: 11px'readonly name='sisadn[]'value='.$sisvoltarif.'></td>
-                                </tr>";
-                          }
+                             // jika type "H" (header)
+                             if ($dettype =='H'){
+                               echo "<tr class='active'>
+                                     <td></td>
+                                     <td>$deturaian</td>
+                                     <td colspan='4'></td>
+                                     <td class='info' colspan='4'></td>
+                                     <td colspan='5'></td>
+                                     </tr>";
+                             }else{
+                               // $sisvoltarif = sisa volume di kali tarif per anak rincian
+                               $sisvoltarif=$sisavol*$dettarif;
+                               $jumtahun+=$sisvoltarif;
+                               echo "<tr>
+                                     <td class='totpagubln$clasrek' style='display:none;'>$sisablnskr</td>
+                                       <td style='display:none;'><input type='hidden' class='form-control' readonly name='detpgblnskr[]'  value=".$sisablnskr."></td>
+                                     <td style='display:none;'><input type='hidden' class='form-control' readonly name='iddpa[]'  value=".$detid."></td>
+                                     <td style='display:none;'><input type='hidden' class='form-control' readonly name='mtgkey[]'  value=".$detmtgkey."></td>
+                                     <td><input type='hidden' class='form-control rek' readonly name='kdrek[]''  value=".$kdper."></td>
+                                     <td><ul class='list-unstyled'>
+                                     <li><ul><li>$deturaian</li></ul></li>
+                                     </ul></td>
+                                     <td class='sisvol' style='text-align:center'>$sisavol</td>
+                                     <td style='text-align:center'>$detsatuan</td>
+                                     <td class='dettarif' style='display:none;'>$dettarif</td>
+                                     <td style='text-align:right'>".$this->template->rupiah($dettarif)."</td>
+                                     <td class='sisavoltarif' style='display:none;'>$sisvoltarif</td>
+                                     <td style='text-align:right'>".$this->template->rupiah($sisvoltarif)."</td>
+                                     <td class='active'></td>
 
-                        }
-                        echo"<tr>
-                          <td colspan='4' style='vertical-align : middle;text-align:right'><b>Total Jumlah</b></td>
-                          <td colspan='2' style='vertical-align : middle;text-align:right'><b>".$this->template->rupiah($jumtahun)."</b></td>
+                                     <td class='info' style='text-align:center'>".$blvol."</td>
+                                     <td class='info' style='text-align:center'>".$this->template->rupiah($blhs)."</td>
 
-                          <td class='active'></td>
-                          <td class='info' colspan='2'></td>
-                          <td colspan='3' style='vertical-align : middle; text-align:right'><b>Total Jumlah</b></td>
-                          <td><input type='text' class='format-rupiah form-control hr harga-rek".$clasrek."' readonly style='font-size: 11px' name='jumperrek[]'></td>
-                          <td></td>
-                          </tr>";
+                                     <td ><select class='form-control select2' name='sumberdn[]' style='width: 100%;font-size: 11px;'>";
+                                      $sdana= $this->User_model->sumberdana();
 
-                    }
+                                      // jika exvol(jumlah vol realisasi) = 0 maka tampilkan semua sumber dana,
+                                      // jika lebih dari nol maka acuan ke yang sudah di entri pertama kali
+                                      if($exvol==0){
+                                        foreach ($sdana as $k) {
+                                          if($k['id']==1){
+                                             echo "<option selected='selected' value='{$k['id']}' style='font-size: 11px;' >{$k['nm_dana']}</option>";
+                                          }else{
+                                            echo "<option value='{$k['id']}' style='font-size: 11px;'>{$k['nm_dana']}</option>";
+                                          }
+                                        }
+                                      }else{
+                                        foreach ($sdana as $k) {
+                                          if($k['id']==$bliddana){
+                                             echo "<option selected='selected' value='{$k['id']}' style='font-size: 11px;'>{$k['nm_dana']}</option>";
+                                          }else{
+                                            echo "<option value='{$k['id']}' disabled style='font-size: 11px;'>{$k['nm_dana']}</option>";
+                                          }
+                                        }
+                                      }
 
-                  }
+                                     echo"</select></td>
+                                     <td><div class='input-group spinner' data-trigger='spinner'>
+                                       <input type='text' class='form-control text-center envol' style='font-size: 11px' value='".$belvol."' name='volume[]' data-rule='quantity'>
+                                     <div class='input-group-addon'>
+                                       <a href='javascript:;' class='spin-up' data-spin='up'><i class='fa fa-caret-up'></i></a>
+                                       <a href='javascript:;' class='spin-down' data-spin='down'><i class='fa fa-caret-down'></i></a>
+                                     </div>
+                                   </div></td>
+                                   <td><input type='text' class='format-rupiah form-control enharga-satuan' style='font-size: 11px' name='hrsatuan[]'  value='".$belhs."'></td>
+                                   <td><input type='text' class='format-rupiah form-control harga-jumlah $clasrek' readonly style='font-size: 11px' name='jum[]' value='".$beljh."'></td>
+                                   <td><input type='text' class='format-rupiah form-control sisadana' style='font-size: 11px'readonly name='sisadn[]'value='.$belsd.'></td>
+                                   </tr>";
+                             }
+
+                           }
+                           echo"<tr>
+                             <td colspan='4' style='vertical-align : middle;text-align:right'><b>Total Jumlah</b></td>
+                             <td colspan='2' style='vertical-align : middle;text-align:right'><b>".$this->template->rupiah($jumtahun)."</b></td>
+
+                             <td class='active'></td>
+                             <td class='info' colspan='2'></td>
+                             <td colspan='3' style='vertical-align : middle; text-align:right'><b>Total Jumlah</b></td>
+                             <td><input type='text' class='format-rupiah form-control hr harga-rek".$clasrek."' readonly style='font-size: 11px' name='jumperrek[]' value='".$tottt."'></td>
+                             <td></td>
+                             </tr>";
+
+                       }
+
+                     }
+
+                   }else{
+                     //entri baru (bukan ubah)
+                     foreach ($header as $hrow){
+
+
+                       $id       =$hrow['id'];
+                       $unitkey  =$hrow['unitkey'];
+                       $kdkegunit=$hrow['kdkegunit'];
+                       $kd_bulan =$hrow['kdkegunit'];
+                       $nilai    =$hrow['nilai'];
+                       $mtgkey   =$hrow['mtgkey'];
+                       $kdper    =$hrow['kdper'];
+                       $nmper    =$hrow['nmper'];
+                       $tahun    =$hrow['tahun'];
+                       //ambil sum jumlah_harga ke tab_realisasi_det berdasarkan id_tab_realisasi(yang tadi disimpan di array)
+                       //dan berdasarkan mtgkey
+                       $this->db->select('SUM(`jumlah_harga`) AS jumsdhreal');
+                       $this->db->from('tab_realisasi_det');
+                       $this->db->where_in('id_tab_realisasi', $idmreal);
+                       $this->db->where('mtgkey', $mtgkey);
+                       $tabdetreal = $this->db->get()->row();
+                       $jumsdhreal=$tabdetreal->jumsdhreal;
+                       $sisablnskr = (int)$nilai - (int)$jumsdhreal;
+                       $jkrek=substr($kdper,0,6);
+                       $clasrek=str_replace(".","-",$kdper);
+                       if($jkrek=='5.2.3.'){
+                         //jika rekening 5.2.3
+                         //cek realisasi belanja modal ke tabel tab_realisasi_bmodal
+                         //SELECT * FROM `tab_realisasi_bmodal` WHERE id_tab_pptk = '5' AND mtgkey='1326_'
+                         $nilaibmodal = $this->db->get_where('tab_realisasi_bmodal',array('id_tab_pptk'=>$idtab,'mtgkey'=>$mtgkey));
+                         if($nilaibmodal->num_rows()>0){
+                           $nlrealbmodal = $nilaibmodal->row()->nilai_ktrk;
+                         }else{
+                           $nlrealbmodal = 0;
+                         }
+
+                         $bmsisablnskr = (int)$nilai - (int)$nlrealbmodal;
+
+                         $class='danger';
+                         echo'<tr class ="'.$class.'">
+                           <td class="totpagubln'.$clasrek.'" style="display:none;">'.$nilai.'</td>
+                           <td class="id" style="display:none;">'.$id.'</td>
+                           <td class="unitkey" style="display:none;">'.$unitkey.'</td>
+                           <td class="kdkegunit" style="display:none;">'.$kdkegunit.'</td>
+                           <td class="mtgkey" style="display:none;">'.$mtgkey.'</td>
+                           <td class="rekheader"><b>'.$kdper.'</b></td>
+                           <td class="nmrekheader"><b>'.$nmper.'</b></td>
+                           <td colspan="4"></td>
+                           <td style="display:none;"><b>'.$this->template->rupiah($nilai).'</b></td>
+                           <td style="display:none;"><b>'.$this->template->rupiah($jumsdhreal).'</b></td>
+                           <td class="sisaentribm'.$clasrek.'"style="text-align:right"><b>'.$this->template->rupiah($bmsisablnskr).'</b></td>
+                           <td style="display:none;"><input type="text" class="form-control headtotsd"  readonly value='.$bmsisablnskr.'></td>
+                           <td style="vertical-align : middle;text-align:center;"><u><b><i>Nilai Kontrak</i></b></u></td>
+                           <td colspan="2"style="vertical-align : middle;text-align:center;"><input type="text" class="format-rupiah form-control" readonly value='.$nlrealbmodal.' id="nlrealbmodal'.$clasrek.'"></td>
+                           <td colspan="3"></td>
+                           <td style="vertical-align : middle;text-align:right; display:none;"><input type="text" class="format-rupiah form-control hr real5-2-3 harga-rek'.$clasrek.'" readonly ></td>
+                           <td style="vertical-align : middle;text-align:center;"><button type="button" class="btnrealfisik btn bg-blue btn-flat bm'.$clasrek.'">Realisasi<div class="ripple-container"></div></button></td>
+                           </tr>';
+                           //ambil detail(anak rincian) rekening ke table dpa221 berdasarkan tahun, unit, kdkegunit, mtgkey,
+                           $this->db->where('`dpa221`.`tahun`', $tahun);
+                           $this->db->where('`dpa221`.`unitkey`', $unitkey);
+                           $this->db->where('`dpa221`.`kdkegunit`', $kdkegunit);
+                           $this->db->where('`dpa221`.`mtgkey`', $mtgkey);
+                           $detail=$this->db->get('dpa221')->result_array();
+                           foreach ($detail as $row){
+                             $detid        = $row['id'];
+                             $dettahun     = $row['tahun'];
+                             $detunitkey   = $row['unitkey'];
+                             $detkdkegunit = $row['kdkegunit'];
+                             $detmtgkey    = $row['mtgkey'];
+                             $deturaianx   = str_replace("-","",$row['uraian']);
+                             $deturaian    = str_replace("  ","",$deturaianx);
+                             $detsatuan    = $row['satuan'];
+                             $dettarif     = $row['tarif'];
+                             $detjumbyek   = $row['jumbyek'];
+                             $detkdjabar   = $row['kdjabar'];
+                             $dettype      = $row['type'];
+                             if ($dettype=='H'){
+                               echo "<tr class='active'>
+                                     <td></td>
+                                     <td>$deturaian</td>
+                                     <td colspan='4'></td>
+                                     <td class='info' colspan='4'></td>
+                                     <td colspan='5'></td>
+                                     </tr>";
+                             }else{
+                                 $sisvoltarif=$detjumbyek*$dettarif;
+                               echo "<tr class='warning'>
+
+                                     <td></td>
+                                     <td><ul class='list-unstyled'>
+                                     <li><ul><li>$deturaian</li></ul></li>
+                                     </ul></td>
+                                     <td class='sisvol' style='text-align:center;'>$detjumbyek</td>
+                                     <td style='text-align:center;'>$detsatuan</td>
+                                     <td class='dettarif' style='display:none;'>$dettarif</td>
+                                     <td style='text-align:right'><b>".$this->template->rupiah($dettarif)."</b></td>
+                                     <td class='sisavoltarif' style='display:none;'>$sisvoltarif</td>
+                                     <td style='text-align:right'><b>".$this->template->rupiah($sisvoltarif)."</b></td>
+                                     <td colspan='8'></td>
+                                   </tr>";
+                             }
+                           }
+
+                       }else{
+                         //selain rekening 5.2.3
+                         $jumtahun=0;
+                         $class='active';
+                         echo'<tr class ="'.$class.'">
+                           <td class="id" style="display:none;">'.$id.'</td>
+                           <td class="unitkey" style="display:none;">'.$unitkey.'</td>
+                           <td class="kdkegunit" style="display:none;">'.$kdkegunit.'</td>
+                           <td class="mtgkey" style="display:none;">'.$mtgkey.'</td>
+                           <td><b>'.$kdper.'</b></td>
+                           <td><b>'.$nmper.'</b></td>
+                           <td></td>
+                           <td></td>
+                           <td></td>
+                           <td></td>
+                           <td style="display:none;"><b>'.$this->template->rupiah($nilai).'</b></td>
+                           <td style="display:none;"><b>'.$this->template->rupiah($jumsdhreal).'</b></td>
+                           <td style="text-align:right"><b>'.$this->template->rupiah($sisablnskr).'</b></td>
+                           <td style="display:none;"><input type="text" class="form-control headtotsd"  readonly value='.$sisablnskr.'></td>
+                           <td class="info" colspan="2"></td>
+                           <td colspan="5"></td>
+
+                           </tr>';
+                           //ambil detail(anak rincian) rekening ke table dpa221 berdasarkan tahun, unit, kdkegunit, mtgkey,
+                           $this->db->where('`dpa221`.`tahun`', $tahun);
+                           $this->db->where('`dpa221`.`unitkey`', $unitkey);
+                           $this->db->where('`dpa221`.`kdkegunit`', $kdkegunit);
+                           $this->db->where('`dpa221`.`mtgkey`', $mtgkey);
+                           $detail=$this->db->get('dpa221')->result_array();
+                           foreach ($detail as $row){
+                             $detid        = $row['id'];
+                             $dettahun     = $row['tahun'];
+                             $detunitkey   = $row['unitkey'];
+                             $detkdkegunit = $row['kdkegunit'];
+                             $detmtgkey    = $row['mtgkey'];
+                             $deturaianx   = str_replace("-","",$row['uraian']);
+                             $deturaian    = str_replace("  ","",$deturaianx);
+                             $detsatuan    = $row['satuan'];
+                             $dettarif     = $row['tarif'];
+                             $detjumbyek   = $row['jumbyek'];
+                             $detkdjabar   = $row['kdjabar'];
+                             $dettype      = $row['type'];
+
+                             //bandingkan volume dpa221 dengan volume yang sudah di realisasikan
+                             //ambil ke tab_realisasi_det berdasarkan id dpa221 ,id ta
+                             //SELECT SUM(vol)  as jumvol FROM `tab_realisasi_det` WHERE `id_tab_realisasi` IN('1','2') AND `id_dpa`='30873'
+                             $this->db->select('SUM(vol) as jumvol');
+                             $this->db->from('tab_realisasi_det');
+                             $this->db->where_in('id_tab_realisasi', $idmreal);
+                             $this->db->where('id_dpa', $detid );
+                             $jumvolsdh = $this->db->get()->row();
+                             $exvol = $jumvolsdh->jumvol;
+                             $sisavol = (int)$detjumbyek - (int)$exvol;
+
+
+                             //select data realiasasi bulan sebelumnya
+                             //ambil ke tab_realisasi_det berdasarkan id_tab_realisasi dan mtgkey
+
+                             $this->db->select('`tab_sumber_dana`.`id`
+                             ,`tab_sumber_dana`.`nm_dana`
+                             , `tab_realisasi_det`.`vol`
+                             , `tab_realisasi_det`.`harga_satuan`
+                             , `tab_realisasi_det`.`jumlah_harga`');
+                             $this->db->from('tab_realisasi_det');
+                             $this->db->join('tab_sumber_dana', '`tab_realisasi_det`.`sumber_dana` = `tab_sumber_dana`.`id`');
+                             $this->db->where_in('id_tab_realisasi', $idreal);
+                             $this->db->where('mtgkey', $detmtgkey);
+                             $this->db->where('id_dpa', $detid);
+                             $rowbulanlalu = $this->db->get()->row_array();
+                           //print_r($rowbulanlalu);
+                           //ini aneh tidak bisa row() seperti biasa harus row_array /sajam untuk iko se
+                           $bliddana=$rowbulanlalu['id'];
+                           $blnmdana=$rowbulanlalu['nm_dana'];
+                           $blvol=$rowbulanlalu['vol'];
+                           $blhs = $rowbulanlalu['harga_satuan'];
+                           $bljh = $rowbulanlalu['jumlah_harga'];
+   // ".$rowbulanlalu->nm_dana."".$rowbulanlalu->vol."".$this->template->rupiah($rowbulanlalu->harga_satuan)."".$this->template->rupiah($rowbulanlalu->jumlah_harga)."
+
+
+                             // jika type "H" (header)
+                             if ($dettype =='H'){
+                               echo "<tr class='active'>
+                                     <td></td>
+                                     <td>$deturaian</td>
+                                     <td colspan='4'></td>
+                                     <td class='info' colspan='4'></td>
+                                     <td colspan='5'></td>
+                                     </tr>";
+                             }else{
+                               // $sisvoltarif = sisa volume di kali tarif per anak rincian
+                               $sisvoltarif=$sisavol*$dettarif;
+                               $jumtahun+=$sisvoltarif;
+                               echo "<tr>
+                                     <td class='totpagubln$clasrek' style='display:none;'>$sisablnskr</td>
+                                       <td style='display:none;'><input type='hidden' class='form-control' readonly name='detpgblnskr[]'  value=".$sisablnskr."></td>
+                                     <td style='display:none;'><input type='hidden' class='form-control' readonly name='iddpa[]'  value=".$detid."></td>
+                                     <td style='display:none;'><input type='hidden' class='form-control' readonly name='mtgkey[]'  value=".$detmtgkey."></td>
+                                     <td><input type='hidden' class='form-control rek' readonly name='kdrek[]''  value=".$kdper."></td>
+                                     <td><ul class='list-unstyled'>
+                                     <li><ul><li>$deturaian</li></ul></li>
+                                     </ul></td>
+                                     <td class='sisvol' style='text-align:center'>$sisavol</td>
+                                     <td style='text-align:center'>$detsatuan</td>
+                                     <td class='dettarif' style='display:none;'>$dettarif</td>
+                                     <td style='text-align:right'>".$this->template->rupiah($dettarif)."</td>
+                                     <td class='sisavoltarif' style='display:none;'>$sisvoltarif</td>
+                                     <td style='text-align:right'>".$this->template->rupiah($sisvoltarif)."</td>
+                                     <td class='active'></td>
+
+                                     <td class='info' style='text-align:center'>".$blvol."</td>
+                                     <td class='info' style='text-align:center'>".$this->template->rupiah($blhs)."</td>
+
+                                     <td ><select class='form-control select2' name='sumberdn[]' style='width: 100%;font-size: 11px;'>";
+                                      $sdana= $this->User_model->sumberdana();
+
+                                      // jika exvol(jumlah vol realisasi) = 0 maka tampilkan semua sumber dana,
+                                      // jika lebih dari nol maka acuan ke yang sudah di entri pertama kali
+                                      if($exvol==0){
+                                        foreach ($sdana as $k) {
+                                          if($k['id']==1){
+                                             echo "<option selected='selected' value='{$k['id']}' style='font-size: 11px;' >{$k['nm_dana']}</option>";
+                                          }else{
+                                            echo "<option value='{$k['id']}' style='font-size: 11px;'>{$k['nm_dana']}</option>";
+                                          }
+                                        }
+                                      }else{
+                                        foreach ($sdana as $k) {
+                                          if($k['id']==$bliddana){
+                                             echo "<option selected='selected' value='{$k['id']}' style='font-size: 11px;'>{$k['nm_dana']}</option>";
+                                          }else{
+                                            echo "<option value='{$k['id']}' disabled style='font-size: 11px;'>{$k['nm_dana']}</option>";
+                                          }
+                                        }
+                                      }
+
+                                     echo"</select></td>
+                                     <td><div class='input-group spinner' data-trigger='spinner'>
+                                       <input type='text' class='form-control text-center envol' style='font-size: 11px' value='0' name='volume[]' data-rule='quantity'>
+                                     <div class='input-group-addon'>
+                                       <a href='javascript:;' class='spin-up' data-spin='up'><i class='fa fa-caret-up'></i></a>
+                                       <a href='javascript:;' class='spin-down' data-spin='down'><i class='fa fa-caret-down'></i></a>
+                                     </div>
+                                   </div></td>
+                                   <td><input type='text' class='format-rupiah form-control enharga-satuan' style='font-size: 11px' name='hrsatuan[]'></td>
+                                   <td><input type='text' class='format-rupiah form-control harga-jumlah $clasrek' readonly style='font-size: 11px' name='jum[]'></td>
+                                   <td><input type='text' class='format-rupiah form-control sisadana' style='font-size: 11px'readonly name='sisadn[]'value='.$sisvoltarif.'></td>
+                                   </tr>";
+                             }
+
+                           }
+                           echo"<tr>
+                             <td colspan='4' style='vertical-align : middle;text-align:right'><b>Total Jumlah</b></td>
+                             <td colspan='2' style='vertical-align : middle;text-align:right'><b>".$this->template->rupiah($jumtahun)."</b></td>
+
+                             <td class='active'></td>
+                             <td class='info' colspan='2'></td>
+                             <td colspan='3' style='vertical-align : middle; text-align:right'><b>Total Jumlah</b></td>
+                             <td><input type='text' class='format-rupiah form-control hr harga-rek".$clasrek."' readonly style='font-size: 11px' name='jumperrek[]'></td>
+                             <td></td>
+                             </tr>";
+
+                       }
+
+                     }
+                   }
+
                   ?>
 
 
