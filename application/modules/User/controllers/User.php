@@ -171,6 +171,7 @@ class User extends MX_Controller
 
                 }elseif($peran=='6'){
                     /*jika peran 6 maka Sekretaris*/
+
                     $lskeg = $this->User_model->getdetlistkegiatan_ppk($nip);
                     $unitkeyppk = $this->User_model->getunitkeyppk($nip);
                     // $data = $this->User_model->getdatappk($unitkeyppk, $nip);
@@ -180,6 +181,7 @@ class User extends MX_Controller
                     $angkasbulanini = $this->User_model->getangkasbulanini($nip,$unitkeyppk) + (($angkas - $this->User_model->getangkasbulanini($nip,$unitkeyppk)) - $totreal);
                     $detangkasbulanini = $this->User_model->getdetangkasbulanini($nip,$unitkeyppk);
                     $realisasibulanini = $this->User_model->getrealisasibulanini($this->User_model->getidstrukturppk($nip));
+
                     $persenrealisasibulanini = ($realisasibulanini / $angkasbulanini) * 100;
                     $lspptk = $this->User_model->getnipstrukturpptk($this->User_model->getidstrukturppk($nip));
 
@@ -979,6 +981,7 @@ function realisasipptk(){
                               , `id_tabpptk`
                               , `real_bulan`');
                               $this->db->from('tab_realisasi');
+                              $this->db->where('MONTH(real_bulan)!=', $bl);
                               $this->db->where('id_tabpptk', $idtab);
                               $idreal = $this->db->get()->result_array();
                               //$idreal = ambil id realisasi di tab_realisasi yang sudah ada di entri ke tabel
@@ -1026,8 +1029,11 @@ function realisasipptk(){
                                 //-----------------------------------------//
                                 'header'    => $headerlist,
                                 'idmreal'   => $wherein_real_m,
-                                //id realisasi bulan sekarang
-                                'idreals'   => $idreals
+                                //yang sudah di realisasi dan di edit kembali
+                                'idreals'   => $idreals,
+                                'real_fisik'    =>$real_fisik,
+                                'bobot_real'    =>$bobot_real,
+                                'permasalahan'    =>$permasalahan
                               );
                               $this->template->load('templatenew','v_realisasi_pptk_next_m', $this->data);
                             }
@@ -1519,6 +1525,7 @@ function simpanrealisasi(){
     if($struktur ){
 
         $peran=$struktur->peran;
+        $parent= $struktur->parent;
 
         if($peran=='3'){
             /*jika peran 3 maka PPTK*/
@@ -1563,7 +1570,8 @@ function simpanrealisasi(){
                 'permasalahan'  => $permasalahan,
                 'admin_entri'   => $adminentri,
                 'tgl_entri'     => $tgl_entri,
-                'pertama'       => $pertama
+                'pertama'       => $pertama,
+                'id_struktur'   => $parent
 
             );
 
@@ -3530,7 +3538,7 @@ function getWeeks($date, $rollover)
         $unitkeyppk = $this->User_model->getunitkeyppk($nip);
         $data = $this->User_model->rincianrealisasi($kdkegunit);
         $databmodal = $this->User_model->getmatangrbmodal($kdkegunit);
-
+        $idstrukturppk = $this->User_model->getidstrukturppk($nip);
         $jsondata = array();
         if($data!=0&&$databmodal!=0){
             $matangr = $this->User_model->getmatangr($kdkegunit);
@@ -3546,6 +3554,8 @@ function getWeeks($date, $rollover)
             }
             foreach ($data as $d){
                 $jsondata[] = array(
+                    'id_tab_realisasi' => $d['id_tab_realisasi'],
+                    'id_struktur' => $d['id_struktur'],
                     'mtgkey' => $d['mtgkey'],
                     'nmper' => $d['nmper'],
                     'kdper' => $d['kdper'],
@@ -3566,6 +3576,8 @@ function getWeeks($date, $rollover)
             foreach ($realbmodal as $rbm) {
               // code...
               $jsondatabmodal[] = array(
+                'id_tab_realisasi_bmodal' => $rbm['id_tab_realisasi_bmodal'],
+                'id_struktur' => $rbm['id_struktur'],
                 'mtgkey' => $rbm['mtgkey'],
                 'urn' => $rbm['uraian'],
                 'satuan' => $rbm['satuan'],
@@ -3620,6 +3632,7 @@ function getWeeks($date, $rollover)
                 'datar' => $jsondata,
                 'datarbmodal' => $jsondatabmodal,
                 'angkasbmodal' => $jsonangkasbmodal,
+                'idstrukturppk' => $idstrukturppk
 
             );
             echo json_encode($json);
@@ -3635,6 +3648,8 @@ function getWeeks($date, $rollover)
             }
             foreach ($data as $d){
                 $jsondata[] = array(
+                  'id_tab_realisasi' => $d['id_tab_realisasi'],
+                  'id_struktur' => $d['id_struktur'],
                     'mtgkey' => $d['mtgkey'],
                     'nmper' => $d['nmper'],
                     'kdper' => $d['kdper'],
@@ -3657,6 +3672,7 @@ function getWeeks($date, $rollover)
                 'datar' => $jsondata,
                 'datarbmodal' => 0,
                 'angkasbmodal' => 0,
+                'idstrukturppk' => $idstrukturppk
 
             );
             echo json_encode($json);
@@ -3666,6 +3682,8 @@ function getWeeks($date, $rollover)
           foreach ($realbmodal as $rbm) {
             // code...
             $jsondatabmodal[] = array(
+              'id_tab_realisasi_bmodal' => $rbm['id_tab_realisasi_bmodal'],
+              'id_struktur' => $rbm['id_struktur'],
               'mtgkey' => $rbm['mtgkey'],
               'urn' => $rbm['uraian'],
               'satuan' => $rbm['satuan'],
@@ -3719,6 +3737,7 @@ function getWeeks($date, $rollover)
                 'datar' => 0,
                 'datarbmodal' => $jsondatabmodal,
                 'angkasbmodal' => $jsonangkasbmodal,
+                'idstrukturppk' => $idstrukturppk
 
             );
             echo json_encode($json);
@@ -3726,6 +3745,75 @@ function getWeeks($date, $rollover)
             echo json_encode($data);
         }
     }
+
+
+    public function update_id_struktur()
+    {
+      $nip=$this->ion_auth->user()->row()->username;
+      $parent = $this->User_model->getidparent($this->User_model->getidstrukturppk($nip));
+      $idstruktur = $this->input->post('idstruktur');
+      $idstrukturbmodal = $this->input->post('idstrukturbmodal');
+      $idstrukturppk = $this->input->post('idstrukturppk');
+      if($idstruktur==$idstrukturppk && $idstrukturbmodal==$idstrukturppk){
+        $id = $this->input->post('id');
+        $idbmodal = $this->input->post('idbmodal');
+
+        $value = array(
+          'id_struktur' => $parent
+        );
+
+        $valuebmodal = array(
+          'id_struktur' => $parent
+        );
+
+        $where = array(
+          'id' => $id
+        );
+        $wherebmodal = array(
+          'id' => $idbmodal
+        );
+        $table = 'tab_realisasi';
+        $tablebmodal = 'tab_realisasi_bmodal';
+
+        $this->User_model->update_id_struktur($value,$where,$table);
+        $this->User_model->update_id_struktur($valuebmodal,$wherebmodal,$tablebmodal);
+
+      }elseif($idstruktur==$idstrukturppk && $idstrukturbmodal!=$idstrukturppk){
+
+        $id = $this->input->post('id');
+
+        $value = array(
+          'id_struktur' => $parent
+        );
+
+        $where = array(
+          'id' => $id
+        );
+
+        $table = 'tab_realisasi';
+
+        $this->User_model->update_id_struktur($value,$where,$table);
+
+      }elseif($idstruktur!=$idstrukturppk && $idstrukturbmodal==$idstrukturppk){
+        $idbmodal = $this->input->post('idbmodal');
+
+        $valuebmodal = array(
+          'id_struktur' => $parent
+        );
+
+        $wherebmodal = array(
+          'id' => $idbmodal
+        );
+        $tablebmodal = 'tab_realisasi_bmodal';
+
+        $this->User_model->update_id_struktur($valuebmodal,$wherebmodal,$tablebmodal);
+      }else{
+        //do nothing
+      }
+
+    }
+    //function created by ragaa -->
+
     //-->
     //AGUNG
     function dafallkeg(){
@@ -3751,14 +3839,14 @@ function getWeeks($date, $rollover)
                     $lskeg = $this->User_model->getdetlistkegiatan_ppk($nip);
                     $unitkeyuser = $this->User_model->getunitkeyppk($nip); // id opd user yg login
                     $idstruktur = $this->User_model->getidstruktur($nip);
-                    $data = $this->User_model->getdatappk($unitkeyuser, $nip);
+                    // $data = $this->User_model->getdatappk($unitkeyuser, $nip);
                     $pgthn = $this->User_model->anggaranopd($unitkeyuser)->anggranopd;
                     // var_dump($pgthn);exit;
                     $angkas = $this->User_model->getangkasopdhinggabulanini($unitkeyuser);
                     $realnonmodal = $this->User_model->gettotalrealisasiopd($unitkeyuser,$idstruktur); //total realisasi hingga bulan sebelumnya
-                    // var_dump($realnonmodal);exit;
                     $realmodal = $this->User_model->getrealisasi_bModal_opd($unitkeyuser,$idstruktur); //total realisasi hingga bulan sebelumnya
                     $totreal = $realnonmodal + $realmodal;
+                    // var_dump($totreal);exit;
                     $angkasbulanini = $this->User_model->getangkasOPDbulanini($unitkeyuser) + (($angkas - $this->User_model->getangkasOPDbulanini($unitkeyuser)) - $totreal);
                     $detangkasbulanini = $this->User_model->getdetangkasOPDbulanini($unitkeyuser);
                     $persenrealisasibulanini = ($totreal / $pgthn) * 100;

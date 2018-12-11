@@ -925,6 +925,17 @@ function simpanentrikak($masterkak){
     }
     //end query untuk mendapatkan id struktur ppk-->
 
+    //<--query untuk mendapatkan id struktur ppk
+    function getidparent($idstrukturppk)
+    {
+        $this->db->select('parent');
+        $this->db->where('id',$idstrukturppk);
+        $this->db->from('tab_struktur');
+        $result = $this->db->get()->row();
+        return $result->parent;
+    }
+    //end query untuk mendapatkan id struktur ppk-->
+
     //<--query untuk mendapatkan nip struktur pptk
     function getnipstrukturpptk($parent)
     {
@@ -1382,6 +1393,8 @@ FROM
     `matangr`.`mtgkey`
     , `matangr`.`nmper`
     , `matangr`.`kdper`
+    , `tab_realisasi`.`id` AS `id_tab_realisasi`
+    , `tab_realisasi`.`id_struktur`
     , `tab_realisasi`.`real_bulan`
     , `tab_realisasi`.`tgl_entri`
     , `tab_realisasi`.`bobot_real`
@@ -1627,6 +1640,8 @@ FROM
     , `dpa221`.`uraian`
     , `dpa221`.`satuan`
     , `dpa221`.`jumbyek` AS `vol`
+    , `tab_realisasi_bmodal`.`id` AS `id_tab_realisasi_bmodal`
+    , `tab_realisasi_bmodal`.`id_struktur`
     , `tab_realisasi_bmodal`.`nilai_ktrk` AS `harga_satuan`
     , `tab_realisasi_bmodal`.`nilai_ktrk` AS `jumlah_harga`
 FROM
@@ -1706,4 +1721,15 @@ FROM
 
     //end query untuk mendapatkan data angkas untuk belanja modal-->
 
+
+    function update_id_struktur($value,$where,$table)
+    {
+      $this->db->set($value);
+      $this->db->where($where);
+      if($this->db->update($table)){
+        return true;
+      }else{
+        return false;
+      }
+    }
 }

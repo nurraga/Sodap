@@ -382,6 +382,9 @@
 <!-- include the script -->
 <script src="<?php echo base_url('assets/alertify/alertify.min.js') ?>"></script>
 <script type="application/javascript">
+$(document).ready(function() {
+  ajaxtoken();
+});
     function detail(kdkegunit) {
         $.ajax({
             url: '<?php echo base_url('User/getjsonrealisasi/'); ?>' + kdkegunit,
@@ -389,8 +392,14 @@
             success: function (data) {
                 if (JSON.parse(data) != 0) {
                     if(JSON.parse(data).matangr!=0 && JSON.parse(data).matangrbmodal!=0){
-                        console.log('kondisi 1');
+                        //console.log('kondisi 1');
                         var tr = '';
+                        var idtab = 0;
+                        var idtabbmodal = 0;
+                        var iddatar = 0;
+                        var idstruktur = 0;
+                        var idstrukturbmodal = 0;
+                        var idstrukturppk = JSON.parse(data).idstrukturppk;
                         for (i = 0; i < JSON.parse(data).matangr.length; i++) {
                             tr += '<tr style="background-color: #f7f3f7">' +
                                 '<td style="text-align:center;vertical-align: middle"><strong>' + JSON.parse(data).matangr[i].kdper + '</strong></td>' +
@@ -415,8 +424,12 @@
                                         '<td style="text-align:right;vertical-align:middle">' + JSON.parse(data).datar[j].sisa_dana + '</td>' +
                                         '</tr>';
                                 }
+                                iddatar = JSON.parse(data).datar[j].id_tab_realisasi;
+                                idstruktur = JSON.parse(data).datar[j].id_struktur;
+                                idtab = JSON.parse(data).datar[j].id_tab_realisasi;
                             }
                         }
+                        var iddatarbmodal = 0;
                         for(i=0;i<JSON.parse(data).matangrbmodal.length;i++){
                             tr += '<tr style="background-color: #f2dede">' +
                                 '<td style="text-align:center;vertical-align: middle"><strong>' + JSON.parse(data).matangrbmodal[i].kdper + '</strong></td>' +
@@ -441,6 +454,9 @@
                                         '<td style="text-align:center;vertical-align:middle"></td>' +
                                         '</tr>';
                                   }
+                                  iddatarbmodal = JSON.parse(data).datarbmodal[j].id_tab_realisasi_bmodal;
+                                  idstrukturbmodal = JSON.parse(data).datarbmodal[j].id_struktur;
+                                  idtabbmodal = JSON.parse(data).datarbmodal[j].id_tab_realisasi_bmodal;
                                 }
                         }
                         var header = document.getElementById('keg' + kdkegunit).innerHTML;
@@ -484,19 +500,157 @@
                             '                        </tbody>\n' +
                             '                    </table>';
                         alertify.defaults.glossary.title = '<center>Detail Realisasi <strong>' + header + '</strong></center>';
-                        alertify.confirm(tb, function () {
-                            alertify.success('Telah Dikonfirmasi!')
-                        }, function () {
-                            alertify.error('Dibatalkan!')
-                        }).set({transition: 'zoom'}).maximize().set({
-                            labels: {ok: 'Konfirmasi', cancel: 'Batal'},
-                            padding: false
-                        }).set('defaultFocus', 'cancel');
-                        document.getElementById('tb-data').innerHTML = tr;
+                        if(idstruktur==idstrukturppk && idstrukturbmodal==idstrukturppk){
+                          alertify.confirm().destroy();
+                          alertify.alert().destroy();
+                          alertify.confirm(tb, function () {
+                            var id1 = idtab;
+                            var id2 = idtabbmodal;
+                            var idstruktur1 = idstruktur;
+                            var idstruktur2 = idstrukturbmodal;
+                            var idstruktur3 = idstrukturppk;
+                            var token = localStorage.getItem("token");
+
+                            //console.log(token);
+                            $.ajax({
+                              url:'<?php echo base_url('User/update_id_struktur') ?>',
+                              type:'POST',
+                              data: {
+                                token: token,
+                                id: id1,
+                                idbmodal: id2,
+                                idstruktur: idstruktur1,
+                                idstrukturbmodal: idstruktur2,
+                                idstrukturppk: idstruktur3
+                              },
+                              success:function(data){
+                                //console.log('success')
+                                ajaxtoken();
+                                alertify.success('Telah Dikonfirmasi!');
+                              },
+                              error:function(data){
+                                //console.log('error');
+                              }
+                            });
+                            //console.log(idstruktur+'|'+idstrukturbmodal);
+                          }, function () {
+                            //console.log('canceled');
+                              alertify.error('Dibatalkan!')
+                          }).set({transition: 'zoom'}).maximize().set({
+                              labels: {ok: 'Konfirmasi', cancel: 'Batal'},
+                              padding: false
+                          }).set('defaultFocus', 'cancel');
+                          document.getElementById('tb-data').innerHTML = tr;
+                          //console.log('k1');
+                          //console.log(idstruktur+idstrukturbmodal+idstrukturppk);
+
+                        }else if (idstruktur==idstrukturppk && idstrukturbmodal!=idstrukturppk) {
+                          alertify.confirm().destroy();
+                          alertify.alert().destroy();
+                          alertify.confirm(tb, function () {
+                            var id1 = idtab;
+                            var id2 = idtabbmodal;
+                            var idstruktur1 = idstruktur;
+                            var idstruktur2 = idstrukturbmodal;
+                            var idstruktur3 = idstrukturppk;
+                            var token = localStorage.getItem("token");
+
+                            //console.log(token);
+                            $.ajax({
+                              url:'<?php echo base_url('User/update_id_struktur') ?>',
+                              type:'POST',
+                              data: {
+                                token: token,
+                                id: id1,
+                                idbmodal: id2,
+                                idstruktur: idstruktur1,
+                                idstrukturbmodal: idstruktur2,
+                                idstrukturppk: idstruktur3
+                              },
+                              success:function(data){
+                                //console.log('success')
+                                ajaxtoken();
+                                alertify.success('Telah Dikonfirmasi!')
+                              },
+                              error:function(data){
+                                //console.log('error');
+                              }
+                            });
+                            //console.log(idstruktur+'|'+idstrukturbmodal);
+                          }, function () {
+                            //console.log('canceled');
+                              alertify.error('Dibatalkan!')
+                          }).set({transition: 'zoom'}).maximize().set({
+                              labels: {ok: 'Konfirmasi', cancel: 'Batal'},
+                              padding: false
+                          }).set('defaultFocus', 'cancel');
+                          document.getElementById('tb-data').innerHTML = tr;
+                          //console.log('k2');
+                          //console.log(idstruktur+idstrukturbmodal+idstrukturppk);
+
+                        }else if (idstruktur!=idstrukturppk && idstrukturbmodal==idstrukturppk) {
+                          alertify.confirm().destroy();
+                          alertify.alert().destroy();
+                          alertify.confirm(tb, function () {
+                            var id1 = idtab;
+                            var id2 = idtabbmodal;
+                            var idstruktur1 = idstruktur;
+                            var idstruktur2 = idstrukturbmodal;
+                            var idstruktur3 = idstrukturppk;
+                            var token = localStorage.getItem("token");
+
+                            //console.log(token);
+                            $.ajax({
+                              url:'<?php echo base_url('User/update_id_struktur') ?>',
+                              type:'POST',
+                              data: {
+                                token: token,
+                                id: id1,
+                                idbmodal: id2,
+                                idstruktur: idstruktur1,
+                                idstrukturbmodal: idstruktur2,
+                                idstrukturppk: idstruktur3
+                              },
+                              success:function(data){
+                                //console.log('success')
+                                ajaxtoken();
+                                alertify.success('Telah Dikonfirmasi!')
+                              },
+                              error:function(data){
+                                //console.log('error');
+                              }
+                            });
+                            //console.log(idstruktur+'|'+idstrukturbmodal);
+                          }, function () {
+                            //console.log('canceled');
+                              alertify.error('Dibatalkan!')
+                          }).set({transition: 'zoom'}).maximize().set({
+                              labels: {ok: 'Konfirmasi', cancel: 'Batal'},
+                              padding: false
+                          }).set('defaultFocus', 'cancel');
+                          document.getElementById('tb-data').innerHTML = tr;
+                          //console.log('k3');
+                          //console.log(idstruktur+idstrukturbmodal+idstrukturppk);
+
+                        }else{
+                          alertify.confirm().destroy();
+                          alertify.alert().destroy();
+                          alertify.alert(tb).set({transition: 'zoom'}).maximize();
+                          document.getElementById('tb-data').innerHTML = tr;
+                          //console.log('k4');
+                          //console.log(idstruktur+idstrukturbmodal+idstrukturppk);
+
+                        }
 
                     }else if(JSON.parse(data).matangr!=0 && JSON.parse(data).matangrbmodal==0){
-                        console.log('kondisi 2');
+                        //console.log('kondisi 2');
                         var tr = '';
+                        var idtab = 0;
+                        var idtabbmodal = 0;
+                        var iddatar = 0;
+                        var idstruktur = 0;
+                        var idstrukturbmodal = 0;
+                        var idstrukturppk = JSON.parse(data).idstrukturppk;
                         for (i = 0; i < JSON.parse(data).matangr.length; i++) {
                             tr += '<tr style="background-color: #f7f3f7">' +
                                 '<td style="text-align:center;vertical-align: middle"><strong>' + JSON.parse(data).matangr[i].kdper + '</strong></td>' +
@@ -521,6 +675,10 @@
                                         '<td style="text-align:right;vertical-align:middle">' + JSON.parse(data).datar[j].sisa_dana + '</td>' +
                                         '</tr>';
                                 }
+                                iddatar = JSON.parse(data).datar[j].id_tab_realisasi;
+                                idstruktur = JSON.parse(data).datar[j].id_struktur;
+                                idtab = JSON.parse(data).datar[j].id_tab_realisasi;
+
                             }
                         }
 
@@ -565,19 +723,157 @@
                             '                        </tbody>\n' +
                             '                    </table>';
                         alertify.defaults.glossary.title = '<center>Detail Realisasi <strong>' + header + '</strong></center>';
-                        alertify.confirm(tb, function () {
-                            alertify.success('Telah Dikonfirmasi!')
-                        }, function () {
-                            alertify.error('Dibatalkan!')
-                        }).set({transition: 'zoom'}).maximize().set({
-                            labels: {ok: 'Konfirmasi', cancel: 'Batal'},
-                            padding: false
-                        }).set('defaultFocus', 'cancel');
-                        document.getElementById('tb-data').innerHTML = tr;
+                        if(idstruktur==idstrukturppk && idstrukturbmodal==idstrukturppk){
+                          alertify.confirm().destroy();
+                          alertify.alert().destroy();
+                          alertify.confirm(tb, function () {
+                            var id1 = idtab;
+                            var id2 = idtabbmodal;
+                            var idstruktur1 = idstruktur;
+                            var idstruktur2 = idstrukturbmodal;
+                            var idstruktur3 = idstrukturppk;
+                            var token = localStorage.getItem("token");
+
+                            //console.log(token);
+                            $.ajax({
+                              url:'<?php echo base_url('User/update_id_struktur') ?>',
+                              type:'POST',
+                              data: {
+                                token: token,
+                                id: id1,
+                                idbmodal: id2,
+                                idstruktur: idstruktur1,
+                                idstrukturbmodal: idstruktur2,
+                                idstrukturppk: idstruktur3
+                              },
+                              success:function(data){
+                                //console.log('success')
+                                ajaxtoken();
+                                alertify.success('Telah Dikonfirmasi!');
+                              },
+                              error:function(data){
+                                //console.log('error');
+                              }
+                            });
+                            //console.log(idstruktur+'|'+idstrukturbmodal);
+                          }, function () {
+                            //console.log('canceled');
+                              alertify.error('Dibatalkan!')
+                          }).set({transition: 'zoom'}).maximize().set({
+                              labels: {ok: 'Konfirmasi', cancel: 'Batal'},
+                              padding: false
+                          }).set('defaultFocus', 'cancel');
+                          document.getElementById('tb-data').innerHTML = tr;
+                          //console.log('k1');
+                          //console.log(idstruktur+idstrukturbmodal+idstrukturppk);
+
+                        }else if (idstruktur==idstrukturppk && idstrukturbmodal!=idstrukturppk) {
+                          alertify.confirm().destroy();
+                          alertify.alert().destroy();
+                          alertify.confirm(tb, function () {
+                            var id1 = idtab;
+                            var id2 = idtabbmodal;
+                            var idstruktur1 = idstruktur;
+                            var idstruktur2 = idstrukturbmodal;
+                            var idstruktur3 = idstrukturppk;
+                            var token = localStorage.getItem("token");
+
+                            //console.log(token);
+                            $.ajax({
+                              url:'<?php echo base_url('User/update_id_struktur') ?>',
+                              type:'POST',
+                              data: {
+                                token: token,
+                                id: id1,
+                                idbmodal: id2,
+                                idstruktur: idstruktur1,
+                                idstrukturbmodal: idstruktur2,
+                                idstrukturppk: idstruktur3
+                              },
+                              success:function(data){
+                                //console.log('success')
+                                ajaxtoken();
+                                alertify.success('Telah Dikonfirmasi!')
+                              },
+                              error:function(data){
+                                //console.log('error');
+                              }
+                            });
+                            //console.log(idstruktur+'|'+idstrukturbmodal);
+                          }, function () {
+                            //console.log('canceled');
+                              alertify.error('Dibatalkan!')
+                          }).set({transition: 'zoom'}).maximize().set({
+                              labels: {ok: 'Konfirmasi', cancel: 'Batal'},
+                              padding: false
+                          }).set('defaultFocus', 'cancel');
+                          document.getElementById('tb-data').innerHTML = tr;
+                          //console.log('k2');
+                          //console.log(idstruktur+idstrukturbmodal+idstrukturppk);
+
+                        }else if (idstruktur!=idstrukturppk && idstrukturbmodal==idstrukturppk) {
+                          alertify.confirm().destroy();
+                          alertify.alert().destroy();
+                          alertify.confirm(tb, function () {
+                            var id1 = idtab;
+                            var id2 = idtabbmodal;
+                            var idstruktur1 = idstruktur;
+                            var idstruktur2 = idstrukturbmodal;
+                            var idstruktur3 = idstrukturppk;
+                            var token = localStorage.getItem("token");
+
+                            //console.log(token);
+                            $.ajax({
+                              url:'<?php echo base_url('User/update_id_struktur') ?>',
+                              type:'POST',
+                              data: {
+                                token: token,
+                                id: id1,
+                                idbmodal: id2,
+                                idstruktur: idstruktur1,
+                                idstrukturbmodal: idstruktur2,
+                                idstrukturppk: idstruktur3
+                              },
+                              success:function(data){
+                                //console.log('success')
+                                ajaxtoken();
+                                alertify.success('Telah Dikonfirmasi!');
+                              },
+                              error:function(data){
+                                //console.log('error');
+                              }
+                            });
+                            //console.log(idstruktur+'|'+idstrukturbmodal);
+                          }, function () {
+                            //console.log('canceled');
+                              alertify.error('Dibatalkan!')
+                          }).set({transition: 'zoom'}).maximize().set({
+                              labels: {ok: 'Konfirmasi', cancel: 'Batal'},
+                              padding: false
+                          }).set('defaultFocus', 'cancel');
+                          document.getElementById('tb-data').innerHTML = tr;
+                          //console.log('k3');
+                          //console.log(idstruktur+idstrukturbmodal+idstrukturppk);
+
+                        }else{
+                          alertify.confirm().destroy();
+                          alertify.alert().destroy();
+                          alertify.alert(tb).set({transition: 'zoom'}).maximize();
+                          document.getElementById('tb-data').innerHTML = tr;
+                          //console.log('k4');
+                          //console.log(idstruktur+idstrukturbmodal+idstrukturppk);
+
+                        }
 
                     }else if(JSON.parse(data).matangr==0 && JSON.parse(data).matangrbmodal!=0){
-                        console.log('kondisi 3');
+                        //console.log('kondisi 3');
                         var tr = '';
+                        var idtab = 0;
+                        var idtabbmodal = 0;
+                        var iddatarbmodal = 0;
+                        var idstruktur = 0;
+                        var idstrukturbmodal = 0;
+                        var idstrukturppk = JSON.parse(data).idstrukturppk;
                         for(i=0;i<JSON.parse(data).matangrbmodal.length;i++){
                             tr += '<tr style="background-color: #f2dede">' +
                                 '<td style="text-align:center;vertical-align: middle"><strong>' + JSON.parse(data).matangrbmodal[i].kdper + '</strong></td>' +
@@ -602,6 +898,10 @@
                                         '<td style="text-align:center;vertical-align:middle"></td>' +
                                         '</tr>';
                                   }
+                                  iddatarbmodal = JSON.parse(data).datarbmodal[j].id_tab_realisasi_bmodal;
+                                  idstrukturbmodal = JSON.parse(data).datarbmodal[j].id_struktur;
+                                  idtabbmodal = JSON.parse(data).datarbmodal[j].id_tab_realisasi_bmodal;
+
                                 }
                         }
                         var header = document.getElementById('keg' + kdkegunit).innerHTML;
@@ -645,15 +945,148 @@
                             '                        </tbody>\n' +
                             '                    </table>';
                         alertify.defaults.glossary.title = '<center>Detail Realisasi <strong>' + header + '</strong></center>';
-                        alertify.confirm(tb, function () {
-                            alertify.success('Telah Dikonfirmasi!')
-                        }, function () {
-                            alertify.error('Dibatalkan!')
-                        }).set({transition: 'zoom'}).maximize().set({
-                            labels: {ok: 'Konfirmasi', cancel: 'Batal'},
-                            padding: false
-                        }).set('defaultFocus', 'cancel');
-                        document.getElementById('tb-data').innerHTML = tr;
+                        if(idstruktur==idstrukturppk && idstrukturbmodal==idstrukturppk){
+                          alertify.confirm().destroy();
+                          alertify.alert().destroy();
+                          alertify.confirm(tb, function () {
+                            var id1 = idtab;
+                            var id2 = idtabbmodal;
+                            var idstruktur1 = idstruktur;
+                            var idstruktur2 = idstrukturbmodal;
+                            var idstruktur3 = idstrukturppk;
+                            var token = localStorage.getItem("token");
+
+                            //console.log(token);
+                            $.ajax({
+                              url:'<?php echo base_url('User/update_id_struktur') ?>',
+                              type:'POST',
+                              data: {
+                                token: token,
+                                id: id1,
+                                idbmodal: id2,
+                                idstruktur: idstruktur1,
+                                idstrukturbmodal: idstruktur2,
+                                idstrukturppk: idstruktur3
+                              },
+                              success:function(data){
+                                //console.log('success')
+                                ajaxtoken();
+                                alertify.success('Telah Dikonfirmasi!');
+                              },
+                              error:function(data){
+                                //console.log('error');
+                              }
+                            });
+                            //console.log(idstruktur+'|'+idstrukturbmodal);
+                          }, function () {
+                            //console.log('canceled');
+                              alertify.error('Dibatalkan!')
+                          }).set({transition: 'zoom'}).maximize().set({
+                              labels: {ok: 'Konfirmasi', cancel: 'Batal'},
+                              padding: false
+                          }).set('defaultFocus', 'cancel');
+                          document.getElementById('tb-data').innerHTML = tr;
+                          //console.log('k1');
+                          //console.log(idstruktur+idstrukturbmodal+idstrukturppk);
+
+                        }else if (idstruktur==idstrukturppk && idstrukturbmodal!=idstrukturppk) {
+                          alertify.confirm().destroy();
+                          alertify.alert().destroy();
+                          alertify.confirm(tb, function () {
+                            var id1 = idtab;
+                            var id2 = idtabbmodal;
+                            var idstruktur1 = idstruktur;
+                            var idstruktur2 = idstrukturbmodal;
+                            var idstruktur3 = idstrukturppk;
+                            var token = localStorage.getItem("token");
+
+                            //console.log(token);
+                            $.ajax({
+                              url:'<?php echo base_url('User/update_id_struktur') ?>',
+                              type:'POST',
+                              data: {
+                                token: token,
+                                id: id1,
+                                idbmodal: id2,
+                                idstruktur: idstruktur1,
+                                idstrukturbmodal: idstruktur2,
+                                idstrukturppk: idstruktur3
+                              },
+                              success:function(data){
+                                //console.log('success')
+                                ajaxtoken();
+                                alertify.success('Telah Dikonfirmasi!');
+                              },
+                              error:function(data){
+                                //console.log('error');
+                              }
+                            });
+                            //console.log(idstruktur+'|'+idstrukturbmodal);
+                          }, function () {
+                            //console.log('canceled');
+                              alertify.error('Dibatalkan!')
+                          }).set({transition: 'zoom'}).maximize().set({
+                              labels: {ok: 'Konfirmasi', cancel: 'Batal'},
+                              padding: false
+                          }).set('defaultFocus', 'cancel');
+                          document.getElementById('tb-data').innerHTML = tr;
+                          //console.log('k2');
+                          //console.log(idstruktur+idstrukturbmodal+idstrukturppk);
+
+                        }else if (idstruktur!=idstrukturppk && idstrukturbmodal==idstrukturppk) {
+                          alertify.confirm().destroy();
+                          alertify.alert().destroy();
+                          alertify.confirm(tb, function () {
+                            var id1 = idtab;
+                            var id2 = idtabbmodal;
+                            var idstruktur1 = idstruktur;
+                            var idstruktur2 = idstrukturbmodal;
+                            var idstruktur3 = idstrukturppk;
+                            var token = localStorage.getItem("token");
+
+                            //console.log(token);
+                            $.ajax({
+                              url:'<?php echo base_url('User/update_id_struktur') ?>',
+                              type:'POST',
+                              data: {
+                                token: token,
+                                id: id1,
+                                idbmodal: id2,
+                                idstruktur: idstruktur1,
+                                idstrukturbmodal: idstruktur2,
+                                idstrukturppk: idstruktur3
+                              },
+                              success:function(data){
+                                //console.log('success')
+                                ajaxtoken();
+                                alertify.success('Telah Dikonfirmasi!');
+                              },
+                              error:function(data){
+                                //console.log('error');
+                              }
+                            });
+                            //console.log(idstruktur+'|'+idstrukturbmodal);
+                          }, function () {
+                            //console.log('canceled');
+                              alertify.error('Dibatalkan!')
+                          }).set({transition: 'zoom'}).maximize().set({
+                              labels: {ok: 'Konfirmasi', cancel: 'Batal'},
+                              padding: false
+                          }).set('defaultFocus', 'cancel');
+                          document.getElementById('tb-data').innerHTML = tr;
+                          //console.log('k3');
+                          //console.log(idstruktur+idstrukturbmodal+idstrukturppk);
+
+                        }else{
+                          alertify.confirm().destroy();
+                          alertify.alert().destroy();
+                          alertify.alert(tb).set({transition: 'zoom'}).maximize();
+                          document.getElementById('tb-data').innerHTML = tr;
+                          //console.log('k4');
+                          //console.log(idstruktur+idstrukturbmodal+idstrukturppk);
+
+                        }
+
                     }
                     //console.log(JSON.parse(data).datar);
                 } else {
