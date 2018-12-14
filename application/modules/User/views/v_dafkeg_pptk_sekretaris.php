@@ -278,79 +278,121 @@
 
 <div class="box box-primary">
     <div class="box-header with-border">
-      <h3 class="box-title">Lisk Kegiatan</h3>
+        <i class="fa fa-text-width"></i>
+      <h3 class="box-title">List Kegiatan</h3>
 
 
       </div>
       <div class="box-body">
+        <div class="row">
+         <div class="col-md-1 col-sm-1 col-xs-12">
+         </div>
+             <div class="col-md-4 col-sm-4 col-xs-12">
+              <h4 class="text-left text-muted">Pagu Tahun</h4>
+            </div>
+            <div class="col-md-1 col-sm-1 col-xs-12">
+             <h4 class="text-center text-muted">:</h4>
+           </div>
+           <div class="col-md-4 col-sm-4 col-xs-12">
+            <h4 class="text-left text-muted"><?php echo $this->template->rupiah($datapagu[0]['tahun'])?></h4>
+
+           </div>
+           <div class="col-md-2 col-sm-2 col-xs-12">
+           </div>
+         </div>
+         <div class="row">
+          <div class="col-md-1 col-sm-1 col-xs-12">
+          </div>
+              <div class="col-md-4 col-sm-4 col-xs-12">
+               <h4 class="text-left text-muted">Kas Sampai Bulan Sekarang</h4>
+             </div>
+             <div class="col-md-1 col-sm-1 col-xs-12">
+              <h4 class="text-center text-muted">:</h4>
+            </div>
+            <div class="col-md-4 col-sm-4 col-xs-12">
+                <h4 class="text-left text-muted"><?php echo $this->template->rupiah($datapagu[0]['blnsdskr'])?></h4>
+            </div>
+            <div class="col-md-2 col-sm-2 col-xs-12">
+            </div>
+          </div>
+          <div class="row">
+           <div class="col-md-1 col-sm-1 col-xs-12">
+           </div>
+               <div class="col-md-4 col-sm-4 col-xs-12">
+                <h4 class="text-left text-muted">Kas Bulan Sekarang</h4>
+              </div>
+              <div class="col-md-1 col-sm-1 col-xs-12">
+               <h4 class="text-center text-muted">:</h4>
+             </div>
+             <div class="col-md-4 col-sm-4 col-xs-12">
+                 <h4 class="text-left text-muted"><?php echo $this->template->rupiah($datapagu[0]['blnskr'])?></h4>
+             </div>
+             <div class="col-md-2 col-sm-2 col-xs-12">
+             </div>
+           </div>
+           <div class="row">
+            <div class="col-md-1 col-sm-1 col-xs-12">
+            </div>
+                <div class="col-md-4 col-sm-4 col-xs-12">
+                 <h4 class="text-left text-muted">Persentase Realiasi Bulan Sekarang</h4>
+               </div>
+               <div class="col-md-1 col-sm-1 col-xs-12">
+                <h4 class="text-center text-muted">:</h4>
+              </div>
+              <div class="col-md-4 col-sm-4 col-xs-12">
+
+              </div>
+              <div class="col-md-2 col-sm-2 col-xs-12">
+              </div>
+            </div>
+         <hr>
+         <br>
           <div class="table-responsive">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th class="text-left"  width="2%"><b>#</b></th>
+            <table class="table table-bordered">
+              <thead>
+              <tr>
+                  <td rowspan="3" style="text-align: center;white-space: nowrap;width: 1%;vertical-align: middle"><strong>No</strong></td>
+                  <td rowspan="3" style="vertical-align: middle;text-align: center"><strong>Kegiatan</strong></td>
+                  <td rowspan="3" style="text-align: center;vertical-align: middle"><strong>PPTK</strong></td>
+                  <td colspan="4" style="text-align: center;white-space: nowrap;width: 1%"><strong>Keuangan</strong></td>
+                  <td colspan="2" style="text-align: center;white-space: nowrap;width: 1%"><strong>Fisik</strong></td>
+                  <td rowspan="3" style="text-align: center;white-space: nowrap;width: 1%;vertical-align: middle"><strong>Status</strong></td>
+                  <td rowspan="3" style="text-align: center;white-space: nowrap;width: 1%;vertical-align: middle"><strong>Detail</strong></td>
+              </tr>
+              <tr>
+                  <td colspan="2" style="text-align: center;white-space: nowrap;width: 1%"><strong>Target</strong></td>
+                  <td colspan="2" style="text-align: center;white-space: nowrap;width: 1%"><strong>Realisasi</strong></td>
+                  <td rowspan="2" style="text-align: center;white-space: nowrap;width: 1%;vertical-align: middle"><strong>Target</strong></td>
+                  <td rowspan="2" style="text-align: center;white-space: nowrap;width: 1%;vertical-align: middle"><strong>Realisasi</strong></td>
+              </tr>
+              <tr>
+                  <td style="text-align: center"><strong>%</strong></td>
+                  <td style="text-align: center"><strong>Keuangan</strong></td>
+                  <td style="text-align: center"><strong>%</strong></td>
+                  <td style="text-align: center"><strong>Keuangan</strong></td>
+              </tr>
+              </thead>
+              <tbody>
+                <?php
+                $i = 0;
+                foreach ($list as $row){
+                    $i++;
 
-                        <th class="col-xs-5 text-left" >Nama Kegiatan</th>
-                        <th class="col-xs-3 text-left" >Nama PPTK</th>
-                        <th class="col-xs-2 text-right" >Pagu Dana</th>
-                        <th class="col-xs-1 text-center" >Status</th>
-                        <th class=" td-actions text-center" ></th>
-                    </tr>
-                </thead>
-                <tbody>
-                  <?php
-                  $i = 0;
-                  foreach ($list as $row){
-                      $i++;
-                      $stat=$row['status'];
-                      if($stat=='1'){
-                        $status='<span class="label label-success">Sudah Konfirmasi</span>';
-                    }else{
-                        $status='<span class="label label-danger">Belum Konfirmasi</span>';
-                    }
-                    /*dari AGUNG----AGUNG----AGUNG----AGUNG----AGUNG----AGUNG----AGUNG----AGUNG*/
-                    $statkak = $this->db->get_where('tab_kak',array('idtab_pptk'=>$row['id']));
-                    if($statkak->num_rows()>0){
-                      // $ada=1; maka tidak bisa lanjut
-                      if($statkak->row()->stat_draft==0){
-                      /*$ada='<button type="button" class="btnkak lihat btn btn-block btn-primary btn-flat data-toggle="tooltip"
-                              title="KAK Sudah Di Entri">Lihat<i class="fa fa-check text-success"></i></button>';*/
-                      $ada='<div class="btn-group">
-                  <button type="button" class="btn btn-info">Lihat</button>
-                  <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown">
-                    <span class="caret"></span>
-                    <span class="sr-only">Toggle Dropdown</span>
-                  </button>
-                  <ul class="dropdown-menu" role="menu">
-                    <li><a class="btnkak lihat">KAK</a></li>
-                    <li><a class="btnkak bmodal">Belanja Modal</a></li>
-                  </ul>
-                </div>';
-                    /*sampai AGUNG----AGUNG----AGUNG----AGUNG----AGUNG----AGUNG----AGUNG----AGUNG*/
-                      }else{
-                        $ada='<button type="button" class="btnkak btn btn-block btn-primary btn-flat" data-toggle="tooltip"
-                              title="Target Fisik Belanja Modal Blm Ada">Entri KAK <i class="fa fa-spinner fa-pulse fa-fw text-danger"></i></button> ';
-                      }
 
-                    }else{
-                      // $ada=0; lanjut karna belum ada
-                      $ada='<button type="button" class="btnkak btn btn-block btn-primary btn-flat" data-toggle="tooltip"
-                              title="KAK Kegiatan Belum Ada">Entri KAK <i class="fa fa-hourglass-start text-danger"></i></button>';
-                    }
+                  echo'<tr>
+                  <td>'.$i.'</td>
+                  <td class="idtab" style="display:none;">'.$row['id'].'</td>
+                  <td class="id" style="display:none;">'.$row['kdkegunit'].'</td>
+                  <td>'.$row['nmkegunit'].'</td>
+                  <td >'.$row['idpnspptk'].'</td>
 
-                    echo'<tr>
-                    <td>'.$i.'</td>
-                    <td class="idtab" style="display:none;">'.$row['id'].'</td>
-                    <td class="id" style="display:none;">'.$row['kdkegunit'].'</td>
-                    <td class="col-xs-5">'.$row['nmkegunit'].'</td>
-                    <td class="col-xs-3">'.$row['idpnspptk'].'</td>
-                    <td class="col-xs-2 text-right">'.$this->template->rupiah($row['nilai']).'</td>
-                    <td class="col-xs-1 text-center">'.$status.'</td>
-                    <td class="td-actions text-center">'.$ada.'</td>
-                    </tr>';
+                  </tr>';
 
-                }
-                ?>
-            </tbody>
+              }
+
+              ?>
+
+              </tbody>
         </table>
     </div>
 </div>

@@ -617,8 +617,10 @@ function getdetlistkegiatan_detppk($nip,$kdkegunit){
 		$this->db->select('tab_pns.nip,tab_pns.nama');
       	$this->db->from('tab_struktur');
       	$this->db->join('tab_pns', 'tab_struktur.nip = tab_pns.nip');
-      	$this->db->where('tab_struktur.peran', '2');
       	$this->db->where('tab_struktur.id_unit', $idunit);
+        $this->db->where('tab_struktur.peran', '2');
+        $this->db->or_where('tab_struktur.peran', '6');
+
       	return $this->db->get()->result();
 	}
   function simpanentrikegiatan($master){
@@ -1718,6 +1720,52 @@ FROM
     }
 
     //end query untuk mendapatkan data realisasi fisik bulan ini PEr satu OPD : Agung-->
+
+
+    //ryh Sekretaris
+    function pagupptksekretaris($thnsekarang,$blnsekarang,$idopd,$arrkdkegunit){
+  //     SELECT
+  //     SUM(`angkas`.`nilai`) AS `pagu_tahun`
+  // FROM angkas WHERE `unitkey`='80_' AND `kdkegunit`!='0_' AND `kdkegunit`IN('11142_','11_','12_','13_','15_','17_','1841_','18_','19_','1_','29_','2_','36_','40_','51_','64_','6_','7_','8_') AND `kd_bulan`>='1' AND `kd_bulan`<='12'
+    $nilai = array();
+    $this->db->select('
+    SUM(`angkas`.`nilai`) AS `tahun`');
+    $this->db->from('angkas');
+    $this->db->where('tahun', $thnsekarang);
+    $this->db->where('unitkey', $idopd);
+    $this->db->where('kdkegunit!=', '0_');
+    $this->db->where_in('kdkegunit', $arrkdkegunit);
+    $tahun = $this->db->get()->row_array();
+
+    $this->db->select('
+    SUM(`angkas`.`nilai`) AS `blnskr`');
+    $this->db->from('angkas');
+    $this->db->where('tahun', $thnsekarang);
+    $this->db->where('unitkey', $idopd);
+    $this->db->where('kd_bulan', $blnsekarang);
+    $this->db->where('kdkegunit!=', '0_');
+    $this->db->where_in('kdkegunit', $arrkdkegunit);
+    $blnskr = $this->db->get()->row_array();
+
+    $this->db->select('
+    SUM(`angkas`.`nilai`) AS `blnsdskr`');
+    $this->db->from('angkas');
+    $this->db->where('tahun', $thnsekarang);
+    $this->db->where('unitkey', $idopd);
+    $this->db->where('kd_bulan <=', $blnsekarang);
+    $this->db->where('kdkegunit!=', '0_');
+    $this->db->where_in('kdkegunit', $arrkdkegunit);
+    $blnsdskr = $this->db->get()->row_array();
+
+    $nilai[]=array(
+              'tahun' => $tahun['tahun'],
+               'blnskr'=>$blnskr['blnskr'],
+               'blnsdskr'=>$blnsdskr['blnsdskr']
+              );
+
+    return $nilai;
+
+    }
 
     //end query untuk mendapatkan data angkas untuk belanja modal-->
 

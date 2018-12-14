@@ -1017,6 +1017,26 @@ if($ubah==1){
               <div class="col-md-1 col-sm-1 col-xs-12">
               </div>
                   <div class="col-md-4 col-sm-4 col-xs-12">
+                   <h4 class="text-left text-muted">Tambahan Realisasi Keuangan</h4>
+                 </div>
+                 <div class="col-md-1 col-sm-1 col-xs-12">
+                  <h4 class="text-center text-muted">:</h4>
+                </div>
+                <div class="col-md-4 col-sm-4 col-xs-12">
+
+                                <input type="text" class=" form-control" id="realkeubljmodal" name="realkeubljmodal"  style="text-align: right;" >
+                                <!-- <div class="input-group-addon">
+                                <i class="fa fa-percent"></i>
+                                </div> -->
+
+                </div>
+                <div class="col-md-2 col-sm-2 col-xs-12">
+                </div>
+              </div>
+              <div class="row">
+              <div class="col-md-1 col-sm-1 col-xs-12">
+              </div>
+                  <div class="col-md-4 col-sm-4 col-xs-12">
                    <h4 class="text-left text-muted">Tambahan Realisasi Fisik</h4>
                  </div>
                  <div class="col-md-1 col-sm-1 col-xs-12">
@@ -1174,6 +1194,18 @@ if($ubah==1){
       self.Value('0');
     }
   });
+  $('#realkeubljmodal').inputmask("numeric",{
+  radixPoint: ",",
+  groupSeparator: ".",
+  digits: 2,
+  autoGroup: true,
+  prefix: 'Rp ', //No Space, this will truncate the first character
+  rightAlign: false,
+  autoUnmask : true,
+  oncleared: function () {
+    self.Value('0');
+  }
+});
   $('#headtotsdana').inputmask("numeric",{
   radixPoint: ",",
   groupSeparator: ".",
@@ -1221,6 +1253,36 @@ if($ubah==1){
        //      'info'
        //    ) this.select(): jumlah;
       });
+      $("#realkeubljmodal").on('input change',function (e) {
+           var pagu=$('#nilaikontrak').val();
+           var val= this.value;
+           // newStr = parseInt(numbers.replace(/_/g, ""), 10);
+           // console.log(val +'-'+ pagu);
+           if(pagu==0){
+             swal(
+               'Upss ',
+               'Silahkan Entri Nilai Kontrak',
+               'info'
+             )
+            $("#realkeubljmodal").val(0);
+            return false;
+           }
+           if(parseInt(val,10) > parseInt(pagu,10)){
+             swal(
+               'Upss ',
+               'Total Melebihi Pagu',
+               'info'
+             )
+             $("#nilaikontrak").val(0);
+
+             return false;
+           }
+          // jumlah = jumlah > 100 ? swal(
+          //      'info',
+          //      'Target Fisik Belanja Modal Sudah di Entri',
+          //      'info'
+          //    ) this.select(): jumlah;
+         });
   // $('#nilaikontrak').on('input change', function(e) {
   //
   // // console.log(pagumodal);
