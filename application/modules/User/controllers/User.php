@@ -66,6 +66,7 @@ class User extends MX_Controller
       $real = $this->User_model->getdatarealisasi_by(2);
       echo json_encode($real);
     }
+
     function general(){
     	if (!$this->ion_auth->logged_in()){
             redirect('Home/login', 'refresh');
@@ -169,51 +170,63 @@ class User extends MX_Controller
                     );
                     $this->template->load('templatenew', 'dashboard_ppk', $this->data);
 
-                }elseif($peran=='6'){
-                    /*jika peran 6 maka Sekretaris*/
-
-                    $lskeg = $this->User_model->getdetlistkegiatan_ppk($nip);
-                    $unitkeyppk = $this->User_model->getunitkeyppk($nip);
-                    // $data = $this->User_model->getdatappk($unitkeyppk, $nip);
-                    $pgthn = $this->User_model->getpagutahun($nip,$unitkeyppk);
-                    $angkas = $this->User_model->getangkashinggabulanini($nip,$unitkeyppk);
-                    $totreal = $this->User_model->gettotalrealisasi($nip); //total realisasi hingga bulan sebelumnya
-                    $angkasbulanini = $this->User_model->getangkasbulanini($nip,$unitkeyppk) + (($angkas - $this->User_model->getangkasbulanini($nip,$unitkeyppk)) - $totreal);
-                    $detangkasbulanini = $this->User_model->getdetangkasbulanini($nip,$unitkeyppk);
-                    $realisasibulanini = $this->User_model->getrealisasibulanini($this->User_model->getidstrukturppk($nip));
-
-                    $persenrealisasibulanini = ($realisasibulanini / $angkasbulanini) * 100;
-                    $lspptk = $this->User_model->getnipstrukturpptk($this->User_model->getidstrukturppk($nip));
-
-                    //var_dump($detangkasbulanini).exit;
-                    //echo $this->template->rupiah($pgthn);
-                    //var_dump($this->User_model->getdetangkashbs($nip)).exit;
-                    //echo json_encode($this->User_model->getdataschedule($nip));
-                    $this->data = array(
-                        'idopd' => $idopd,
-                        'nmopd' => $namaopd,
-                        'tahun' => date('Y'),
-                        'list' => $lskeg,
-                        'pagu_tahun' => $this->template->rupiah($pgthn),
-                        'angkas_bulan' => $this->template->rupiah($angkas),
-                        'angkas_bulan_ini' => $this->template->rupiah($angkasbulanini),
-                        'det_angkas_bulan_ini' => $detangkasbulanini,
-                        'det_angkas_satu_tahun' => $this->User_model->getdetangkassatutahun($nip,$unitkeyppk),
-                        'realisasi_bulan_ini' => $this->template->rupiah($realisasibulanini),
-                        'persen_realisasi' => round($persenrealisasibulanini, 2) . ' %',
-                        'lspptk' => $lspptk,
-                        'kegiatan' => $this->User_model->getkegiatan($nip),
-                        'data_realisasi' => $this->User_model->getdatarealisasi($nip), //data realisasi bulan ini
-                        'data_realisasi_hbs' => $this->User_model->getdatarealisasihbs($nip), //data realisasi hingga bulan sebelumnya
-                        'data_angkas_hbs' => $this->User_model->getdetangkashbs($nip,$unitkeyppk), //data angkas hingga bulan sebelumnya
-                        'data_schedule' => $this->User_model->getdataschedule($nip), //data schedule satu tahun
-                        'data_real_fisik' => $this->User_model->getrealfisik($nip), //data realisasi fisik bulan ini
-                        'det_real_bmodalbi' => $this->User_model->getdetrealbmodalbi($this->User_model->getidstrukturppk($nip),$unitkeyppk), //detail realisasi belanja modal bulan ini
+                }
+                // elseif($peran=='6'){
+                //     /*jika peran 6 maka Sekretaris*/
+                //
+                //     $lskeg = $this->User_model->getdetlistkegiatan_ppk($nip);
+                //     $unitkeyppk = $this->User_model->getunitkeyppk($nip);
+                //     // $data = $this->User_model->getdatappk($unitkeyppk, $nip);
+                //     $pgthn = $this->User_model->getpagutahun($nip,$unitkeyppk);
+                //     $angkas = $this->User_model->getangkashinggabulanini($nip,$unitkeyppk);
+                //     $totreal = $this->User_model->gettotalrealisasi($nip); //total realisasi hingga bulan sebelumnya
+                //     $angkasbulanini = $this->User_model->getangkasbulanini($nip,$unitkeyppk) + (($angkas - $this->User_model->getangkasbulanini($nip,$unitkeyppk)) - $totreal);
+                //     $detangkasbulanini = $this->User_model->getdetangkasbulanini($nip,$unitkeyppk);
+                //     $realisasibulanini = $this->User_model->getrealisasibulanini($this->User_model->getidstrukturppk($nip));
+                //
+                //     $persenrealisasibulanini = ($realisasibulanini / $angkasbulanini) * 100;
+                //     $lspptk = $this->User_model->getnipstrukturpptk($this->User_model->getidstrukturppk($nip));
+                //
+                //     //var_dump($detangkasbulanini).exit;
+                //     //echo $this->template->rupiah($pgthn);
+                //     //var_dump($this->User_model->getdetangkashbs($nip)).exit;
+                //     //echo json_encode($this->User_model->getdataschedule($nip));
+                //     $this->data = array(
+                //         'idopd' => $idopd,
+                //         'nmopd' => $namaopd,
+                //         'tahun' => date('Y'),
+                //         'list' => $lskeg,
+                //         'pagu_tahun' => $this->template->rupiah($pgthn),
+                //         'angkas_bulan' => $this->template->rupiah($angkas),
+                //         'angkas_bulan_ini' => $this->template->rupiah($angkasbulanini),
+                //         'det_angkas_bulan_ini' => $detangkasbulanini,
+                //         'det_angkas_satu_tahun' => $this->User_model->getdetangkassatutahun($nip,$unitkeyppk),
+                //         'realisasi_bulan_ini' => $this->template->rupiah($realisasibulanini),
+                //         'persen_realisasi' => round($persenrealisasibulanini, 2) . ' %',
+                //         'lspptk' => $lspptk,
+                //         'kegiatan' => $this->User_model->getkegiatan($nip),
+                //         'data_realisasi' => $this->User_model->getdatarealisasi($nip), //data realisasi bulan ini
+                //         'data_realisasi_hbs' => $this->User_model->getdatarealisasihbs($nip), //data realisasi hingga bulan sebelumnya
+                //         'data_angkas_hbs' => $this->User_model->getdetangkashbs($nip,$unitkeyppk), //data angkas hingga bulan sebelumnya
+                //         'data_schedule' => $this->User_model->getdataschedule($nip), //data schedule satu tahun
+                //         'data_real_fisik' => $this->User_model->getrealfisik($nip), //data realisasi fisik bulan ini
+                //         'det_real_bmodalbi' => $this->User_model->getdetrealbmodalbi($this->User_model->getidstrukturppk($nip),$unitkeyppk), //detail realisasi belanja modal bulan ini
+                //
+                //     );
+                //     $this->template->load('templatenew', 'dashboard_sekretaris', $this->data);
+                //
+                // }
+                elseif($peran=='6'){
+                    /*jika peran 3 maka PPTK*/
+                     $this->data= array(
+                        'idopd'     => $idopd,
+                        'nmopd'     => $namaopd,
+                        'tahun'     => date('Y'),
 
                     );
-                    $this->template->load('templatenew', 'dashboard_sekretaris', $this->data);
-
-                }elseif($peran=='3'){
+                    $this->template->load('templatenew','dashboard_sekretaris',$this->data);
+                }
+                elseif($peran=='3'){
                     /*jika peran 3 maka PPTK*/
                      $this->data= array(
                         'idopd'     => $idopd,
@@ -1404,9 +1417,11 @@ function cektabrealisasi(){
         redirect('Home/login', 'refresh');
     }elseif ($this->ion_auth->is_admin()){
         redirect('Cpanel', 'refresh');
-    }elseif ($this->ion_auth->is_kasubag()){
-        redirect('User/admingeneral', 'refresh');
-    }else{
+    }
+    // elseif ($this->ion_auth->is_kasubag()){
+    //     redirect('User/admingeneral', 'refresh');
+    //}
+    else{
         /*ini akan di cek ke tabel struktur apakah user tersebut KADIS/PPK/PPTK */
         $nip=$this->ion_auth->user()->row()->username;
         $struktur = $this->User_model->cekstrukturpns($nip);
@@ -2265,7 +2280,7 @@ function simpankak(){
 
         $peran=$struktur->peran;
 
-        if($peran=='2'){
+        if($peran=='2' || $peran=='6' ){
             /*jika peran 2 maka PPK*/
             $lskeg = $this->User_model->getdetlistkegiatan_ppk($nip);
 
@@ -2721,7 +2736,7 @@ function cekstatkak(){
 
             $peran=$struktur->peran;
 
-            if($peran=='2'){
+            if($peran=='2' || $peran=='6'){
                 /*jika peran 2 maka PPK*/
                 $idtab=$this->input->post('idtab');
                 $idkeg=$this->input->post('idkeg');
@@ -2799,7 +2814,7 @@ function cekblnjamdal(){
 
             $peran=$struktur->peran;
 
-            if($peran=='2'){
+            if($peran=='2' || $peran=='6' ){
                 /*jika peran 2 maka PPK*/
                 $unitkey    =$this->input->post('idopd');
                 $idkeg      =$this->input->post('idkeg');
@@ -2870,7 +2885,7 @@ function entrikak(){
     $namaopd=$getopd->nmunit;
     if($struktur ){
         $peran=$struktur->peran;
-        if($peran=='2'){
+        if($peran=='2' || $peran=='6'){
             /*jika peran 2 maka PPK*/
             $encryptionMethod = "AES-256-ECB";
             $secretHash = "aS9P0RNoKY9QcmvGDWwcZcjw6OuZKJK2VrR4Hv9UMms=";
@@ -3078,30 +3093,85 @@ function cektargetfisik(){
         echo json_encode($arr);
     }
 
-function enckeytes(){
 
-    $textToEncrypt = "Risma Yunia Harnika";
-$encryptionMethod = "AES-256-ECB";  // AES is used by the U.S. gov't to encrypt top secret documents.
-$secretHash = "aS9P0RNoKY9QcmvGDWwcZcjw6OuZKJK2VrR4Hv9UMms=";
-
-//To encrypt
-$encryptedMessage = openssl_encrypt($textToEncrypt, $encryptionMethod, $secretHash);
-
-//To Decrypt
-$decryptedMessage = openssl_decrypt($encryptedMessage, $encryptionMethod, $secretHash);
-
-//Result
-echo "Encrypted: $encryptedMessage<br>Decrypted: $decryptedMessage";
-    // $tes= urlencode(base64_encode("user-data"));
-
-
-    // $decode = base64_decode(urldecode($tes));
-    // echo "Encrypted: $tes<br>Decrypted: $decode";
-}
 
 //------------------------------------------akhir ppk--------------------------------------------------//
 
 
+//------------------------------------------awal sekreataris -------------------------------------------//
+function dafkegsekretaris(){
+
+
+    if (!$this->ion_auth->logged_in()){
+        redirect('Home/login', 'refresh');
+    }elseif ($this->ion_auth->is_admin()){
+        redirect('Cpanel', 'refresh');
+    }elseif ($this->ion_auth->is_kasubag()){
+       /*Dari function ini akan di cek ke tabel struktur apakah user tersebut KADIS/PPK/PPTK */
+        redirect('User/admingeneral', 'refresh');
+
+    }else{
+        /*Dari function ini akan di cek ke tabel struktur apakah user tersebut KADIS/PPK/PPTK */
+        $nip=$this->ion_auth->user()->row()->username;
+        $struktur = $this->User_model->cekstrukturpns($nip);
+        $getopd = $this->User_model->getnamaopd($nip);
+        $idopd =$getopd->unitkey;
+        $namaopd=$getopd->nmunit;
+        if($struktur ){
+
+            $peran=$struktur->peran;
+
+            if($peran=='6'){
+                /*jika peran 6 maka Sekretaris*/
+                $arridtabpptk = array();
+                $arrkdkegunit = array();
+
+
+                $thnsekarang= date('Y');
+                $blnsekarang=  date('n');
+              //$blnsekarang=  2;
+                $lskeg = $this->User_model->getdetlistkegiatan_ppk($nip);
+                if($lskeg){
+                  foreach ($lskeg as $key) {
+
+                      $arridtabpptk[]= $key['id'];
+                      $arrkdkegunit[]= $key['kdkegunit'];
+                  }
+                  //nilai pagu
+                  $datapagu=$this->User_model->pagupptksekretaris($thnsekarang,$blnsekarang,$idopd,$arrkdkegunit);
+                  // output nilai Pagu ----->>> echo json_encode($datapagu[0]['tahun']);
+                  //nilai persentase
+                  // $persentase =
+
+                }
+
+
+                $this->data= array(
+                    'idopd'     => $idopd,
+                    'nmopd'     => $namaopd,
+                    'tahun'     => $thnsekarang,
+                    'list'      => $lskeg,
+                    'blnskr'    => $blnsekarang,
+                    'datapagu'  => $datapagu
+                );
+                // echo json_encode($datapagu[0]['tahun']);
+                 //echo json_encode($lskeg);
+                $this->template->load('templatenew','v_dafkeg_pptk_sekretaris',$this->data);
+
+            }else{
+                /*jika tidak*/
+                redirect('User', 'refresh');
+            }
+        }else{
+          redirect('User', 'refresh');
+        }
+
+
+  }
+}
+
+
+//------------------------------------------akhir sekreataris-------------------------------------------//
 
 //batas new
 
@@ -3325,208 +3395,7 @@ function logout()
     $this->session->set_flashdata('message', $this->ion_auth->messages());
     redirect('Kasi', 'refresh');
 }
-//all tes
 
-function tesgetbulankegiatan2(){
-       $kak = $this->db->get_where('tab_kak',array('idtab_pptk'=>'1'));
-       $idkak=$kak->row()->id;
-       $dateawal=$kak->row()->ii_awal_keg;
-       $dateakhir=$kak->row()->ii_akhir_keg;
-       $bulansekarang =date('M');
-        $pecahawal = explode('-',  $dateawal);
-        $thnawal  = $pecahawal[0];
-        $blnawal  = $pecahawal[1];
-        $pecahakhir = explode('-', $dateakhir);
-        $thnakhir  = $pecahakhir[0];
-        $blnakhir  = $pecahakhir[1];
-
-       //echo (int)$blnawal.' - '. (int)$blnakhir;
-        $arr = array('jan','feb','mar','apr','mei','jun','jul','ags','sep','okt','nov','des' );
-
-       for($i=(int)$blnawal;$i<=(int)$blnakhir;$i++)
-        {
-
-            $where =$arr[$i-1].'!=';
-            $ada = $this->db->get_where('tab_schedule',array('id_tab_kak'=>$idkak, $where => ''));
-             if($ada->num_rows()>0){
-               $x='ada';
-             }else{
-               $x='tidak ada';
-             }
-
-
-        }
-       // echo json_encode($arrbulan);
-
-}
-
-function tesgetbulankegiatan1(){
-        $kak = $this->db->get_where('tab_kak',array('idtab_pptk'=>'5'));
-        $idkak=$kak->row()->id;
-        $dateawal=$kak->row()->ii_awal_keg;
-        $dateakhir=$kak->row()->ii_akhir_keg;
-        $bulansekarang =date('n');
-        $pecahawal = explode('-',  $dateawal);
-        $thnawal  = $pecahawal[0];
-        $blnawal  = $pecahawal[1];
-        $pecahakhir = explode('-', $dateakhir);
-        $thnakhir  = $pecahakhir[0];
-        $blnakhir  = $pecahakhir[1];
-
-       //echo (int)$blnawal.' - '. (int)$blnakhir;
-        $arr = array('jan','feb','mar','apr','mei','jun','jul','ags','sep','okt','nov','des' );
-       $arrbulan = array();
-       for($i=(int)$blnawal;$i<=(int)$blnakhir;$i++)
-        {
-
-            $where =$arr[$i-1].'!=';
-            $this->db->where('id_tab_kak', $idkak);
-            $this->db->where($where, '');
-            $ada = $this->db->get('tab_schedule');
-            if($ada->num_rows()>0 ){
-
-                $this->db->where('MONTH(real_bulan)', $i);
-                $this->db->where('id_tabpptk', '5');
-                $treal = $this->db->get('tab_realisasi');
-                if($treal->num_rows()==0){
-                    $this->db->where('id_tabpptk', '5');
-                    $jumreal = $this->db->get('tab_realisasi');
-                    if($jumreal->num_rows()==0){
-                        $pertama=1;
-                    }else{
-                        $pertama=0;
-                    }
-                    $geat = $arr[$i-1];
-                    echo 'entri '.$geat.' dan ini '. $pertama;
-                   break;
-                }
-
-            }
-
-
-            // $arrbulan[$bulansekarang][$arr[$i-1]][]= array(
-            //     'bulan' => $arr[$i-1],
-            //     'status' => $x
-            // );
-            //   $arrbulan[$arr[$i-1]][]= array(
-            //     'bulan' => $arr[$i-1],
-            //     'sch' => $x,
-            //     'real'=> $y
-            // );
-
-        }
-        //echo json_encode($arrbulan);
-
-}
-function tesbreak(){
-    $arr = array('one', 'two', 'three', 'four', 'stop', 'five');
-foreach ($arr as $val) {
-    if ($val == 'stop') {
-        break;    /* You could also write 'break 1;' here. */
-    }
-    echo "$val<br />\n";
-}
-}
-function testgl(){
-
-        // $date1 = date_create('2007-03-24');
-        // $date2 = date_create('2009-06-26');
-        // $interval = date_diff($date1, $date2);
-        // echo $interval->y . " years, " . $interval->m." months, ".$interval->d." days ";
-        //-------------
-//         $mm= $_REQUEST['month'];
-// $yy= $_REQUEST['year'];
-  $mm= '10';
-  $yy= '2018';
-  $startdate=date($yy."-".$mm."-01") ;
-  $current_date=date('Y-m-t');
-  $ld= cal_days_in_month(CAL_GREGORIAN, $mm, $yy);
-  $lastday=$yy.'-'.$mm.'-'.$ld;
-  $start_date = date('Y-m-d', strtotime($startdate));
-  $end_date = date('Y-m-d', strtotime($lastday));
-  $end_date1 = date('Y-m-d', strtotime($lastday." + 6 days"));
-  $count_week=0;
-  $week_array = array();
-
-  for($date = $start_date; $date <= $end_date1; $date = date('Y-m-d', strtotime($date. ' + 7 days')))
-  {
-    $getarray= $this->getWeekDates($date, $start_date, $end_date);
-    echo "<br>";
-    $week_array[]=$getarray;
-    echo "\n";
-    $count_week++;
-
-}
-
-// its give the number of week for the given month and year
-echo $count_week;
-//print_r($week_array);
-
-
-
-for($i=0;$i<$count_week;$i++)
-{
-    $start= $week_array[$i]['ssdate'];
-    echo "--";
-
-    $week_array[$i]['eedate'];
-    echo "<br>";
-}
-
-}
-function tescurency(){
-   $var = str_replace("Rp ","","Rp 44.000");
-   echo str_replace(".","",$var);
-//     $actual = $formatter->formatCurrency(20000, 'EUR') . PHP_EOL;
-// $output = preg_replace( '/[^0-9,"."]/', '', $actual );
-// echo $actual;
-}
-function getWeekDates($date, $start_date, $end_date)
-{
-    $week =  date('W', strtotime($date));
-    $year =  date('Y', strtotime($date));
-    $from = date("Y-m-d", strtotime("{$year}-W{$week}+1"));
-    if($from < $start_date) $from = $start_date;
-
-    $to = date("Y-m-d", strtotime("{$year}-W{$week}-6"));
-    if($to > $end_date) $to = $end_date;
-
-    $array1 = array(
-        "ssdate" => $from,
-        "eedate" => $to,
-    );
-
-    return $array1;
-
-   // echo "Start Date-->".$from."End Date -->".$to;
-}
-
-function testgl2(){
-   echo $this->getWeeks("2018-11-01", "sunday");
-}
-function getWeeks($date, $rollover)
-{
-    $cut = substr($date, 0, 8);
-    $daylen = 86400;
-
-    $timestamp = strtotime($date);
-    $first = strtotime($cut . "00");
-    $elapsed = ($timestamp - $first) / $daylen;
-
-    $weeks = 1;
-
-    for ($i = 1; $i <= $elapsed; $i++)
-    {
-        $dayfind = $cut . (strlen($i) < 2 ? '0' . $i : $i);
-        $daytimestamp = strtotime($dayfind);
-
-        $day = strtolower(date("l", $daytimestamp));
-
-        if($day == strtolower($rollover))  $weeks ++;
-    }
-
-    return $weeks;
-}
 
 //<--function created by ragaa
     function getjsonrealisasi($kdkegunit)
@@ -3892,4 +3761,228 @@ function getWeeks($date, $rollover)
         }
     }
     //Agung
+
+    //all tes
+    //put your kode di atas tes
+    function enckeytes(){
+
+
+        $textToEncrypt = "Risma Yunia Harnika";
+    $encryptionMethod = "AES-256-ECB";  // AES is used by the U.S. gov't to encrypt top secret documents.
+    $secretHash = "aS9P0RNoKY9QcmvGDWwcZcjw6OuZKJK2VrR4Hv9UMms=";
+
+    //To encrypt
+    $encryptedMessage = openssl_encrypt($textToEncrypt, $encryptionMethod, $secretHash);
+
+    //To Decrypt
+    $decryptedMessage = openssl_decrypt($encryptedMessage, $encryptionMethod, $secretHash);
+
+    //Result
+    echo "Encrypted: $encryptedMessage<br>Decrypted: $decryptedMessage";
+        // $tes= urlencode(base64_encode("user-data"));
+
+
+        // $decode = base64_decode(urldecode($tes));
+        // echo "Encrypted: $tes<br>Decrypted: $decode";
+    }
+    function tesgetbulankegiatan2(){
+           $kak = $this->db->get_where('tab_kak',array('idtab_pptk'=>'1'));
+           $idkak=$kak->row()->id;
+           $dateawal=$kak->row()->ii_awal_keg;
+           $dateakhir=$kak->row()->ii_akhir_keg;
+           $bulansekarang =date('M');
+            $pecahawal = explode('-',  $dateawal);
+            $thnawal  = $pecahawal[0];
+            $blnawal  = $pecahawal[1];
+            $pecahakhir = explode('-', $dateakhir);
+            $thnakhir  = $pecahakhir[0];
+            $blnakhir  = $pecahakhir[1];
+
+           //echo (int)$blnawal.' - '. (int)$blnakhir;
+            $arr = array('jan','feb','mar','apr','mei','jun','jul','ags','sep','okt','nov','des' );
+
+           for($i=(int)$blnawal;$i<=(int)$blnakhir;$i++)
+            {
+
+                $where =$arr[$i-1].'!=';
+                $ada = $this->db->get_where('tab_schedule',array('id_tab_kak'=>$idkak, $where => ''));
+                 if($ada->num_rows()>0){
+                   $x='ada';
+                 }else{
+                   $x='tidak ada';
+                 }
+
+
+            }
+           // echo json_encode($arrbulan);
+
+    }
+
+    function tesgetbulankegiatan1(){
+            $kak = $this->db->get_where('tab_kak',array('idtab_pptk'=>'5'));
+            $idkak=$kak->row()->id;
+            $dateawal=$kak->row()->ii_awal_keg;
+            $dateakhir=$kak->row()->ii_akhir_keg;
+            $bulansekarang =date('n');
+            $pecahawal = explode('-',  $dateawal);
+            $thnawal  = $pecahawal[0];
+            $blnawal  = $pecahawal[1];
+            $pecahakhir = explode('-', $dateakhir);
+            $thnakhir  = $pecahakhir[0];
+            $blnakhir  = $pecahakhir[1];
+
+           //echo (int)$blnawal.' - '. (int)$blnakhir;
+            $arr = array('jan','feb','mar','apr','mei','jun','jul','ags','sep','okt','nov','des' );
+           $arrbulan = array();
+           for($i=(int)$blnawal;$i<=(int)$blnakhir;$i++)
+            {
+
+                $where =$arr[$i-1].'!=';
+                $this->db->where('id_tab_kak', $idkak);
+                $this->db->where($where, '');
+                $ada = $this->db->get('tab_schedule');
+                if($ada->num_rows()>0 ){
+
+                    $this->db->where('MONTH(real_bulan)', $i);
+                    $this->db->where('id_tabpptk', '5');
+                    $treal = $this->db->get('tab_realisasi');
+                    if($treal->num_rows()==0){
+                        $this->db->where('id_tabpptk', '5');
+                        $jumreal = $this->db->get('tab_realisasi');
+                        if($jumreal->num_rows()==0){
+                            $pertama=1;
+                        }else{
+                            $pertama=0;
+                        }
+                        $geat = $arr[$i-1];
+                        echo 'entri '.$geat.' dan ini '. $pertama;
+                       break;
+                    }
+
+                }
+
+
+                // $arrbulan[$bulansekarang][$arr[$i-1]][]= array(
+                //     'bulan' => $arr[$i-1],
+                //     'status' => $x
+                // );
+                //   $arrbulan[$arr[$i-1]][]= array(
+                //     'bulan' => $arr[$i-1],
+                //     'sch' => $x,
+                //     'real'=> $y
+                // );
+
+            }
+            //echo json_encode($arrbulan);
+
+    }
+    function tesbreak(){
+        $arr = array('one', 'two', 'three', 'four', 'stop', 'five');
+    foreach ($arr as $val) {
+        if ($val == 'stop') {
+            break;    /* You could also write 'break 1;' here. */
+        }
+        echo "$val<br />\n";
+    }
+    }
+    function testgl(){
+
+            // $date1 = date_create('2007-03-24');
+            // $date2 = date_create('2009-06-26');
+            // $interval = date_diff($date1, $date2);
+            // echo $interval->y . " years, " . $interval->m." months, ".$interval->d." days ";
+            //-------------
+    //         $mm= $_REQUEST['month'];
+    // $yy= $_REQUEST['year'];
+      $mm= '10';
+      $yy= '2018';
+      $startdate=date($yy."-".$mm."-01") ;
+      $current_date=date('Y-m-t');
+      $ld= cal_days_in_month(CAL_GREGORIAN, $mm, $yy);
+      $lastday=$yy.'-'.$mm.'-'.$ld;
+      $start_date = date('Y-m-d', strtotime($startdate));
+      $end_date = date('Y-m-d', strtotime($lastday));
+      $end_date1 = date('Y-m-d', strtotime($lastday." + 6 days"));
+      $count_week=0;
+      $week_array = array();
+
+      for($date = $start_date; $date <= $end_date1; $date = date('Y-m-d', strtotime($date. ' + 7 days')))
+      {
+        $getarray= $this->getWeekDates($date, $start_date, $end_date);
+        echo "<br>";
+        $week_array[]=$getarray;
+        echo "\n";
+        $count_week++;
+
+    }
+
+    // its give the number of week for the given month and year
+    echo $count_week;
+    //print_r($week_array);
+
+
+
+    for($i=0;$i<$count_week;$i++)
+    {
+        $start= $week_array[$i]['ssdate'];
+        echo "--";
+
+        $week_array[$i]['eedate'];
+        echo "<br>";
+    }
+
+    }
+    function tescurency(){
+       $var = str_replace("Rp ","","Rp 44.000");
+       echo str_replace(".","",$var);
+    //     $actual = $formatter->formatCurrency(20000, 'EUR') . PHP_EOL;
+    // $output = preg_replace( '/[^0-9,"."]/', '', $actual );
+    // echo $actual;
+    }
+    function getWeekDates($date, $start_date, $end_date)
+    {
+        $week =  date('W', strtotime($date));
+        $year =  date('Y', strtotime($date));
+        $from = date("Y-m-d", strtotime("{$year}-W{$week}+1"));
+        if($from < $start_date) $from = $start_date;
+
+        $to = date("Y-m-d", strtotime("{$year}-W{$week}-6"));
+        if($to > $end_date) $to = $end_date;
+
+        $array1 = array(
+            "ssdate" => $from,
+            "eedate" => $to,
+        );
+
+        return $array1;
+
+       // echo "Start Date-->".$from."End Date -->".$to;
+    }
+
+    function testgl2(){
+       echo $this->getWeeks("2018-11-01", "sunday");
+    }
+    function getWeeks($date, $rollover)
+    {
+        $cut = substr($date, 0, 8);
+        $daylen = 86400;
+
+        $timestamp = strtotime($date);
+        $first = strtotime($cut . "00");
+        $elapsed = ($timestamp - $first) / $daylen;
+
+        $weeks = 1;
+
+        for ($i = 1; $i <= $elapsed; $i++)
+        {
+            $dayfind = $cut . (strlen($i) < 2 ? '0' . $i : $i);
+            $daytimestamp = strtotime($dayfind);
+
+            $day = strtolower(date("l", $daytimestamp));
+
+            if($day == strtolower($rollover))  $weeks ++;
+        }
+
+        return $weeks;
+    }
 }

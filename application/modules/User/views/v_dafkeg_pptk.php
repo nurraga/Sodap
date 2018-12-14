@@ -213,7 +213,7 @@
         var mm = d.getMonth()+1;
         var yyyy = d.getFullYear();
 
-        var skr   =new Date("04"+"/06/"+yyyy);
+        var skr   =new Date("01"+"/06/"+yyyy);
 
         var jsonData = JSON.parse(data.responseText);
         html+="<table class='table table-bordered'>\
@@ -244,7 +244,7 @@
                   var batasakr = new Date(nobln+"/05/"+yyyy);
 
                   var batasjn = new Date("2/05/"+yyyy);
-                  if(4 < no){
+                  if(1 < no){
                     //dibatasi bulan sekarang (tidak boleh lebih dari bulan sekarang)
                     tmb = "<button class='btn bg-maroon btn-flat disabled'>Realisasi<div class='ripple-container'></div></button>";
 
@@ -380,7 +380,7 @@
                   label : 'Tutup'
                 }
               },
-              title: 'Target Keuangan',
+              title: 'Realisasi Kegiatan',
 
               kdkeg : kdkegunit,
               idtab : idtab,
@@ -664,7 +664,7 @@
 </div>
 <!-- /.box-body -->
 <div class="box-footer">
-  Footer
+
 </div>
 <!-- /.box-footer-->
 
@@ -676,52 +676,68 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="material-icons">clear</i></button>
-
+                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
+                    <h4 class="modal-title"></h4>
 
             </div>
 
             <div class="modal-body">
                <div class="row">
                         <div class="col-md-12">
-                            <div class="card">
-                              <div class="card-header card-header-icon" data-background-color="blue">
-                                    <i class="material-icons">assignment</i>
-                                </div>
-                              <div class="card-content">
-                              <h4 class="card-title modal-title"></h4>
-                                <div class="toolbar">
+                            <!--<div class="card">-->
+                            <!--  <div class="card-header card-header-icon" data-background-color="blue">-->
+                            <!--        <i class="material-icons">assignment</i>-->
+                            <!--    </div>-->
+                            <!--  <div class="card-content">-->
+
+                            <!--    <div class="toolbar">-->
 
 
-                                </div>
-                              <br>
+                            <!--    </div>-->
+                            <!--  <br>-->
 
-                              <p id="kdkeg"></p>
-                              <p id="idtab"></p>
+
+                            <!--    </div>-->
+                            <!--</div>-->
+                            <br>
+                            <p id="kdkeg" hidden></p>
+                              <p id="idtab" hidden></p>
                                 <div class="row">
+                                    <div class="col-md-1 col-sm-1 text-muted" style="text-align: left">
+
+                                    </div>
                                     <div class="col-md-2 col-sm-2 text-muted" style="text-align: left">Nama Kegiatan</div>
                                     <div class="col-md-1 col-sm-1 text-muted" style="text-align: right;width: 5px">:</div>
-                                    <div class="col-md-9 col-sm-9 text-muted" style="padding-left: 25px"><p id="namakegiatan"></p></div>
+                                    <div class="col-md-8 col-sm-8 text-muted" style="padding-left: 25px"><p id="namakegiatan"></p></div>
                                 </div>
                                 <br>
 
                                 <div class="row">
+                                    <div class="col-md-1 col-sm-1 text-muted" style="text-align: left">
+
+                                    </div>
                                     <div class="col-md-2 col-sm-2 text-muted" style="text-align: left">Nilai Kegiatan</div>
                                     <div class="col-md-1 col-sm-1 text-muted" style="text-align: right;width: 5px">:</div>
-                                    <div class="col-md-9 col-sm-9 text-muted" style="padding-left: 25px"><p id="nilai"></p></div>
+                                    <div class="col-md-8 col-sm-8 text-muted" style="padding-left: 25px"><p id="nilai"></p></div>
                                 </div>
                                 <br>
                                 <div class="row">
+                                    <div class="col-md-1 col-sm-1 text-muted" style="text-align: left">
+
+                                    </div>
                                     <div class="col-md-2 col-sm-2 text-muted" style="text-align: left">Nama PPTK</div>
                                     <div class="col-md-1 col-sm-1 text-muted" style="text-align: right;width: 5px">:</div>
-                                    <div class="col-md-9 col-sm-9 text-muted" style="padding-left: 25px"><p id="namapptk"></p></div>
+                                    <div class="col-md-8 col-sm-8 text-muted" style="padding-left: 25px"><p id="namapptk"></p></div>
                                 </div>
                                 <br>
 
                                 <div class="row">
+                                    <div class="col-md-1 col-sm-1 text-muted" style="text-align: left">
+
+                                    </div>
                                     <div class="col-md-2 col-sm-2 text-muted" style="text-align: left">Nama KPA</div>
                                     <div class="col-md-1 col-sm-1 text-muted" style="text-align: right;width: 5px">:</div>
-                                    <div class="col-md-9 col-sm-9 text-muted" style="padding-left: 25px"><p id="namappk"></p></div>
+                                    <div class="col-md-8 col-sm-8 text-muted" style="padding-left: 25px"><p id="namappk"></p></div>
                                 </div>
 
                                 <br>
@@ -729,8 +745,6 @@
                                     <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
 
                                     </div>
-                                </div>
-                            </div>
                         </div>
 
                     </div>

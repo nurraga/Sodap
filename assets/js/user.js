@@ -71,11 +71,10 @@ $('#btn-entrikegiatan').click(function(){
           window.location.href = base_url+"User/entrikegiatan";
         });
       }else{
-          swal(
-            'info',
-            'Sudah Entri !!!',
-            'info'
-          );
+        Pace.restart ();
+        Pace.track (function (){
+          window.location.href = base_url+"User/entrikegiatan";
+        });
       }
     },
     error: function(jqXHR, textStatus, errorThrown){
