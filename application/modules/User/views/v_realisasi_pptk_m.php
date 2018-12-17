@@ -811,6 +811,7 @@ if($ubah==1){
             <p id="code" hidden></p>
             <p id="idbmodal" hidden></p>
             <p id="realfissudah" hidden></p>
+            <p id="realkeusudah" hidden></p>
             <p id="realfisedit" hidden></p>
             <!-- <p id="rek"></p> -->
             <p id="pagubmodalbln" hidden></p>
@@ -992,7 +993,7 @@ if($ubah==1){
                 <div class="col-md-2 col-sm-2 col-xs-12">
                 </div>
               </div>
-              <div class="row realfissudah2" >
+              <div class="row realfissudah2 " >
               <div class="col-md-1 col-sm-1 col-xs-12">
               </div>
                   <div class="col-md-4 col-sm-4 col-xs-12">
@@ -1009,6 +1010,24 @@ if($ubah==1){
                                 <i class="fa fa-percent"></i>
                                 </div>
                                 </div>
+                </div>
+                <div class="col-md-2 col-sm-2 col-xs-12">
+                </div>
+              </div>
+              <div class="row realkeusudah2" >
+              <div class="col-md-1 col-sm-1 col-xs-12">
+              </div>
+                  <div class="col-md-4 col-sm-4 col-xs-12">
+                   <h4 class="text-left text-muted">Total Realisasi Keuangan s/d Bulan Sekarang</h4>
+                 </div>
+                 <div class="col-md-1 col-sm-1 col-xs-12">
+                  <h4 class="text-center text-muted">:</h4>
+                </div>
+                <div class="col-md-4 col-sm-4 col-xs-12">
+
+
+                                <input type="text" class=" form-control" id="realkeusudah2"  name="realkeusudah2" style="text-align: right;" readonly>
+
                 </div>
                 <div class="col-md-2 col-sm-2 col-xs-12">
                 </div>
@@ -1206,6 +1225,18 @@ if($ubah==1){
     self.Value('0');
   }
 });
+  $('#realkeusudah2').inputmask("numeric",{
+  radixPoint: ",",
+  groupSeparator: ".",
+  digits: 2,
+  autoGroup: true,
+  prefix: 'Rp ', //No Space, this will truncate the first character
+  rightAlign: false,
+  autoUnmask : true,
+  oncleared: function () {
+    self.Value('0');
+  }
+});
   $('#headtotsdana').inputmask("numeric",{
   radixPoint: ",",
   groupSeparator: ".",
@@ -1256,8 +1287,10 @@ if($ubah==1){
       $("#realkeubljmodal").on('input change',function (e) {
            var pagu=$('#nilaikontrak').val();
            var val= this.value;
+
+
            // newStr = parseInt(numbers.replace(/_/g, ""), 10);
-           // console.log(val +'-'+ pagu);
+
            if(pagu==0){
              swal(
                'Upss ',
@@ -1266,14 +1299,13 @@ if($ubah==1){
              )
             $("#realkeubljmodal").val(0);
             return false;
-           }
-           if(parseInt(val,10) > parseInt(pagu,10)){
+          }else if(parseInt(val,10) > parseInt(pagu,10)){
              swal(
                'Upss ',
-               'Total Melebihi Pagu',
+               'Total Melebihi Nilai Kontrak',
                'info'
              )
-             $("#nilaikontrak").val(0);
+             $("#realkeubljmodal").val(0);
 
              return false;
            }
@@ -1569,6 +1601,12 @@ if($ubah==1){
 
     });
     $(".btnrealfisik").click(function() {
+      var bulan = {
+        'January':'0','February':'1',
+        'March':'2','April':'3','May':'4',
+        'June':'5','July':'6','August':'7',
+        'September':'8','October':'9',
+        'November':'10','December':'11'};
 
         var row = $(this).closest("tr");    // Find the row
         var res = row.find(".rekheader").text();
@@ -1592,7 +1630,39 @@ if($ubah==1){
           success: function(result){
               //jika code = 0 maka entri baru
               if (result.data[0].code == 0){
-
+                $('#awalktr').datepicker({
+                  format: "dd MM yyyy",
+                  language: "id",
+                  autoclose: true
+                }).on("input change", function (e) {
+                var namabln =this.value;
+                var convert = namabln.split(" ");
+                tgl = convert[0];
+                bln = bulan[convert[1]];
+                thn = convert[2];
+                // console.log(tgl +'-'+ bln +'-'+thn);
+                $('#akhirktr').datepicker('setDate', null);
+                $('#akhirktr').datepicker('destroy');
+                $('#akhirktr').datepicker({
+                  format: "dd MM yyyy",
+                  autoclose: true,
+                  startDate: new Date(thn,bln,tgl),
+                }).on("input change", function (e) {
+                  var namabln2 =this.value;
+                  var convert2 = namabln2.split(" ");
+                  var tgl2 = convert2[0];
+                  var bln2 = bulan[convert2[1]];
+                  var thn2 = convert2[2];
+                  $('#spmk').datepicker('setDate', null);
+                  $('#spmk').datepicker('destroy');
+                  $('#spmk').datepicker({
+                    format: "dd MM yyyy",
+                    autoclose: true,
+                    startDate: new Date(thn,bln,tgl),
+                    endDate: new Date(thn2,bln2,tgl2)
+                  });
+                });
+              });
                 modalrealisasi({
                       buttons: {
                         batal: {
@@ -1620,6 +1690,49 @@ if($ubah==1){
                     });
               }else if(result.data[0].code == 1){
                   //code 1 = Master sudah ada tetapi detail belum ada
+                  $('#awalktr').datepicker({
+                   format: "dd MM yyyy",
+                   language: "id",
+                   autoclose: true
+
+                 }).on("input change", function (e) {
+
+                   var namabln =this.value;
+                   var convert = namabln.split(" ");
+
+                   tgl = convert[0];
+                   bln = bulan[convert[1]];
+                   thn = convert[2];
+                   // console.log(tgl +'-'+ bln +'-'+thn);
+                   $('#akhirktr').datepicker('setDate', null);
+                   $('#akhirktr').datepicker('destroy');
+                   $('#akhirktr').datepicker({
+                       format: "dd MM yyyy",
+
+                       autoclose: true,
+                       startDate: new Date(thn,bln,tgl),
+
+
+                     }).on("input change", function (e) {
+                       var namabln2 =this.value;
+                       var convert2 = namabln2.split(" ");
+                       var tgl2 = convert2[0];
+                       var bln2 = bulan[convert2[1]];
+                       var thn2 = convert2[2];
+                       $('#spmk').datepicker('setDate', null);
+                       $('#spmk').datepicker('destroy');
+                       $('#spmk').datepicker({
+                           format: "dd MM yyyy",
+                           autoclose: true,
+                           startDate: new Date(thn,bln,tgl)
+
+
+
+                         });
+
+
+                     });
+                   });
                   var jumreal = result.data[0].realfisik;
                    if (jumreal < 100){
                      modalrealisasi({
@@ -1651,6 +1764,7 @@ if($ubah==1){
                            status : result.data[0].code,
                            tottarfis :result.data[0].targetfis,
                            realfisik : result.data[0].realfisik,
+                           realkeu:result.data[0].jumrealkeu,
                            idbmodal : result.data[0].idbmodal
                          });
                    }else{
@@ -1675,6 +1789,49 @@ if($ubah==1){
               // }
               else if(result.data[0].code == 4){
                 //code 4 = realisasi masih bisa di edit
+                $('#awalktr').datepicker({
+                 format: "dd MM yyyy",
+                 language: "id",
+                 autoclose: true
+
+               }).on("input change", function (e) {
+
+                 var namabln =this.value;
+                 var convert = namabln.split(" ");
+
+                 tgl = convert[0];
+                 bln = bulan[convert[1]];
+                 thn = convert[2];
+                 // console.log(tgl +'-'+ bln +'-'+thn);
+                 $('#akhirktr').datepicker('setDate', null);
+                 $('#akhirktr').datepicker('destroy');
+                 $('#akhirktr').datepicker({
+                     format: "dd MM yyyy",
+
+                     autoclose: true,
+                     startDate: new Date(thn,bln,tgl),
+
+
+                   }).on("input change", function (e) {
+                     var namabln2 =this.value;
+                     var convert2 = namabln2.split(" ");
+                     var tgl2 = convert2[0];
+                     var bln2 = bulan[convert2[1]];
+                     var thn2 = convert2[2];
+                     $('#spmk').datepicker('setDate', null);
+                     $('#spmk').datepicker('destroy');
+                     $('#spmk').datepicker({
+                         format: "dd MM yyyy",
+                         autoclose: true,
+                         startDate: new Date(thn,bln,tgl),
+                         // endDate: new Date(thn2,bln2,tgl2)
+
+
+                       });
+
+
+                   });
+                 });
                 modalrealisasi({
 
                       buttons: {
@@ -1706,9 +1863,11 @@ if($ubah==1){
                       bbtbj   :result.data[0].bobotrealblj,
                       status  : result.data[0].code,
                       realfisik : result.data[0].realfisik,
+                       realkeu:result.data[0].jumrealkeu,
                       idbmodal : result.data[0].idbmodal,
                       iddet : result.data[0].iddet,
-                      tottarfis :result.data[0].targetfis
+                      tottarfis :result.data[0].targetfis,
+                      realkeublj : result.data[0].realkeublj
 
                     });
               }
@@ -1770,53 +1929,48 @@ if($ubah==1){
 
 
 
-            var bulan = {
-              'January':'0','February':'1',
-              'March':'2','April':'3','May':'4',
-              'June':'5','July':'6','August':'7',
-              'September':'8','October':'9',
-              'November':'10','December':'11'};
-            $('#awalktr').datepicker({
-             format: "dd MM yyyy",
-             language: "id",
-             autoclose: true
 
-           }).on("input change", function (e) {
-
-             var namabln =this.value;
-             var convert = namabln.split(" ");
-
-             tgl = convert[0];
-             bln = bulan[convert[1]];
-             thn = convert[2];
-             // console.log(tgl +'-'+ bln +'-'+thn);
-             $('#akhirktr').datepicker('setDate', null);
-             $('#akhirktr').datepicker('destroy');
-             $('#akhirktr').datepicker({
-                 format: "dd MM yyyy",
-
-                 autoclose: true,
-                 startDate: new Date(thn,bln,tgl),
-
-
-               }).on("input change", function (e) {
-                 var namabln2 =this.value;
-                 var convert2 = namabln2.split(" ");
-                 var tgl2 = convert2[0];
-                 var bln2 = bulan[convert2[1]];
-                 var thn2 = convert2[2];
-                 $('#spmk').datepicker('setDate', null);
-                 $('#spmk').datepicker('destroy');
-                 $('#spmk').datepicker({
-                     format: "dd MM yyyy",
-                     autoclose: true,
-                     startDate: new Date(thn,bln,tgl),
-                     endDate: new Date(thn2,bln2,tgl2)
-
-                   });
-
-               });
-             });
+           //  $('#awalktr').datepicker({
+           //   format: "dd MM yyyy",
+           //   language: "id",
+           //   autoclose: true
+           //
+           // }).on("input change", function (e) {
+           //
+           //   var namabln =this.value;
+           //   var convert = namabln.split(" ");
+           //
+           //   tgl = convert[0];
+           //   bln = bulan[convert[1]];
+           //   thn = convert[2];
+           //   // console.log(tgl +'-'+ bln +'-'+thn);
+           //   $('#akhirktr').datepicker('setDate', null);
+           //   $('#akhirktr').datepicker('destroy');
+           //   $('#akhirktr').datepicker({
+           //       format: "dd MM yyyy",
+           //
+           //       autoclose: true,
+           //       startDate: new Date(thn,bln,tgl),
+           //
+           //
+           //     }).on("input change", function (e) {
+           //       var namabln2 =this.value;
+           //       var convert2 = namabln2.split(" ");
+           //       var tgl2 = convert2[0];
+           //       var bln2 = bulan[convert2[1]];
+           //       var thn2 = convert2[2];
+           //       $('#spmk').datepicker('setDate', null);
+           //       $('#spmk').datepicker('destroy');
+           //       $('#spmk').datepicker({
+           //           format: "dd MM yyyy",
+           //           autoclose: true,
+           //           startDate: new Date(thn,bln,tgl),
+           //           endDate: new Date(thn2,bln2,tgl2)
+           //
+           //         });
+           //
+           //     });
+           //   });
 
     });
 
@@ -1919,7 +2073,7 @@ $(function () {
           var bulan   = $('#idbulan').html();
           var tahun   = $('#idtahun').html();
           var nilaikontrak   = $('#nilaikontrak').val();
-
+          var realkeubljmodal  = $('#realkeubljmodal').val();
           var formData = new FormData($('#formrealisasibljmodal')[0]);
           formData.append("token",token);
           formData.append("tahun",tahun);
@@ -1927,6 +2081,7 @@ $(function () {
           formData.append("idtab",tab);
           formData.append("mtgkey",mtgkey);
           formData.append("nilaikontrak",nilaikontrak);
+          formData.append("realkeubljmodal",realkeubljmodal);
           $.ajax({
             url: base_url+"User/simpanrealisasibmodal",
             type: 'POST',
@@ -2004,11 +2159,12 @@ $(function () {
           Pace.track (function (){
           var token   = localStorage.getItem("token");
           var iddet     = $('#iddet').html();
-
+          var realkeubljmodal  = $('#realkeubljmodal').val();
 
           var formData = new FormData($('#formrealisasibljmodal')[0]);
           formData.append("token",token);
           formData.append("iddet",iddet);
+          formData.append("realkeubljmodal",realkeubljmodal);
 
           $.ajax({
             url: base_url+"User/ubahrealisasibmodaldet",
@@ -2025,7 +2181,7 @@ $(function () {
                 if (jsonData.data[0].status == false){
                   swal(
                     'info',
-                    'Terjadi Kesalahan saat simpan!!!',
+                    'Terjadi Kesalahan Saat Ubah!!!',
                     'info'
                   );
                   ajaxtoken();

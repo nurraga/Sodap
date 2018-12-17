@@ -376,6 +376,7 @@
                             noktrk  : result.data[0].noktrk,
                             status : result.data[0].code,
                             realfisik : result.data[0].realfisik,
+                            realkeu:result.data[0].jumrealkeu,
                             idbmodal : result.data[0].idbmodal,
                             tottarfis :result.data[0].targetfis
                           });
@@ -437,7 +438,7 @@
                                              format: "dd MM yyyy",
                                              autoclose: true,
                                              startDate: new Date(thn,bln,tgl),
-                                             endDate: new Date(thn2,bln2,tgl2)
+                                            // endDate: new Date(thn2,bln2,tgl2)
 
 
                                            });
@@ -477,6 +478,7 @@
                           bbtbj   :result.data[0].bobotrealblj,
                           status  : result.data[0].code,
                           realfisik : result.data[0].realfisik,
+                          realkeu:result.data[0].jumrealkeu,
                           idbmodal : result.data[0].idbmodal,
                           iddet : result.data[0].iddet,
                           tottarfis :result.data[0].targetfis
@@ -2100,6 +2102,7 @@
             <p id="code" hidden></p>
             <p id="idbmodal" hidden></p>
             <p id="realfissudah" hidden></p>
+            <p id="realkeusudah" hidden></p>
             <p id="realfisedit" hidden></p>
             <!-- <p id="rek"></p> -->
             <p id="pagubmodalbln" hidden></p>
@@ -2302,11 +2305,51 @@
                 <div class="col-md-2 col-sm-2 col-xs-12">
                 </div>
               </div>
+              <div class="row realkeusudah2" >
+              <div class="col-md-1 col-sm-1 col-xs-12">
+              </div>
+                  <div class="col-md-4 col-sm-4 col-xs-12">
+                   <h4 class="text-left text-muted">Total Realisasi Keuangan s/d Bulan Sekarang</h4>
+                 </div>
+                 <div class="col-md-1 col-sm-1 col-xs-12">
+                  <h4 class="text-center text-muted">:</h4>
+                </div>
+                <div class="col-md-4 col-sm-4 col-xs-12">
+
+
+                                <input type="text" class="format-rupiah form-control" id="realkeusudah2"  name="realkeusudah2" style="text-align: right;" readonly>
+
+                </div>
+                <div class="col-md-2 col-sm-2 col-xs-12">
+                </div>
+              </div>
+
               <div class="row">
               <div class="col-md-1 col-sm-1 col-xs-12">
               </div>
                   <div class="col-md-4 col-sm-4 col-xs-12">
-                   <h4 class="text-left text-muted">Tambahan Realisasi Fisik Bulan Sekarang</h4>
+                   <h4 class="text-left text-muted">Tambahan Realisasi Keuangan</h4>
+                 </div>
+                 <div class="col-md-1 col-sm-1 col-xs-12">
+                  <h4 class="text-center text-muted">:</h4>
+                </div>
+                <div class="col-md-4 col-sm-4 col-xs-12">
+
+                                <input type="text" class=" form-control" id="realkeubljmodal" name="realkeubljmodal"  style="text-align: right;" >
+                                <!-- <div class="input-group-addon">
+                                <i class="fa fa-percent"></i>
+                                </div> -->
+
+                </div>
+                <div class="col-md-2 col-sm-2 col-xs-12">
+                </div>
+              </div>
+
+              <div class="row">
+              <div class="col-md-1 col-sm-1 col-xs-12">
+              </div>
+                  <div class="col-md-4 col-sm-4 col-xs-12">
+                   <h4 class="text-left text-muted">Tambahan Realisasi Fisik</h4>
                  </div>
                  <div class="col-md-1 col-sm-1 col-xs-12">
                   <h4 class="text-center text-muted">:</h4>
