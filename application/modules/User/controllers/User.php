@@ -1685,7 +1685,7 @@ $query='';
       $spmk     =  $adabmodal->row()->spmk;
       $noktrk   =  $adabmodal->row()->no_kontrak;
       //kalkulasi realfisik_bljmodal berdasarkan id_tab_real_bmodal
-      $this->db->select('SUM(`realfisik_bljmodal`) AS sumary');
+      $this->db->select('SUM(`realfisik_bljmodal`) AS sumary,SUM(`real_keuangan`) AS sumary_keu');
       $this->db->from('tab_realisasi_bmodal_det');
       $this->db->where('`tab_realisasi_bmodal_det`.`id_tab_real_bmodal`', $idbmodal);
       $this->db->where('`tab_realisasi_bmodal_det`.`stat`','1');
@@ -1693,9 +1693,11 @@ $query='';
       if($sumary){
         //jika ada
         $jumrealfis= $sumary->sumary;
+        $jumrealkeu= $sumary->sumary_keu;
       }else{
         //jika tidak ada = 0
         $jumrealfis= 0;
+        $jumrealkeu= 0;
       }
 
 
@@ -1720,7 +1722,9 @@ $query='';
             'spmk'        => $spmk,
             'noktrk'      => $noktrk,
             'realfisik'   => $jumrealfis, //total semua realisasi fisik
+            'jumrealkeu'   => $jumrealkeu, //total semua realisasi fisik
             'realblj'     => $detbmodal->row()->realfisik_bljmodal,
+            'realkeublj'   => $detbmodal->row()->real_keuangan,
             'bobotrealblj'=> $detbmodal->row()->bobot_real_bljmodal,
             'idbmodal'    => $idbmodal,
             'targetfis'   => $tottargetfis['tot']
@@ -1739,6 +1743,7 @@ $query='';
             'spmk'        => $spmk,
             'noktrk'      => $noktrk,
             'realfisik'   => $jumrealfis,
+            'jumrealkeu'   => $jumrealkeu,
             'idbmodal'    => $idbmodal,
             'targetfis'   => $tottargetfis['tot']
 
@@ -1903,8 +1908,7 @@ function simpanrealisasibmodaldet(){
 }
 
 function ubahrealisasibmodaldet(){
-  if
- (!$this->ion_auth->logged_in()){
+  if(!$this->ion_auth->logged_in()){
     redirect('Home/login', 'refresh');
   }elseif ($this->ion_auth->is_admin()){
     redirect('Cpanel', 'refresh');
@@ -1937,11 +1941,11 @@ function ubahrealisasibmodaldet(){
             $bobot_bljmodal       = $this->input->post('bobotbljmodal');
             $realfisik_bljmodal   = $this->input->post('realfisikbljmodal');
             $bobot_real_bljmodal  = $this->input->post('realbobotbljmodal');
-
+            $realkeubljmodal      = $this->input->post('realkeubljmodal');
 
 
             $detail=array(
-
+                'real_keuangan'       => $realkeubljmodal,
                 'bobot_bljmodal'      => $bobot_bljmodal,
                 'realfisik_bljmodal'  => $realfisik_bljmodal,
                 'bobot_real_bljmodal' => $bobot_real_bljmodal,
@@ -2038,8 +2042,7 @@ function simpanrealisasibmodal(){
             $awal_ktrk      = $this->input->post('awalktr');
             $akhir_ktrk     = $this->input->post('akhirktr');
             $spmk           = $this->input->post('spmk');
-            $pagubmodalbln          = $this->input->post('pagubmodalbln');
-
+            $pagubmodalbln  = $this->input->post('pagubmodalbln');
             $no_kontrak     = $this->input->post('nomorkontrak');
             $adminentri     = $nip;
             $tgl_entri      = date('Y/m/d h:i:sa');
@@ -2059,6 +2062,7 @@ function simpanrealisasibmodal(){
             $real_tahun           = $this->input->post('tahun');
             $real_bulan           = $this->input->post('bulan');
             $bobot_bljmodal       = $this->input->post('bobotbljmodal');
+            $realkeubljmodal      = $this->input->post('realkeubljmodal');
             $realfisik_bljmodal   = $this->input->post('realfisikbljmodal');
             $bobot_real_bljmodal  = $this->input->post('realbobotbljmodal');
 
@@ -2078,8 +2082,11 @@ function simpanrealisasibmodal(){
 
             );
             $detail=array(
+
+
                 'real_bulan'          => $real_tahun.'-'.$arraybulnid[$real_bulan].'-01',
                 'bobot_bljmodal'      => $bobot_bljmodal,
+                'real_keuangan'       => $realkeubljmodal,
                 'realfisik_bljmodal'  => $realfisik_bljmodal,
                 'bobot_real_bljmodal' => $bobot_real_bljmodal,
                 'tgl_entri '          => $tgl_entri ,

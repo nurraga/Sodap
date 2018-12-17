@@ -270,6 +270,7 @@ function modalrealisasi(data) {
     $('#awalktr').prop("disabled", "disabled");
     $('#akhirktr').prop("disabled", "disabled");
     $('.realfissudah2').prop("hidden", false);
+    $('.realkeusudah2').prop("hidden", false);
     $('#spmk').prop("disabled", "disabled");
     $('#nomorkontrak').prop("disabled", "disabled");
     $('#nilaikontrak').val(data.nlktrk);
@@ -280,6 +281,8 @@ function modalrealisasi(data) {
     $('#nomorkontrak').val(data.noktrk);
     $('#realfissudah').html(data.realfisik);
     $('#realfissudah2').val(data.realfisik);
+    $('#realkeusudah').html(data.realkeu);
+    $('#realkeusudah2').val(data.realkeu);
 
   }else if(stat==3 || stat==4){
     $('#totargetfisik').prop("disabled", "disabled");
@@ -290,6 +293,7 @@ function modalrealisasi(data) {
     $('#spmk').prop("disabled", "disabled");
     $('#nomorkontrak').prop("disabled", "disabled");
     $('.realfissudah2').prop("hidden", false);
+    $('.realkeusudah2').prop("hidden", false);
     $('#nilaikontrak').val(data.nlktrk);
     $('#pbj').val(data.pbj);
     $("#awalktr").datepicker("setDate",new Date(data.awlktrk));
@@ -298,7 +302,10 @@ function modalrealisasi(data) {
     $('#nomorkontrak').val(data.noktrk);
     $('#realfissudah').html(data.realfisik);
     $('#realfissudah2').val(data.realfisik);
+    $('#realkeusudah').html(data.realkeu);
+    $('#realkeusudah2').val(data.realkeu);
     $('#realfisedit').html(data.realbj);
+    $('#realkeubljmodal').val(data.realkeublj);
 
     $('#realfisikbljmodal').val(data.realbj );
     $('#realbobotbljmodal').val(data.bbtbj);
@@ -312,6 +319,7 @@ function modalrealisasi(data) {
     $('#spmk').removeAttr("disabled");
     $('#nomorkontrak').removeAttr("disabled");
     $('.realfissudah2').prop("hidden", true);
+    $('.realkeusudah2').prop("hidden", true);
     $('#realfissudah').html(0);
     $('#idbmodal').html(0);
     $('#iddet').html(0);
