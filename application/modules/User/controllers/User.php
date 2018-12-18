@@ -1100,7 +1100,7 @@ function realisasipptk(){
                             , `angkas`.`kdkegunit`
                             , `angkas`.`kd_bulan`
                             , sum(`angkas`.`nilai`) AS nilai
-                            , `angkas`.`mtgkey`
+                            ,  `angkas`.`mtgkey`
                             , `matangr`.`kdper`
                             , `matangr`.`nmper`
                             , `angkas`.`tahun`');
