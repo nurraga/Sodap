@@ -283,7 +283,8 @@ function modalrealisasi(data) {
     $('#realfissudah2').val(data.realfisik);
     $('#realkeusudah').html(data.realkeu);
     $('#realkeusudah2').val(data.realkeu);
-
+    $('#texttrkbm').html('Tambahan Realisasi Keuangan');
+    $('#texttrfbm').html('Tambahan Realisasi Fisik');
   }else if(stat==3 || stat==4){
     $('#totargetfisik').prop("disabled", "disabled");
     $('#nilaikontrak').prop("disabled", "disabled");
@@ -305,8 +306,10 @@ function modalrealisasi(data) {
     $('#realkeusudah').html(data.realkeu);
     $('#realkeusudah2').val(data.realkeu);
     $('#realfisedit').html(data.realbj);
+    $('#realkeuedit').html(data.realkeublj);
+    $('#texttrkbm').html('Ubah Tambahan Realisasi Keuangan');
+    $('#texttrfbm').html('Ubah Tambahan Realisasi Fisik');
     $('#realkeubljmodal').val(data.realkeublj);
-
     $('#realfisikbljmodal').val(data.realbj );
     $('#realbobotbljmodal').val(data.bbtbj);
     $('#iddet').html(data.iddet);
@@ -323,6 +326,11 @@ function modalrealisasi(data) {
     $('#realfissudah').html(0);
     $('#idbmodal').html(0);
     $('#iddet').html(0);
+    $('#realfisedit').html(0);
+    $('#realkeusudah').html(0);
+    $('#realkeuedit').html(0);
+    $('#texttrkbm').html('Tambahan Realisasi Keuangan');
+    $('#texttrfbm').html('Tambahan Realisasi Fisik');
   }
 
 
