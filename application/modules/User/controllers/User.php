@@ -651,7 +651,9 @@ function jsontargetfis(){
     }
     $xar= 100/$arsir;
 
-    $nlsatuarsir =   round($xar, 3) ;
+    //$nlsatuarsir =   round($xar, 3) ;
+
+    $nlsatuarsir =  number_format($xar,2);
 
 
     $data['header'][] = array(
@@ -714,20 +716,24 @@ function jsontargetfis(){
       $target =  $arraytarget[$i]*$nlsatuarsir;
 
       if ($target!=0) {
-        $xtarget=$jumtarget+=$target;
-    }else{
-        $xtarget = 0;
-    }
-    if($jumtarget > 99 && $jumtarget < 100  ){
-        $xtarget=ceil($jumtarget);
-    }elseif($jumtarget > 100){
-        $xtarget=floor($jumtarget);
-    }
-    $data['data'][] = array(
-        'bln'      =>  $arraybuln[$i],
-        'targ'      => $target,
-        'jumtarg'   => $xtarget
-    );
+
+        $xtarget=$jumtarget+= $target;
+
+      }else{
+          $xtarget = 0;
+      }
+
+      if($jumtarget > 99 && $jumtarget < 100  ){
+          $xtarget=ceil($jumtarget);
+      }elseif($jumtarget > 100){
+          $xtarget=floor($jumtarget);
+      }
+
+      $data['data'][] = array(
+          'bln'      =>  $arraybuln[$i],
+          'targ'      => $target,
+          'jumtarg'   => number_format($xtarget,2)
+      );
 
 
 }
@@ -820,8 +826,12 @@ function jsonrealisasi(){
             }
         }
         //realisasi 5.2.3
-        $this->db->where('MONTH(real_bulan)', $bulan);
-        $this->db->select('SUM(`nilai_ktrk`) AS jumrealbm');
+        // $this->db->where('MONTH(real_bulan)', $bulan);
+        // $this->db->select('SUM(`nilai_ktrk`) AS jumrealbm');
+        // $this->db->where('id_tab_pptk', $idtab);
+        // $jumreal = $this->db->get('tab_realisasi_bmodal');
+
+        $this->db->select('id');
         $this->db->where('id_tab_pptk', $idtab);
         $jumreal = $this->db->get('tab_realisasi_bmodal');
         if($jumreal->num_rows()==0){
@@ -829,9 +839,14 @@ function jsonrealisasi(){
             $adarealbm=0;
             $totrealbm=0;
         }else{
+            $idjumreal= $jumreal->row()->id;
+            $this->db->select('SUM(`real_keuangan`) AS jumrealbm');
+            $this->db->where('MONTH(real_bulan)', $bulan);
+            $this->db->where('id_tab_real_bmodal', $idjumreal);
+            $detjumreal = $this->db->get('tab_realisasi_bmodal_det');
             $pertamabm=0;
             $adarealbm=1;
-            $totrealbm=$jumreal->row()->jumrealbm;
+            $totrealbm=$detjumreal->row()->jumrealbm;
         }
         //jumlah totreal keuangan 5.2.2 dan 5.2.3
 
@@ -878,7 +893,7 @@ function realisasipptk(){
                 $encryptionMethod = "AES-256-ECB";
                 $secretHash = "aS9P0RNoKY9QcmvGDWwcZcjw6OuZKJK2VrR4Hv9UMms=";
                 if(!isset($_GET['unit'], $_GET['keg'], $_GET['tab'],$_GET['pr'],$_GET['indexbl'],$_GET['bl'],$_GET['ub'])) {
-                  redirect('User/kakppk', 'refresh');
+                  redirect('User/dafkeg', 'refresh');
                 }else{
                     $un=$_GET['unit'];
                     $keg=$_GET['keg'];
@@ -926,9 +941,6 @@ function realisasipptk(){
                           }
 
                             if($pert==1){
-
-
-
                                   //$header=$this->User_model->getheader_realisasipptk($idopd,$lskeg->kdkeg);
                                   $header=$this->User_model->getheader_realisasipptk_angkas($idopd,$lskeg->kdkeg,$bl);
                                   //cek ke aliran kas
@@ -1098,7 +1110,7 @@ function realisasipptk(){
                             $this->db->select('`angkas`.`id`
                             , `angkas`.`unitkey`
                             , `angkas`.`kdkegunit`
-                            , `angkas`.`kd_bulan`
+
                             , sum(`angkas`.`nilai`) AS nilai
                             ,  `angkas`.`mtgkey`
                             , `matangr`.`kdper`
@@ -1113,6 +1125,7 @@ function realisasipptk(){
                             $this->db->where_in('kd_bulan', $wherein);
                             $this->db->group_by('`matangr`.`kdper`');
                             $headerlist = $this->db->get()->result_array();
+                            // echo json_encode($headerlist);exit;
                             //---------------------------------------------------//
                             $wherein_real_m = array();
                             $this->db->select('`id`
@@ -1864,17 +1877,20 @@ function simpanrealisasibmodaldet(){
             $bobot_bljmodal       = $this->input->post('bobotbljmodal');
             $realfisik_bljmodal   = $this->input->post('realfisikbljmodal');
             $bobot_real_bljmodal  = $this->input->post('realbobotbljmodal');
+            $realkeubljmodal      = $this->input->post('realkeubljmodal');
 
 
 
             $detail=array(
                 'id_tab_real_bmodal'    => $idtabreal,
                 'real_bulan'          => $real_tahun.'-'.$arraybulnid[$real_bulan].'-01',
+                'real_keuangan'       => $realkeubljmodal,
                 'bobot_bljmodal'      => $bobot_bljmodal,
                 'realfisik_bljmodal'  => $realfisik_bljmodal,
                 'bobot_real_bljmodal' => $bobot_real_bljmodal,
                 'tgl_entri '          => $tgl_entri ,
                 'admin_entri  '       => $adminentri
+
 
             );
             $result=$this->User_model->simpanrealisasibmodaldet($detail);
@@ -1956,10 +1972,23 @@ function ubahrealisasibmodaldet(){
             $result=$this->User_model->ubahrealisasibmodaldet($detail,$iddet);
 
             if($result){
-
+              $idmaster = $this->db->get_where('tab_realisasi_bmodal_det',array('id_tab_real_bmodal'=>$iddet));
+              $id=$idmaster->row()->id;
+              $tbmaster = $this->db->get_where('tab_realisasi_bmodal',array('id'=>$id));
+              $nilaiktrk=$tbmaster->row()->nilai_ktrk;
+              $this->db->select('SUM(`real_keuangan`) AS jumrealbm');
+              //$this->db->where('MONTH(real_bulan)', $indexbulan);
+              $this->db->where('id_tab_real_bmodal', $id);
+              $detjumreal = $this->db->get('tab_realisasi_bmodal_det');
+              $totnlrealbmodal=$detjumreal->row()->jumrealbm;
+              $render=(int)$nilaiktrk - (int)$totnlrealbmodal;
                 $arr['data'][]= array(
 
-                    'status' => true
+
+                    'status' => true,
+                    'realkeu' => $totnlrealbmodal,
+                    'sisadana' => $render,
+                    'render' => $this->template->rupiah($render)
                 );
             }else{
                 $arr['data'][]= array(
@@ -2096,11 +2125,14 @@ function simpanrealisasibmodal(){
             $result=$this->User_model->simpanrealisasibmodal($data,$detail);
 
             if($result){
-              $render=(int)$pagubmodalbln - (int)$nilai_ktrk;
+            //  $render=(int)$pagubmodalbln - (int)$nilai_ktrk;
+              $render=(int)$nilai_ktrk - (int)$realkeubljmodal;
+
                 $arr['data'][]= array(
 
                     'status' => true,
                     'nilai'=> $nilai_ktrk,
+                    'realkeu' => $realkeubljmodal,
                     'render' => $this->template->rupiah($render)
 
                 );

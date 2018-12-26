@@ -278,8 +278,10 @@
                         <td style="text-align:right"><b>'.$this->template->rupiah($hrow['nilai']).'</b></td>
                         <td style="display:none;"><input type="text" class="form-control headtotsd "  readonly value='.$hrow['nilai'].'></td>
                         <td style="display:none;"><input type="text" class="form-control nsisadana sisadana'.$clasrek.'"  readonly value='.$hrow['nilai'].'></td>
-                        <td colspan="3"></td>
-                        <td style="vertical-align : middle;text-align:center;"><input type="text" class="form-control hr real5-2-3 harga-rek'.$clasrek.'" readonly name="jumperrek[]"  style="font-size: 11px" value='.$nlrealbmodal.'></td>
+                        <td style="vertical-align : middle;text-align:center;"><u><b><i>Nilai Kontrak</i></b></u></td>
+                          <td style="vertical-align : middle;text-align:center;"><input type="text" class="form-control hr real5-2-3 harga-rek'.$clasrek.'" readonly name="jumperrek[]"  style="font-size: 11px" value='.$nlrealbmodal.'></td>
+                        <td colspan="2"></td>
+
                         <td style="vertical-align : middle;text-align:center;"><button type="button" class="btnrealfisik btn bg-blue btn-flat bm'.$clasrek.'">Realisasi<div class="ripple-container"></div></button></td>
                         </tr>';
 
@@ -811,8 +813,9 @@ if($ubah==1){
             <p id="code" hidden></p>
             <p id="idbmodal" hidden></p>
             <p id="realfissudah" hidden></p>
-            <p id="realkeusudah" hidden></p>
             <p id="realfisedit" hidden></p>
+            <p id="realkeusudah" hidden></p>
+            <p id="realkeuedit" hidden ></p>
             <!-- <p id="rek"></p> -->
             <p id="pagubmodalbln" hidden></p>
             <p id="mtgkey" hidden></p>
@@ -1036,7 +1039,8 @@ if($ubah==1){
               <div class="col-md-1 col-sm-1 col-xs-12">
               </div>
                   <div class="col-md-4 col-sm-4 col-xs-12">
-                   <h4 class="text-left text-muted">Tambahan Realisasi Keuangan</h4>
+
+                   <h4 class="text-left text-muted" id="texttrkbm">Tambahan Realisasi Keuangan</h4>
                  </div>
                  <div class="col-md-1 col-sm-1 col-xs-12">
                   <h4 class="text-center text-muted">:</h4>
@@ -1056,7 +1060,7 @@ if($ubah==1){
               <div class="col-md-1 col-sm-1 col-xs-12">
               </div>
                   <div class="col-md-4 col-sm-4 col-xs-12">
-                   <h4 class="text-left text-muted">Tambahan Realisasi Fisik</h4>
+                   <h4 class="text-left text-muted" id="texttrfbm">Tambahan Realisasi Fisik</h4>
                  </div>
                  <div class="col-md-1 col-sm-1 col-xs-12">
                   <h4 class="text-center text-muted">:</h4>
@@ -1284,37 +1288,7 @@ if($ubah==1){
        //      'info'
        //    ) this.select(): jumlah;
       });
-      $("#realkeubljmodal").on('input change',function (e) {
-           var pagu=$('#nilaikontrak').val();
-           var val= this.value;
 
-
-           // newStr = parseInt(numbers.replace(/_/g, ""), 10);
-
-           if(pagu==0){
-             swal(
-               'Upss ',
-               'Silahkan Entri Nilai Kontrak',
-               'info'
-             )
-            $("#realkeubljmodal").val(0);
-            return false;
-          }else if(parseInt(val,10) > parseInt(pagu,10)){
-             swal(
-               'Upss ',
-               'Total Melebihi Nilai Kontrak',
-               'info'
-             )
-             $("#realkeubljmodal").val(0);
-
-             return false;
-           }
-          // jumlah = jumlah > 100 ? swal(
-          //      'info',
-          //      'Target Fisik Belanja Modal Sudah di Entri',
-          //      'info'
-          //    ) this.select(): jumlah;
-         });
   // $('#nilaikontrak').on('input change', function(e) {
   //
   // // console.log(pagumodal);
@@ -1353,12 +1327,44 @@ if($ubah==1){
         if(isNaN(bobtreal)){
           $(".realbobot").val(0);
         }else{
-          $(".realbobot").val( bobtreal.toFixed(2));
+          $(".realbobot").val( bobtreal.toFixed(3));
         }
 
 
       }
      });
+
+     $("#realkeubljmodal").on('input change',function (e) {
+          var pagu=$('#nilaikontrak').val();
+          var val= this.value;
+
+
+          // newStr = parseInt(numbers.replace(/_/g, ""), 10);
+
+          if(pagu==0){
+            swal(
+              'Upss ',
+              'Silahkan Entri Nilai Kontrak',
+              'info'
+            )
+           $("#realkeubljmodal").val(0);
+           return false;
+         }else if(parseInt(val,10) > parseInt(pagu,10)){
+            swal(
+              'Upss ',
+              'Total Melebihi Nilai Kontrak',
+              'info'
+            )
+            $("#realkeubljmodal").val(0);
+
+            return false;
+          }
+         // jumlah = jumlah > 100 ? swal(
+         //      'info',
+         //      'Target Fisik Belanja Modal Sudah di Entri',
+         //      'info'
+         //    ) this.select(): jumlah;
+        });
 
      $("#realfisikbljmodal").on('input change',function (e) {
 
@@ -1384,7 +1390,7 @@ if($ubah==1){
            if(isNaN(bobtreal)){
              $("#realbobotbljmodal").val(0);
            }else{
-             $("#realbobotbljmodal").val( bobtreal.toFixed(2));
+             $("#realbobotbljmodal").val( bobtreal.toFixed(3));
            }
 
 
@@ -1412,7 +1418,7 @@ if($ubah==1){
            if(isNaN(bobtreal)){
              $("#realbobotbljmodal").val(0);
            }else{
-             $("#realbobotbljmodal").val( bobtreal.toFixed(2));
+             $("#realbobotbljmodal").val( bobtreal.toFixed(3));
            }
 
 
