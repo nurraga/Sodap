@@ -6,9 +6,12 @@ class User extends MX_Controller
     //function admingeneral= kasubag
     //function general= PPK/PPTK/KADIS/ASISTEN/SEKDA dan WAKO
     public $data;
+    public $tahunskr;
     public function __construct()
     {
         parent::__construct();
+      //  $this->tahunskr =$this->tahunskr;
+        $this->tahunskr ='2018';
         $this->load->model(array('User_model'));
         $this->load->library(array('ion_auth','upload'));
     }
@@ -52,7 +55,7 @@ class User extends MX_Controller
             $this->data= array(
 
                 'nmopd'     => $namaopd,
-                'tahun'     => date('Y'),
+                'tahun'     => $this->tahunskr,
                 'idopd'     =>  $idopd
             );
             $this->template->load('templatenew','dashboard_admin',$this->data);
@@ -110,7 +113,7 @@ class User extends MX_Controller
                     $this->data = array(
                         'idopd' => $idopd,
                         'nmopd' => $namaopd,
-                        'tahun' => date('Y'),
+                        'tahun' => $this->tahunskr,
                         'list' => $lskeg,
                         'pagu_tahun' => $this->template->rupiah($pgthn),
                         'angkas_bulan' => $this->template->rupiah($angkas),
@@ -150,7 +153,7 @@ class User extends MX_Controller
                     $this->data = array(
                         'idopd' => $idopd,
                         'nmopd' => $namaopd,
-                        'tahun' => date('Y'),
+                        'tahun' => $this->tahunskr,
                         'list' => $lskeg,
                         'pagu_tahun' => $this->template->rupiah($pgthn),
                         'angkas_bulan' => $this->template->rupiah($angkas),
@@ -194,7 +197,7 @@ class User extends MX_Controller
                 //     $this->data = array(
                 //         'idopd' => $idopd,
                 //         'nmopd' => $namaopd,
-                //         'tahun' => date('Y'),
+                //         'tahun' => $this->tahunskr,
                 //         'list' => $lskeg,
                 //         'pagu_tahun' => $this->template->rupiah($pgthn),
                 //         'angkas_bulan' => $this->template->rupiah($angkas),
@@ -221,7 +224,7 @@ class User extends MX_Controller
                      $this->data= array(
                         'idopd'     => $idopd,
                         'nmopd'     => $namaopd,
-                        'tahun'     => date('Y'),
+                        'tahun'     => $this->tahunskr,
 
                     );
                     $this->template->load('templatenew','dashboard_sekretaris',$this->data);
@@ -231,7 +234,7 @@ class User extends MX_Controller
                      $this->data= array(
                         'idopd'     => $idopd,
                         'nmopd'     => $namaopd,
-                        'tahun'     => date('Y'),
+                        'tahun'     => $this->tahunskr,
 
                     );
                     $this->template->load('templatenew','dashboard_pptk',$this->data);
@@ -402,13 +405,15 @@ class User extends MX_Controller
     }
 
     function cekkegiatan(){
+      //generate KPA - PPTK
         $nip=$this->ion_auth->user()->row()->username;
         $rowunit=$this->User_model->getpns($nip);
         $idunit=$rowunit->unitkey;
-        $result=$this->User_model->cekkegiatan($idunit);
-        if($result){
+        $result=$this->User_model->cekkegiatan($idunit,$this->tahunskr);
+        if($result->row()){
             $arr['data'][]= array(
                 'status' => 'true'
+                // 'jumrow' => $result->num_rows()
             );
         }else{
             $arr['data'][]= array(
@@ -419,8 +424,9 @@ class User extends MX_Controller
         // minimal PHP 5.2
         echo json_encode($arr);
     }
-    function cekkegiatanentri(){
 
+    function cekkegiatanentri(){
+//list legiatan di dasbord
         $nip=$this->ion_auth->user()->row()->username;
         $rowunit=$this->User_model->getpns($nip);
         $idunit=$rowunit->unitkey;
@@ -462,14 +468,20 @@ class User extends MX_Controller
                $this->data= array(
                 'idopd'     => $idopd,
                 'nmopd'     => $namaopd,
-                'tahun'     => date('Y'),
+                'tahun'     => $this->tahunskr,
                 'list'     =>  $listkegiatan,
                 'pptk'     =>  $pptk,
                 'ppk'      =>  $ppk
             );
 
            }
-           $this->template->load('templatenew','v_entrikegiatan',$this->data);
+          $getmastersk = $this->User_model->cekkegiatan($idopd,$this->tahunskr);
+          if($getmastersk->num_rows()>0){
+            redirect('User/listsk','refresh');
+          }else{
+            $this->template->load('templatenew','v_entrikegiatan',$this->data);
+          }
+
 
        }else{
         redirect('User/general', 'refresh');
@@ -484,27 +496,225 @@ function simpanentrikegiatan(){
         $nip            = $this->ion_auth->user()->row()->username;
         $rowunit        = $this->User_model->getpns($nip);
         $unitkey        = $rowunit->unitkey;
-        $tahun          = date('Y');
+        $tahun          = $this->tahunskr;
         $adminentri     = $nip;
         $tgl_entri      = date('Y/m/d h:i:sa');
 
+
+
         $master=array(
-         'tahun'      => $tahun,
-         'unitkey'    => $unitkey,
-         'admin_entri'=> $adminentri,
-         'tgl_entri'  => $tgl_entri
-     );
+           'tahun'      => $tahun,
+           'unitkey'    => $unitkey,
+           'admin_entri'=> $adminentri,
+           'tgl_entri'  => $tgl_entri
+        );
 
-
-
-        $result=$this->User_model->simpanentrikegiatan($master);
-        if($result){
-            echo json_encode(array("status" => TRUE));
+        $getmastersk = $this->User_model->cekkegiatan($unitkey,$this->tahunskr);
+        if(!$getmastersk){
+          $status=false;
+        }elseif($getmastersk->num_rows()>0){
+          $status=false;
+        }else{
+          $result=$this->User_model->simpanentrikegiatan($master);
+          if($result){
+            $status=true;
+          }
         }
+        $data['data'][] = array(
+
+          'status'   =>  $status
+
+        );
+
+
+        echo json_encode($data);
+
+        // $result=$this->User_model->simpanentrikegiatan($master);
+        // if($result){
+        //     echo json_encode(array("status" => TRUE));
+        // }
     }else{
         redirect('User/general', 'refresh');
     }
 }
+
+function listsk(){
+
+  if (!$this->ion_auth->logged_in()){
+      redirect('Home/login', 'refresh');
+  }elseif ($this->ion_auth->is_admin()){
+      redirect('Cpanel', 'refresh');
+  }elseif ($this->ion_auth->is_kasubag()){
+     /*Dari function ini akan di cek ke tabel struktur apakah user tersebut KADIS/PPK/PPTK */
+      $nip=$this->ion_auth->user()->row()->username;
+      $getopd = $this->User_model->getnamaopd($nip);
+      $idopd  = $getopd->unitkey;
+      $namaopd= $getopd->nmunit;
+
+      //$getdetsk    = $this->User_model->get_eska_detail($id_m,$this->tahunskr);
+      // 0 = baru masuk dan belum di komfirmasi admin dalbang -> lanjut untuk acc atau tolak
+      // 1 = sudah konfirmasi dan ok , kemudian semua user sudah di acc per opd dan per tahun
+      // 2 = sudah di lihat tapi belum ada proses(cuma dilihat) -> lanjut untuk acc dan tolak
+      // 3 = tolak dan perbaiki tambah catatan (dalbang)
+      // 4 = belum entri
+      $ceksk = $this->User_model->cekkegiatan($idopd,$this->tahunskr);
+      if($ceksk->num_rows()>0){
+        $getmastersk = $this->User_model->get_eska_master($idopd,$this->tahunskr)->row();
+        $nama_entri_m= $getmastersk->nama;
+        $tgl_entri_m = $getmastersk->tgl_entri;
+        $stat_m      = $getmastersk->stat;
+        $id_m        = $getmastersk->id;
+
+      $dokumen = $this->User_model->get_eska_dokumen($id_m);
+
+      if($stat_m == 0){
+        $stat='Belum di Konfirmasi';
+      }elseif ($stat_m == 1) {
+        $stat = 'Sudah di Konfirmasi';
+      }elseif ($stat_m == 2) {
+        $stat = 'Sudah di Lihat';
+      }elseif ($stat_m == 3) {
+        $stat = 'Di Tolak';
+      }else{
+        $stat = 'Belum Entri';
+      }
+      $this->data= array(
+          'idopd'     => $idopd,
+          'nmopd'     =>  $namaopd,
+          'tahun'     =>  $this->tahunskr,
+          'nama_entri_m' => $nama_entri_m,
+          'tgl_entri_m' => $tgl_entri_m,
+          'stat_m'    => $stat,
+          'id_m'    => $id_m,
+          'dokumen' => $dokumen->nama_dokumen,
+          'path' => $dokumen->file_path
+      );
+
+
+
+           $this->template->load('templatenew','v_list_sk',$this->data);
+      }else{
+          redirect('User/entrikegiatan','refresh');
+
+      }
+
+ //echo json_encode($this->data);
+  }else{
+
+    redirect('User', 'refresh');
+
+  }
+
+
+}
+function json_detail_sk($id_m){
+    header('Content-Type: application/json');
+  //  echo $this->User_model->jsonstrukturlist_by($opd);
+    echo $this->User_model->get_eska_detail($id_m,$this->tahunskr);
+}
+
+function download_sk($path){
+    $file_path = FCPATH . 'assets/dokumen/'.$path;
+    force_download($file_path,NULL);
+}
+
+function get_sk_kpa_pptk(){
+    $id_m=$this->input->post('idm');
+    $idkeg=$this->input->post('idkeg');
+    $idunit = $this->input->post('idunit');
+    $pptk =$this->User_model->listpptk($idunit);
+    $ppk  =$this->User_model->listppk($idunit);
+    $detail= $this->User_model->get_eska_detail_keg($id_m,$this->tahunskr,$idkeg);
+   //  foreach ($rangkasrek as $rkey ) {
+   //     $rek[] = array(
+   //         'mtgkey'   => $rkey['mtgkey'],
+   //         'nilai'    => $rkey['nilai'],
+   //         'msknilai' => $this->template->rupiah($rkey['nilai']),
+   //         'nmper'    => $rkey['nmper'],
+   //         'kdper'    => $rkey['kdper'],
+   //         'tahun'    => $rkey['tahun']
+   //     );
+   // }
+    $data['data'][] = array(
+
+      'nmkegunit'   =>   $detail['nmkegunit'],
+      'nippptklama' =>   $detail['nippptk'],
+      'nipppklama' =>    $detail['nipppk'],
+      'pptk'        =>   $pptk,
+      'ppk'         =>   $ppk
+    );
+
+     echo json_encode($data);
+}
+function update_det_eska(){
+    $id=$this->input->post('id');
+    $nippptk=$this->input->post('pptk');
+    $nipppk=$this->input->post('ppk');
+    $data=array(
+                'idpnspptk'    => $nippptk,
+                'idpnsppk'    => $nipppk
+            );
+    $update = $this->User_model->update_eska_kpapptk($id,$data);
+    $data['data'][] = array(
+
+      'status'   =>  $update
+
+    );
+
+     echo json_encode($data);
+
+}
+
+function update_dokumen_eska(){
+  $namadok = $this->input->post('nmdok');
+  $idm = $this->input->post('idm');
+  $file    = "file_".time(); //nama file saya beri nama langsung dan diikuti fungsi time
+  $config['upload_path'] = './assets/dokumen/'; //path folder iko
+  $config['allowed_types'] = 'pdf'; //type yang dapat diakses ikobisa anda sesuaikan
+  $config['max_size'] = '3072'; //maksimum besar file 3M
+  // $config['max_width']  = '5000'; //lebar maksimum 5000 px
+  // $config['max_height']  = '5000'; //tinggi maksimu 5000 px
+  $config['file_name'] = $file; //nama yang terupload nantinya smpai iko
+  $files = $_FILES;
+  $_FILES['userfile']['name']= $files['userfile']['name'];
+  $_FILES['userfile']['type']= $files['userfile']['type'];
+  $_FILES['userfile']['tmp_name']= $files['userfile']['tmp_name'];
+  $_FILES['userfile']['error']= $files['userfile']['error'];
+  $_FILES['userfile']['size']= $files['userfile']['size'];
+  $this->upload->initialize($config);
+  if ( !$this->upload->do_upload()){
+    $stat = false;
+    $namo_dokumen = 'no-image.png';
+    $msg = $this->upload->display_errors('', '');
+  }else{
+    $stat = true;
+    $fileData = $this->upload->data();
+    $msg ='sukses unggah dokumen';
+    $namo_dokumen = $fileData['file_name'];
+    $dt=array(
+        'id_pptk_master' => $idm,
+        'nama_dokumen'   => $namadok,
+        'file_path'      => $namo_dokumen
+    );
+    $result=$this->User_model->update_dokumen_eska($dt,$idm);
+    if(!$result){
+      $stat= false;
+    }
+
+  }
+
+  $data['data'][] = array(
+
+    'status'   => $stat,
+    'pesan'    => $msg
+
+  );
+
+   echo json_encode($data);
+
+}
+
+//last update
 /*Batas kasubag k*/
 //new
 
@@ -527,15 +737,20 @@ function dafkeg(){
         if($struktur ){
 
             $peran=$struktur->peran;
+            if($peran=='3'){
+              $lskeg = $this->User_model->getlistkegiatan($nip);
+                  $this->data= array(
+                      'idopd'     => $idopd,
+                      'nmopd'     =>  $namaopd,
+                      'tahun'     =>  $this->tahunskr,
+                      'list'      =>$lskeg
+                  );
+                  $this->template->load('templatenew','v_dafkeg_pptk',$this->data);
+            }else{
+                /*jika tidak*/
+                redirect('User', 'refresh');
+            }
 
-          $lskeg = $this->User_model->getlistkegiatan($nip);
-                $this->data= array(
-                    'idopd'     => $idopd,
-                    'nmopd'     =>  $namaopd,
-                    'tahun'     =>  date('Y'),
-                    'list'      =>$lskeg
-                );
-                $this->template->load('templatenew','v_dafkeg_pptk',$this->data);
         }else{
           redirect('User', 'refresh');
         }
@@ -556,7 +771,7 @@ function dafkeg(){
                 $this->data= array(
                     'idopd'     => $idopd,
                     'nmopd'     =>  $namaopd,
-                    'tahun'     =>  date('Y'),
+                    'tahun'     =>  $this->tahunskr,
                     'list'      =>$lskeg
                 );
                 $this->template->load('templatenew','v_dafkeg_pptk',$this->data);
@@ -875,8 +1090,10 @@ function realisasipptk(){
         redirect('Home/login', 'refresh');
     }elseif ($this->ion_auth->is_admin()){
         redirect('Cpanel', 'refresh');
-    }elseif ($this->ion_auth->is_kasubag()){
-        redirect('User/admingeneral', 'refresh');
+    //}
+    // elseif ($this->ion_auth->is_kasubag()){
+    //     // redirect('User/admingeneral', 'refresh');
+    //     echo 'hoho';
     }else{
         /*ini akan di cek ke tabel struktur apakah user tersebut KADIS/PPK/PPTK */
         $nip=$this->ion_auth->user()->row()->username;
@@ -951,7 +1168,7 @@ function realisasipptk(){
                                       'idopd'     => $idopd,
                                       'idtab'     => $idtab,
                                       'nmopd'     => $namaopd,
-                                      'tahun'     => date('Y'),
+                                      'tahun'     => $this->tahunskr,
                                       'prog'      => $lskeg->prog,
                                       'kdkeg'     => $lskeg->kdkeg,
                                       'keg'       => $lskeg->keg,
@@ -1037,7 +1254,7 @@ function realisasipptk(){
                                 'idopd'     => $idopd,
                                 'idtab'     => $idtab,
                                 'nmopd'     => $namaopd,
-                                'tahun'     => date('Y'),
+                                'tahun'     => $this->tahunskr,
                                 'prog'      => $lskeg->prog,
                                 'kdkeg'     => $lskeg->kdkeg,
                                 'keg'       => $lskeg->keg,
@@ -1077,7 +1294,7 @@ function realisasipptk(){
                                   'idopd'     => $idopd,
                                   'idtab'     => $idtab,
                                   'nmopd'     => $namaopd,
-                                  'tahun'     => date('Y'),
+                                  'tahun'     => $this->tahunskr,
                                   'prog'      => $lskeg->prog,
                                   'kdkeg'     => $lskeg->kdkeg,
                                   'keg'       => $lskeg->keg,
@@ -1161,7 +1378,7 @@ function realisasipptk(){
                               'idopd'     => $idopd,
                               'idtab'     => $idtab,
                               'nmopd'     => $namaopd,
-                              'tahun'     => date('Y'),
+                              'tahun'     => $this->tahunskr,
                               'prog'      => $lskeg->prog,
                               'kdkeg'     => $lskeg->kdkeg,
                               'keg'       => $lskeg->keg,
@@ -1188,7 +1405,7 @@ function realisasipptk(){
                                           'idopd'     => $idopd,
                                           'idtab'     => $idtab,
                                           'nmopd'     => $namaopd,
-                                          'tahun'     => date('Y'),
+                                          'tahun'     => $this->tahunskr,
                                           'prog'      => $lskeg->prog,
                                           'kdkeg'     => $lskeg->kdkeg,
                                           'keg'       => $lskeg->keg,
@@ -1327,7 +1544,7 @@ function realisasipptklama(){
                                         'idopd'     => $idopd,
                                         'idtab'     => $idtab,
                                         'nmopd'     => $namaopd,
-                                        'tahun'     => date('Y'),
+                                        'tahun'     => $this->tahunskr,
                                         'prog'      => $lskeg->prog,
                                         'kdkeg'     => $lskeg->kdkeg,
                                         'keg'       => $lskeg->keg,
@@ -1358,7 +1575,7 @@ function realisasipptklama(){
                                         'idopd'     => $idopd,
                                         'idtab'     => $idtab,
                                         'nmopd'     => $namaopd,
-                                        'tahun'     => date('Y'),
+                                        'tahun'     => $this->tahunskr,
                                         'prog'      => $lskeg->prog,
                                         'kdkeg'     => $lskeg->kdkeg,
                                         'keg'       => $lskeg->keg,
@@ -1382,7 +1599,7 @@ function realisasipptklama(){
                                         'idopd'     => $idopd,
                                         'idtab'     => $idtab,
                                         'nmopd'     => $namaopd,
-                                        'tahun'     => date('Y'),
+                                        'tahun'     => $this->tahunskr,
                                         'prog'      => $lskeg->prog,
                                         'kdkeg'     => $lskeg->kdkeg,
                                         'keg'       => $lskeg->keg,
@@ -2223,7 +2440,7 @@ function entrirealisasipptk(){
                             'idopd'     => $idopd,
                             'idtab'     => $idtab,
                             'nmopd'     => $namaopd,
-                            'tahun'     => date('Y'),
+                            'tahun'     => $this->tahunskr,
                             'prog'      => $lskeg->prog,
                             'kdkeg'     => $lskeg->kdkeg,
                             'keg'       => $lskeg->keg,
@@ -2283,7 +2500,7 @@ function kakppk(){
 
                     'idopd'     => $idopd,
                     'nmopd'     => $namaopd,
-                    'tahun'     => date('Y'),
+                    'tahun'     => $this->tahunskr,
                     'list'      => $lskeg
                 );
                 $this->template->load('templatenew','v_dafkeg_ppk',$this->data);
@@ -2435,7 +2652,7 @@ function viewkakppk(){
 
                         'idopd'     => $idopd,
                         'nmopd'     => $namaopd,
-                        'tahun'     => date('Y'),
+                        'tahun'     => $this->tahunskr,
                         'list'      => $lskak,
                         'schedule'      => $schedule,
                         'schbelanja'      => $schedule_blj_modal,
@@ -2485,7 +2702,7 @@ function lapkak($idtab){
                          'idopd'     => $idopd,
                         'nmopd'     => $namaopd,
                         'idtab' => $idtab,
-                        'tahun'     => date('Y'),
+                        'tahun'     => $this->tahunskr,
                         'nama'   => $namappk,
                         'ttd'  => $ttd,
                         'list'      => $lskak
@@ -2521,7 +2738,7 @@ function timeschedule($idtab){
                          'idopd'     => $idopd,
                         'nmopd'     => $namaopd,
                         'idtab' => $idtab,
-                        'tahun'     => date('Y'),
+                        'tahun'     => $this->tahunskr,
                          'schedule'      => $schedule,
                           'schbelanja'      => $schedule_blj_modal,
 
@@ -2967,7 +3184,7 @@ function entrikak(){
                             'idopd'     => $idopd,
                             'idtab'     => $idtab,
                             'nmopd'     => $namaopd,
-                            'tahun'     => date('Y'),
+                            'tahun'     => $this->tahunskr,
                             'prog'      => $lskeg->prog,
                             'kdkeg'     => $lskeg->kdkeg,
                             'keg'       => $lskeg->keg,
@@ -3065,7 +3282,7 @@ function entritblnjmodal(){
                                 'idopd'     => $idopd,
                                 'idtab'     => $idtab,
                                 'nmopd'     => $namaopd,
-                                'tahun'     => date('Y'),
+                                'tahun'     => $this->tahunskr,
                                 'prog'      => $lskeg->prog,
                                 'kdkeg'     => $lskeg->kdkeg,
                                 'keg'       => $lskeg->keg,
@@ -3166,7 +3383,7 @@ function dafkegsekretaris(){
                 $arrkdkegunit = array();
 
 
-                $thnsekarang= date('Y');
+                $thnsekarang= $this->tahunskr;
                 $blnsekarang=  date('n');
               //$blnsekarang=  2;
                 $lskeg = $this->User_model->getdetlistkegiatan_ppk($nip);
@@ -3767,7 +3984,7 @@ function logout()
                     $this->data = array(
                         'idopd' => $idopd,
                         'nmopd' => $namaopd,
-                        'tahun' => date('Y'),
+                        'tahun' => $this->tahunskr,
                         'list' => $lskeg,
                         'pagu_tahun' => $this->template->rupiah($pgthn),
                         'angkas_bulan' => $this->template->rupiah($angkas),

@@ -12,14 +12,14 @@
       dataType: "JSON",
       complete: function(data){
         var jsonData = JSON.parse(data.responseText);
-         
+
         if (jsonData.data[0].status == "false"){
           swal(
             'info',
             'Silahkan Lengkapi Struktur OPD / Unit !!!',
             'info'
           );
-       
+
         }else{
           return true;
 
@@ -37,7 +37,7 @@
     $("#dashkeg").click(function() {
         Pace.restart ();
         Pace.track (function (){
-            window.location.href = base_url+"User/kakppk";    
+            window.location.href = base_url+"User/kakppk";
         });
     });
 });
@@ -57,7 +57,7 @@
 
 <!-- Main content -->
 <section class="content">
-    <div class="callout callout-info">
+    <div class="callout bg-blue">
       <div class="row">
           <div class="col-xs-12 col-md-12 col-md-offset-1">
              <br>
@@ -91,7 +91,7 @@
       <!-- small box -->
       <div class="small-box bg-green">
         <div class="inner">
-          <h3>LIST</h3>
+          <h3>List</h3>
 
           <p>Kegiatan</p>
       </div>
@@ -102,8 +102,8 @@
           Proses <i class="fa fa-arrow-circle-right"></i>
       </a> -->
        <a class="btn btn-block btn-social btn-success" id="btn-dash-entri">
-          <i class="fa fa-bars"></i> proses 
-        </a> 
+          <i class="fa fa-bars"></i> proses
+        </a>
   </div>
 </div>
 <div class="col-lg-3 col-xs-6">
@@ -112,7 +112,7 @@
         <div class="inner">
           <h3>Generate</h3>
 
-          <p>PPK - PPTK</p>
+          <p>KPA - PPTK</p>
       </div>
       <div class="icon">
           <i class="ion ion-stats-bars"></i>
@@ -122,8 +122,8 @@
       </a> -->
 
        <a class="btn btn-block btn-social btn-success" id="btn-entrikegiatan">
-          <i class="fa fa-bars"></i> proses 
-        </a> 
+          <i class="fa fa-bars"></i> proses
+        </a>
   </div>
 </div>
 <div class="col-lg-3 col-xs-6">
@@ -141,8 +141,8 @@
           Proses <i class="fa fa-arrow-circle-right"></i>
       </a> -->
        <a class="btn btn-block btn-social btn-success" id="dashkeg" href="<?php echo base_url('User/struktur');?>">
-          <i class="fa fa-bars"></i> proses 
-        </a> 
+          <i class="fa fa-bars"></i> proses
+        </a>
   </div>
 </div>
 <!-- ./col -->
@@ -153,12 +153,3 @@
 
 </section>
 <!-- /.content -->
-
-
-
-
-
-
-
-
-

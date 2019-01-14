@@ -90,6 +90,8 @@
   .orgchart .frontend1 .title { background-color: #cc0066; }
   .orgchart .frontend1 .content { border-color: #cc0066; }
 
+
+
   /*blink*/
   .blink_me {
     -webkit-animation-name: blinker;
@@ -287,6 +289,10 @@
   <script type="text/javascript" >
   var base_url = '<?php echo base_url() ?>';
   </script>
+
+  <!-- DataTables -->
+  <script src="<?php echo base_url('assets/admin/bower_components/datatables.net/js/jquery.dataTables.min.js')?>"></script>
+  <script src="<?php echo base_url('assets/admin/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js')?>"></script>
 </head>
 <!-- ADD THE CLASS fixed TO GET A FIXED HEADER AND SIDEBAR LAYOUT -->
 <!-- the fixed layout is not compatible with sidebar-mini -->
@@ -479,9 +485,6 @@ immediately after the control sidebar -->
 <!-- Bootstrap 3.3.7 -->
 <script src="<?php echo base_url('assets/admin/bower_components/bootstrap/dist/js/bootstrap.min.js')?>" type="text/javascript"></script>
 
-<!-- DataTables -->
-<script src="<?php echo base_url('assets/admin/bower_components/datatables.net/js/jquery.dataTables.min.js')?>"></script>
-<script src="<?php echo base_url('assets/admin/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js')?>"></script>
 
 <!-- Select2 -->
 <script src="<?php echo base_url('assets/admin/bower_components/select2/dist/js/select2.full.min.js')?>"></script>

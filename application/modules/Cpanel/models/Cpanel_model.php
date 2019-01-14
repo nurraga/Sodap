@@ -58,12 +58,12 @@ class Cpanel_model extends CI_Model
     function getppkmaster($opd,$tahun){
 
       $this->db->select('`daftunit`.`nmunit`
-    , `tab_pptk_master`.`id`
-    , `tab_pptk_master`.`tahun`
-    , `tab_pns`.`nip`
-    , `tab_pns`.`nama`
-    , `tab_pptk_master`.`tgl_entri`
-    , `tab_pptk_master`.`stat`');
+      , `tab_pptk_master`.`id`
+      , `tab_pptk_master`.`tahun`
+      , `tab_pns`.`nip`
+      , `tab_pns`.`nama`
+      , `tab_pptk_master`.`tgl_entri`
+      , `tab_pptk_master`.`stat`');
       $this->db->from('tab_pptk_master');
       $this->db->join('daftunit', '`tab_pptk_master`.`unitkey` = `daftunit`.`unitkey`');
       $this->db->join('tab_pns', '`tab_pptk_master`.`admin_entri` = `tab_pns`.`nip`');
@@ -89,13 +89,28 @@ class Cpanel_model extends CI_Model
     }
 
   /*all json Datatables*/
+  // function opdentri_baru($thn){
+  //
+  //   $this->datatables->select('`daftunit`.`unitkey`
+  //   , `daftunit`.`nmunit`
+  //   , `tab_pptk_master`.`stat`');
+  //   $this->datatables->from('`db_sodap`.`tab_pptk_master`');
+  //   $this->datatables->join('`db_sodap`.`daftunit`', '`tab_pptk_master`.`unitkey` = `daftunit`.`unitkey` and `tab_pptk_master`.`tahun`="'.$thn.'"','right');
+  //   $this->datatables->where('`daftunit`.`tahun`', $thn);
+  //   $this->db->order_by('`daftunit`.`nmunit`', 'ASC');
+  //   $this->datatables->add_column('action', '<button class="entriact btn btn-social btn-fill btn-twitter">
+  //                                               <i class="fa fa-recycle"></i> Proses
+  //                                           <div class="ripple-container"></div></button>' );
+  //
+  //   return $this->datatables->generate();
+  // }
   function opdentri_baru($thn){
 
     $this->datatables->select('`daftunit`.`unitkey`
     , `daftunit`.`nmunit`
     , `tab_pptk_master`.`stat`');
-    $this->datatables->from('`db_sodap`.`tab_pptk_master`');
-    $this->datatables->join('`db_sodap`.`daftunit`', '`tab_pptk_master`.`unitkey` = `daftunit`.`unitkey` and `tab_pptk_master`.`tahun`="'.$thn.'"','right');
+    $this->datatables->from('`tab_pptk_master`');
+    $this->datatables->join('`daftunit`', '`tab_pptk_master`.`unitkey` = `daftunit`.`unitkey` and `tab_pptk_master`.`tahun`="'.$thn.'"','right');
     $this->datatables->where('`daftunit`.`tahun`', $thn);
     $this->db->order_by('`daftunit`.`nmunit`', 'ASC');
     $this->datatables->add_column('action', '<button class="entriact btn btn-social btn-fill btn-twitter">

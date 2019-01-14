@@ -279,8 +279,9 @@
                         <td style="display:none;"><input type="text" class="form-control headtotsd "  readonly value='.$hrow['nilai'].'></td>
                         <td style="display:none;"><input type="text" class="form-control nsisadana sisadana'.$clasrek.'"  readonly value='.$hrow['nilai'].'></td>
                         <td style="vertical-align : middle;text-align:center;"><u><b><i>Nilai Kontrak</i></b></u></td>
-                          <td style="vertical-align : middle;text-align:center;"><input type="text" class="form-control hr real5-2-3 harga-rek'.$clasrek.'" readonly name="jumperrek[]"  style="font-size: 11px" value='.$nlrealbmodal.'></td>
-                        <td colspan="2"></td>
+                        <td style="vertical-align : middle;text-align:center;"><input type="text" class="form-control hr real5-2-3 harga-rek'.$clasrek.'" readonly name="jumperrek[]"  style="font-size: 11px" value='.$nlrealbmodal.'></td>
+                        <td style="vertical-align : middle;text-align:center;"><u><b><i>Total Realisasi</i></b></u></td>
+                        <td ></td>
 
                         <td style="vertical-align : middle;text-align:center;"><button type="button" class="btnrealfisik btn bg-blue btn-flat bm'.$clasrek.'">Realisasi<div class="ripple-container"></div></button></td>
                         </tr>';
@@ -457,9 +458,14 @@
                      }else{
 
                        foreach ($header as $hrow){
-                        $unitkey=$hrow['unitkey'];
+                        $id       =$hrow['id'];
+                        $unitkey  =$hrow['unitkey'];
                         $kdkegunit=$hrow['kdkegunit'];
-                        $mtgkey=$hrow['mtgkey'];
+                        $nilai    =$hrow['nilai'];
+                        $mtgkey   =$hrow['mtgkey'];
+                        $kdper    =$hrow['kdper'];
+                        $nmper    =$hrow['nmper'];
+                        $tahun    =$hrow['tahun'];
                         $jkrek=substr($hrow['kdper'],0,6);
                         $clasrek=str_replace(".","-",$hrow['kdper']);
                         if($jkrek=='5.2.3.'){
@@ -478,9 +484,22 @@
                         //SELECT * FROM `tab_realisasi_bmodal` WHERE id_tab_pptk = '5' AND mtgkey='1326_'
                         $nilaibmodal = $this->db->get_where('tab_realisasi_bmodal',array('id_tab_pptk'=>$idtab,'mtgkey'=>$mtgkey));
                         if($nilaibmodal->num_rows()>0){
+                          $idnilaimodal = $nilaibmodal->row()->id;
+                          $this->db->select('SUM(`real_keuangan`) AS jumrealbm');
+                          //$this->db->where('MONTH(real_bulan)', $indexbulan);
+                          $this->db->where('id_tab_real_bmodal', $idnilaimodal);
+                          $detjumreal = $this->db->get('tab_realisasi_bmodal_det');
+                          $totnlrealbmodal=$detjumreal->row()->jumrealbm;
                           $nlrealbmodal = $nilaibmodal->row()->nilai_ktrk;
+
+                         // $nlrealbmodal =$totrealbm;
+                         $bmsisablnskr =(int)$nlrealbmodal - (int)$totnlrealbmodal;
+                          // $nlrealbmodal = $nilaibmodal->row()->nilai_ktrk;
                         }else{
+                          // $nlrealbmodal = 0;
                           $nlrealbmodal = 0;
+                          $totnlrealbmodal= 0;
+                           $bmsisablnskr = (int)$nilai;
                         }
 
 
@@ -496,11 +515,14 @@
 
                         <td class="totpagubln'.$clasrek.'" style="display:none;">'.$hrow['nilai'].'</td>
                         <td style="display:none;"><input type="text" class="form-control pg'.$clasrek.'"  readonly value='.$hrow['nilai'].'></td>
-                        <td style="text-align:right"><b>'.$this->template->rupiah($hrow['nilai']).'</b></td>
+                        <td style="text-align:right"><b>'.$this->template->rupiah($bmsisablnskr).'</b></td>
                         <td style="display:none;"><input type="text" class="form-control headtotsd "  readonly value='.$hrow['nilai'].'></td>
                         <td style="display:none;"><input type="text" class="form-control nsisadana sisadana'.$clasrek.'"  readonly value='.$hrow['nilai'].'></td>
-                        <td colspan="3"></td>
-                        <td style="vertical-align : middle;text-align:center;"><input type="text" class="form-control hr real5-2-3 harga-rek'.$clasrek.'" readonly name="jumperrek[]" style="font-size: 11px" value='.$nlrealbmodal.'></td>
+                        <td style="vertical-align : middle;text-align:center;"><u><b><i>Nilai Kontrak</i></b></u></td>
+                        <td style="vertical-align : middle;text-align:center;"><input type="text" class="format-rupiah form-control" readonly name="jumperrek[]" style="font-size: 11px" value='.$nlrealbmodal.'></td>
+                        <td style="vertical-align : middle;text-align:center;"><u><b><i>Total Realisasi</i></b></u></td>
+                        <td style="vertical-align : middle;text-align:center;"><input type="text" class="format-rupiah form-control hr real5-2-3 harga-rek'.$clasrek.'" readonly value='.$totnlrealbmodal.' id="totnlrealbmodal'.$clasrek.'" style="font-size: 11px"></td>
+
                         <td style="vertical-align : middle;text-align:center;"><button type="button" class="btnrealfisik btn bg-blue btn-flat bm'.$clasrek.'">Realisasi<div class="ripple-container"></div></button></td>
                         </tr>';
 
@@ -1141,18 +1163,7 @@ if($ubah==1){
         self.Value('0');
       }
     });
-       $('.hr').inputmask("numeric",{
-      radixPoint: ",",
-      groupSeparator: ".",
-      digits: 2,
-      autoGroup: true,
-      prefix: 'Rp ', //No Space, this will truncate the first character
-      rightAlign: false,
-      autoUnmask : true,
-      oncleared: function () {
-        self.Value('0');
-      }
-    });
+      
 
     $('.harga-jumlah').inputmask("numeric",{
       radixPoint: ",",
@@ -1264,6 +1275,19 @@ if($ubah==1){
          }
        },
        rightAlign: true
+      });
+
+      $('.format-rupiah').inputmask("numeric",{
+        radixPoint: ",",
+        groupSeparator: ".",
+        digits: 2,
+        autoGroup: true,
+        prefix: 'Rp ', //No Space, this will truncate the first character
+        rightAlign: false,
+        autoUnmask : true,
+        oncleared: function () {
+          self.Value('0');
+        }
       });
 
       // $("#nilaikontrak").focusout(function() {
@@ -2111,6 +2135,8 @@ $(function () {
 
                   ajaxtoken();
                   var nlktrk = jsonData.data[0].nilai;
+                  var realkeu = jsonData.data[0].realkeu;
+                  var render = jsonData.data[0].render;
                   swal({
                     title: "Sukses",
                     text: "Data berhasil disimpan!!!",
@@ -2127,6 +2153,7 @@ $(function () {
 
                       $('#modalrealisasi').modal('hide');
                       $(".harga-rek"+rek).val(nlktrk);
+                        $("#totnlrealbmodal"+rek).val(realkeu);
                       totkeu();
                       totsisadana();
                     }
