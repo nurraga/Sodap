@@ -481,7 +481,8 @@
                           realkeu:result.data[0].jumrealkeu,
                           idbmodal : result.data[0].idbmodal,
                           iddet : result.data[0].iddet,
-                          tottarfis :result.data[0].targetfis
+                          tottarfis :result.data[0].targetfis,
+                          realkeublj : result.data[0].realkeublj
 
                         });
                   }
@@ -568,6 +569,79 @@
             //    ) this.select(): jumlah;
            });
 
+        $("#realkeubljmodal").on('input change',function (e) {
+                var status =  $('#code').html();
+                var pagu=$('#nilaikontrak').val();
+                var val= this.value;
+
+                if (status != 4){
+              //    var x = parseInt($("#realkeubljmodal").val());
+                  var y = parseInt($('#realkeusudah').html());
+                  var xy= y+parseInt(val,10);
+                  // var botblj=$('#bobotbljmodal').val();
+                  // if (xy > pagu){
+                  //    swal(
+                  //       'Ups',
+                  //       'Tidak Lebih Dari Nilai Kontrak',
+                  //       'info'
+                  //     );realfisedit
+                  //     $("#realkeubljmodal").val(0);
+                  //    return false;
+                  // }else
+                  if(pagu==0){
+                          swal(
+                            'Upss ',
+                            'Silahkan Entri Nilai Kontrak',
+                            'info'
+                        )
+                       $("#realkeubljmodal").val(0);
+                       return false;
+                  }else if(xy > parseInt(pagu,10)){
+                        swal(
+                          'Upss ',
+                          'Total Melebihi Nilai Kontrak',
+                          'info'
+                        )
+                      $("#realkeubljmodal").val(0);
+
+                          return false;
+                  }
+                }else{
+                  //var x = parseInt($("#realkeubljmodal").val());
+                  var y = parseInt($('#realkeusudah').html());
+                  var z = parseInt($('#realkeuedit').html());
+                  var yz= y-z;
+                  var xyz= yz+parseInt(val,10);
+                  //var botblj=$('#bobotbljmodal').val();
+                  if(pagu==0){
+                          swal(
+                            'Upss ',
+                            'Silahkan Entri Nilai Kontrak',
+                            'info'
+                        )
+                       $("#realkeubljmodal").val(0);
+                       return false;
+                  }else if (xyz > parseInt(pagu,10)){
+                     swal(
+                        'Ups',
+                        'Total Melebihi Nilai Kontrak',
+                        'info'
+                      );
+                       $("#realkeubljmodal").val(0);
+                     return false;
+                  }
+                }
+
+                // newStr = parseInt(numbers.replace(/_/g, ""), 10);
+
+
+               // jumlah = jumlah > 100 ? swal(
+               //      'info',
+               //      'Target Fisik Belanja Modal Sudah di Entri',
+               //      'info'
+               //    ) this.select(): jumlah;
+        });
+
         $("#realfisikbljmodal").on('input change',function (e) {
         var status =  $('#code').html();
         if (status != 4){
@@ -591,7 +665,7 @@
             if(isNaN(bobtreal)){
               $("#realbobotbljmodal").val(0);
             }else{
-              $("#realbobotbljmodal").val( bobtreal.toFixed(2));
+              $("#realbobotbljmodal").val( bobtreal.toFixed(3));
             }
 
 
@@ -619,7 +693,7 @@
             if(isNaN(bobtreal)){
               $("#realbobotbljmodal").val(0);
             }else{
-              $("#realbobotbljmodal").val( bobtreal.toFixed(2));
+              $("#realbobotbljmodal").val( bobtreal.toFixed(3));
             }
 
 
@@ -627,6 +701,7 @@
         }
 
         });
+
 
         $(".realfisik").on('input change',function (e) {
 
@@ -653,7 +728,7 @@
            if(isNaN(bobtreal)){
              $(".realbobot").val(0);
            }else{
-             $(".realbobot").val( bobtreal.toFixed(2));
+             $(".realbobot").val( bobtreal.toFixed(3));
            }
 
 
@@ -764,7 +839,7 @@
               var tahun   = $('#idtahun').html();
               var pagubmodalbln   = $('#pagubmodalbln').html();
               var nilaikontrak   = $('#nilaikontrak').val();
-
+              var realkeubljmodal  = $('#realkeubljmodal').val();
 
               var formData = new FormData($('#formrealisasibljmodal')[0]);
               formData.append("token",token);
@@ -774,6 +849,7 @@
               formData.append("mtgkey",mtgkey);
               formData.append("pagubmodalbln",pagubmodalbln);
               formData.append("nilaikontrak",nilaikontrak);
+              formData.append("realkeubljmodal",realkeubljmodal);
               $.ajax({
                 url: base_url+"User/simpanrealisasibmodal",
                 type: 'POST',
@@ -797,6 +873,7 @@
 
                       ajaxtoken();
                       var nlktrk = jsonData.data[0].nilai;
+                      var realkeu = jsonData.data[0].realkeu;
                       var render = jsonData.data[0].render;
 
                       swal({
@@ -814,8 +891,9 @@
                           swal.close();
 
                           $('#modalrealisasi').modal('hide');
-                          $(".harga-rek"+rek).val(nlktrk);
+                          $(".harga-rek"+rek).val(realkeu);
                           $("#nlrealbmodal"+rek).val(nlktrk);
+                          $("#totnlrealbmodal"+rek).val(realkeu);
                           $(".sisaentribm"+rek).html(render);
 
                           totkeu();
@@ -856,11 +934,13 @@
               Pace.track (function (){
               var token   = localStorage.getItem("token");
               var iddet     = $('#iddet').html();
+              var realkeubljmodal  = $('#realkeubljmodal').val();
 
 
               var formData = new FormData($('#formrealisasibljmodal')[0]);
               formData.append("token",token);
               formData.append("iddet",iddet);
+              formData.append("realkeubljmodal",realkeubljmodal);
 
               $.ajax({
                 url: base_url+"User/ubahrealisasibmodaldet",
@@ -883,6 +963,11 @@
                       ajaxtoken();
                     }else{
                       ajaxtoken();
+
+                      var realkeu = jsonData.data[0].realkeu;
+                      var render = jsonData.data[0].render;
+                      var sisadanaa = jsonData.data[0].sisadana;
+
                       swal({
                         title: "Sukses",
                         text: "Data berhasil diubah!!!",
@@ -896,7 +981,18 @@
                       },function(isConfirm){
                         if(isConfirm){
                           swal.close();
-                               $('#modalrealisasi').modal('hide');
+                          $('#modalrealisasi').modal('hide');
+                        //  $(".harga-rek"+rek).val(realkeu);
+                      //    $("#nlrealbmodal"+rek).val(nlktrk);
+                          $("#totnlrealbmodal"+rek).val(realkeu);
+                          $("#sisdn"+rek).val(sisadanaa);
+
+                          $(".sisaentribm"+rek).html(render);
+
+                          // totkeu();
+                         totsisadana();
+                        headtotsd();
+                              // $('#modalrealisasi').modal('hide');
                         }
                       });
                     }
@@ -935,12 +1031,13 @@
               var tabbmodal     = status;
               var bulan   = $('#idbulan').html();
               var tahun   = $('#idtahun').html();
+              var realkeubljmodal  = $('#realkeubljmodal').val();
               var formData = new FormData($('#formrealisasibljmodal')[0]);
               formData.append("token",token);
               formData.append("tabbmodal",tabbmodal);
               formData.append("tahun",tahun);
               formData.append("bulan",bulan);
-
+              formData.append("realkeubljmodal",realkeubljmodal);
               $.ajax({
                 url: base_url+"User/simpanrealisasibmodaldet",
                 type: 'POST',
@@ -1667,7 +1764,7 @@
                        $id       =$hrow['id'];
                        $unitkey  =$hrow['unitkey'];
                        $kdkegunit=$hrow['kdkegunit'];
-                       $kd_bulan =$hrow['kdkegunit'];
+                       // $kd_bulan =$hrow['kdkegunit'];
                        $nilai    =$hrow['nilai'];
                        $mtgkey   =$hrow['mtgkey'];
                        $kdper    =$hrow['kdper'];
@@ -1690,12 +1787,24 @@
                          //SELECT * FROM `tab_realisasi_bmodal` WHERE id_tab_pptk = '5' AND mtgkey='1326_'
                          $nilaibmodal = $this->db->get_where('tab_realisasi_bmodal',array('id_tab_pptk'=>$idtab,'mtgkey'=>$mtgkey));
                          if($nilaibmodal->num_rows()>0){
+                           $idnilaimodal = $nilaibmodal->row()->id;
+                           $this->db->select('SUM(`real_keuangan`) AS jumrealbm');
+                           //$this->db->where('MONTH(real_bulan)', $indexbulan);
+                           $this->db->where('id_tab_real_bmodal', $idnilaimodal);
+                           $detjumreal = $this->db->get('tab_realisasi_bmodal_det');
+                           $totnlrealbmodal=$detjumreal->row()->jumrealbm;
                            $nlrealbmodal = $nilaibmodal->row()->nilai_ktrk;
+
+                          // $nlrealbmodal =$totrealbm;
+                          $bmsisablnskr =(int)$nlrealbmodal - (int)$totnlrealbmodal;
                          }else{
                            $nlrealbmodal = 0;
+                           $totnlrealbmodal= 0;
+                            $bmsisablnskr = (int)$nilai;
                          }
 
-                         $bmsisablnskr = (int)$nilai - (int)$nlrealbmodal;
+                         //$bmsisablnskr = (int)$nilai - (int)$nlrealbmodal;
+
 
                          $class='danger';
                          echo'<tr class ="'.$class.'">
@@ -1710,11 +1819,14 @@
                            <td style="display:none;"><b>'.$this->template->rupiah($nilai).'</b></td>
                            <td style="display:none;"><b>'.$this->template->rupiah($jumsdhreal).'</b></td>
                            <td class="sisaentribm'.$clasrek.'"style="text-align:right"><b>'.$this->template->rupiah($bmsisablnskr).'</b></td>
-                           <td style="display:none;"><input type="text" class="form-control headtotsd"  readonly value='.$bmsisablnskr.'></td>
+                           <td style=""><input type="text" class="form-control headtotsd" id="sisdn'.$clasrek.'" readonly value='.$bmsisablnskr.'></td>
                            <td style="vertical-align : middle;text-align:center;"><u><b><i>Nilai Kontrak</i></b></u></td>
                            <td colspan="2"style="vertical-align : middle;text-align:center;"><input type="text" class="format-rupiah form-control" readonly value='.$nlrealbmodal.' id="nlrealbmodal'.$clasrek.'"></td>
-                           <td colspan="3"></td>
-                           <td style="vertical-align : middle;text-align:right; display:none;"><input type="text" class="format-rupiah form-control hr real5-2-3 harga-rek'.$clasrek.'" readonly ></td>
+                           <td style="vertical-align : middle;text-align:center;"><u><b><i>Total Realisasi</i></b></u></td>
+                           <td colspan="2"style="vertical-align : middle;text-align:center;"><input type="text" class="format-rupiah form-control" readonly value='.$totnlrealbmodal.' id="totnlrealbmodal'.$clasrek.'"></td>
+
+
+                           <td style="vertical-align : middle;text-align:right;"><input type="text" class="format-rupiah form-control real5-2-3 harga-rek'.$clasrek.'" readonly  ></td>
                            <td style="vertical-align : middle;text-align:center;"><button type="button" class="btnrealfisik btn bg-blue btn-flat bm'.$clasrek.'">Realisasi<div class="ripple-container"></div></button></td>
                            </tr>';
                            //ambil detail(anak rincian) rekening ke table dpa221 berdasarkan tahun, unit, kdkegunit, mtgkey,
@@ -2101,9 +2213,10 @@
             <p id="iddet" hidden></p>
             <p id="code" hidden></p>
             <p id="idbmodal" hidden></p>
-            <p id="realfissudah" hidden></p>
+            <p id="realfissudah" hidden ></p>
+            <p id="realfisedit" hidden ></p>
             <p id="realkeusudah" hidden></p>
-            <p id="realfisedit" hidden></p>
+            <p id="realkeuedit" hidden ></p>
             <!-- <p id="rek"></p> -->
             <p id="pagubmodalbln" hidden></p>
             <p id="mtgkey" hidden></p>
@@ -2328,14 +2441,14 @@
               <div class="col-md-1 col-sm-1 col-xs-12">
               </div>
                   <div class="col-md-4 col-sm-4 col-xs-12">
-                   <h4 class="text-left text-muted">Tambahan Realisasi Keuangan</h4>
+                   <h4 class="text-left text-muted" id="texttrkbm">Tambahan Realisasi Keuangan</h4>
                  </div>
                  <div class="col-md-1 col-sm-1 col-xs-12">
                   <h4 class="text-center text-muted">:</h4>
                 </div>
                 <div class="col-md-4 col-sm-4 col-xs-12">
 
-                                <input type="text" class=" form-control" id="realkeubljmodal" name="realkeubljmodal"  style="text-align: right;" >
+                                <input type="text" class="format-rupiah form-control" id="realkeubljmodal" name="realkeubljmodal"  style="text-align: right;" >
                                 <!-- <div class="input-group-addon">
                                 <i class="fa fa-percent"></i>
                                 </div> -->
@@ -2349,7 +2462,7 @@
               <div class="col-md-1 col-sm-1 col-xs-12">
               </div>
                   <div class="col-md-4 col-sm-4 col-xs-12">
-                   <h4 class="text-left text-muted">Tambahan Realisasi Fisik</h4>
+                   <h4 class="text-left text-muted" id="texttrfbm">Tambahan Realisasi Fisik</h4>
                  </div>
                  <div class="col-md-1 col-sm-1 col-xs-12">
                   <h4 class="text-center text-muted">:</h4>

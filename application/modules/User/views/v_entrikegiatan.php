@@ -1,6 +1,6 @@
 <script type="text/javascript">
     $(function () {
- 
+
 
   });
     function bs_input_file(){
@@ -19,7 +19,7 @@
                         element.val(null);
                         $(this).parents(".input-file").find('input').val('');
                     });
-                    
+
                     $(this).find('input').css("cursor","pointer");
                     $(this).find('input').mousedown(function() {
                         $(this).parents('.input-file').prev().click();
@@ -40,7 +40,7 @@
             placeholder: "* Pilih Nama Pejabat",
             width: "200px"
         });
-        
+
         var validobj = $("#formkegiatan").validate({
             onkeyup: false,
             errorClass: "myErrorClass",
@@ -71,7 +71,7 @@
          $(document).on("change", ".select2", function () {
             if (!$.isEmptyObject(validobj.submitted)) {
                 validobj.form();
-              
+
             }
         });
 
@@ -98,7 +98,7 @@
                 markup += "</td>";
                 markup += "<td>";
                 markup += "<div class='form-group label-floating is-empty'>\
-                            <label class='control-label'>* Nama File (ex: SK no. xx Th xxxx)</label>\
+                            <label class='control-label'>* Nama Dokumen (ex: SK no. xx Th xxxx)</label>\
                             <input type='text' class='form-control required' name='namadokumen["+i+"]' id='namadokumenid["+i+"]'>\
                             <span class='material-input'></span>\
                             </div>";
@@ -132,7 +132,7 @@
               checkboxClass: 'icheckbox_flat-green',
               radioClass   : 'iradio_flat-green'
             })
-            
+
         });
 
         $(".btn-hapus").click(function(){
@@ -143,7 +143,7 @@
             });
         });
     });
-    
+
     $(function () {
         $('#formkegiatan').submit(function (e, params) {
             var localParams = params || {};
@@ -176,7 +176,11 @@
                             contentType: false,
                             cache: false,
                             processData: false,
-                            success: function(result){
+                            complete: function(data){
+                              //buat validasi jika sudah ada di database dengan tahun dan unitkey
+                              var jsonData = JSON.parse(data.responseText);
+                              var status =jsonData.data[0].status;
+                              if (status == true){
                                 swal({
                                   title: "Sukses",
                                   text: "Data berhasil di Kirim !!!",
@@ -194,8 +198,29 @@
                                      window.location.href = base_url+"User";
                                   }
                                 });
+                              }else{
+                                swal({
+                                  title: "Maaf",
+                                  text: "Data Sudah Dientri!!!",
+                                  type: "error",
+                                  showCancelButton: false,
+                                  confirmButtonColor: "#008D4C",
+                                  confirmButtonText: "OK",
+                                  cancelButtonText: "",
+                                  closeOnConfirm: false,
+                                  closeOnCancel: false
+                                },function(isConfirm){
+                                  if(isConfirm){
+                                    swal.close();
+                                     /*jika suskser direct ke */
+                                     window.location.href = base_url+"User";
+                                  }
+                                });
 
-                                                
+                              }
+
+
+
                             },
                             error: function(jqXHR, textStatus, errorThrown){
                                 swal({
@@ -233,7 +258,7 @@
 
 <!-- Main content -->
 <section class="content">
-    <div class="callout callout-info">
+    <div class="callout bg-blue">
       <div class="row">
           <div class="col-xs-12 col-md-12 col-md-offset-1">
              <br>
@@ -260,6 +285,28 @@
 
 </div>
 </div>
+<div class="row">
+
+      <div class="col-md-3 col-sm-6 col-xs-12">
+        <a class="btn btn-block btn-social btn-success btn-flat" id="btn-kembali">
+          <i class="fa fa-arrow-left"></i> Kembali
+        </a>
+      </div>
+      <div class="col-md-3 col-sm-6 col-xs-12">
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-12">
+
+        </div>
+
+        <div class="col-md-3 col-sm-6 col-xs-12">
+
+
+        </div>
+
+
+
+      </div>
+      <br>
 
 
 <div class="box box-primary">
@@ -268,7 +315,7 @@
     <h3 class="box-title">Form Entri PPTK-PPK</h3>
   </div>
   <div class="box-body">
-    <form id="formkegiatan" enctype="multipart/form-data" role="form" autocomplete="off">     
+    <form id="formkegiatan" enctype="multipart/form-data" role="form" autocomplete="off">
                             <div class="table-responsive">
                                 <table class="table table-bordered table-striped">
                                     <thead>
@@ -276,7 +323,7 @@
                                             <th>Nama Kegiatan</th>
                                             <th class="col-xs-2 text-right">Pagu Dana</th>
                                             <th class="col-xs-1 text-center ">PPTK</th>
-                                            <th class="col-xs-1 text-center ">PPK</th>   
+                                            <th class="col-xs-1 text-center ">PPK</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -288,30 +335,30 @@
                                                 // $kdkegunit = $row->kdkegunit;
                                                 // $this->db->where('tahun', $tahun);
                                                 // $this->db->where('unitkey', $unitkey);
-                                                
+
                                                 // $ada=$this->db->get('tab_pptk_master')->row();
                                                 // if(!$ada){
-                                                  
+
                                                 // }
-                                                  echo'<tr>        
+                                                  echo'<tr>
                                                     <td>'.$row->namakeg.'<div class="form-group"><input class="form-control" name="nmkdkeg[]"" type="hidden" value='.$row->kdkegunit.'></div></td>
                                                     <td class="text-right">'.$this->template->rupiah($row->nilai).'<div class="form-group"><input class="form-control" name="nilai[]" type="hidden" value='.$row->nilai.'></div></td>
                                                     <td class="text-center info"><select name="nmpptk['.$i.']" id="idpptk['.$i.']" size="1" class="select2 required"><option value=""></option>';
                                                         foreach ($pptk as $xrow) {
                                                             echo "<option value='{$xrow->nip}'>{$xrow->nama}</option>";
                                                         }
-                                                echo'</select></td>   
+                                                echo'</select></td>
                                                     <td class="text-center danger"><select name="nmppk['.$i.']" id="idppk['.$i.']" size="1" class="select2 required"><option value=""></option>';
                                                         foreach ($ppk as $yrow) {
                                                             echo "<option value='{$yrow->nip}'>{$yrow->nama}</option>";
                                                         }
-                                                echo'</select></td>    
+                                                echo'</select></td>
                                                     </tr>';
-                                                 $i++; 
+                                                 $i++;
                                             }
                                         ?>
                                     </tbody>
-                                </table>    
+                                </table>
                             </div>
                             <hr class="style13">
 
@@ -326,34 +373,34 @@
 
                                     <tr>
                                         <td>
-                                            
+
                                         </td>
                                         <td>
 
-                                            
+
                                             <div class="form-group is-empty">
 
-                                                <label class="control-label">* Nama File (ex: SK no. xx Th xxxx)</label>
+                                                <label class="control-label">* Nama Dokumen (ex: SK no. xx Th xxxx)</label>
                                                 <input type="text" class="form-control required" name="namadokumen[0]" id="namadokumenid[0]">
                                                 <span class="material-input"></span>
                                             </div>
-                                            
+
                                         </td>
                                         <td>
 
                                         <!-- <div class="form-group">
                                             <label class="control-label">&nbsp</label>
-                                            <div class="input-group input-file" name="userfile[]" id="userfile">  
+                                            <div class="input-group input-file" name="userfile[]" id="userfile">
                                                 <input type="text" class="form-control" placeholder='Pilih Dokumen...' />
                                                 <span class="input-group-btn">
                                                     <button class="btn btn-info btn-sm btn-choose" type="button">Choose</button>
                                                 </span>
-                                                
+
                                                 <span class="input-group-btn">
-                                                   
+
                                                 </span>
                                             </div>
-                                          
+
                                         </div> -->
                                         <label class="control-label">&nbsp</label>
                                         <div class="input-group input-file" name="userfile[]" id="userfile">
@@ -365,22 +412,22 @@
                                         </td>
                                         <td class="col-xs-3 text-center">
 
-                                        <label class="control-label">&nbsp</label>
+                                        <!-- <label class="control-label">&nbsp</label>
                                         <div class="input-group input-group">
                                             <label class="control-label">&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</label>
                                             <div class="btn-group">
                                                 <button class="btn btn-info btn-add" type="button"><i class="fa fa-fw fa-plus"></i></button>
-                                                <button class="btn btn-danger btn-hapus" type="button"><i class="fa fa-fw fa-remove"></i></button>      
+                                                <button class="btn btn-danger btn-hapus" type="button"><i class="fa fa-fw fa-remove"></i></button>
                                             </div>
-                                        </div>
-                                            
+                                        </div> -->
+
                                         </td>
-                                        
-                                    </tr>     
+
+                                    </tr>
                                 </tbody>
                             </table>
-                            
-                           </div> 
+
+                           </div>
 
                             </div>
                             <hr class="style13">
@@ -389,23 +436,14 @@
                                 <div class="form-footer text-right">
                                     <button type="button" class="btn btn-rose btn-fill" id="btn-batal">Batal</button>
                                     <button type="submit" class="btn btn-info btn-fill" id="btn-simpankegiatan" >Simpan</button>
-                                   
+
                                 </div>
-                            <div class="card-footer">          
-                            </div>                 
+                            <div class="card-footer">
+                            </div>
                         </form>
   </div>
 </div>
- 
+
 
 </section>
 <!-- /.content -->
-
-
-
-
-
-
-
-
-

@@ -255,7 +255,7 @@
 <div class="row">
 
       <div class="col-md-3 col-sm-6 col-xs-12">
-        <a class="btn btn-block btn-social btn-success" id="btn-kembali">
+        <a class="btn btn-block btn-social btn-success btn-flat" id="btn-kembali">
           <i class="fa fa-arrow-left"></i> Kembali
         </a>
       </div>

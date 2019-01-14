@@ -73,7 +73,7 @@ $('#btn-entrikegiatan').click(function(){
       }else{
         Pace.restart ();
         Pace.track (function (){
-          window.location.href = base_url+"User/entrikegiatan";
+          window.location.href = base_url+"User/listsk";
         });
       }
     },

@@ -21,9 +21,10 @@ class User_model extends CI_Model
       return $this->db->get('tab_struktur')->row();
     }
 
-    function cekkegiatan($opd){
+    function cekkegiatan($opd,$thn){
+      $this->db->where('tahun', $thn);
       $this->db->where('unitkey', $opd);
-      return $this->db->get('tab_pptk_master')->row();
+      return $this->db->get('tab_pptk_master');
     }
 
     function cekkegiatanentri($opd){
@@ -172,12 +173,14 @@ class User_model extends CI_Model
      function getheader_realisasipptk_angkas($unit,$kdkegunit,$bulan){
       $thn='2018';
      $this->db->select('
-       `angkas`.`unitkey`
+      `angkas`.`id`
+      ,`angkas`.`unitkey`
       ,`angkas`.`kdkegunit`
       , `angkas`.`mtgkey`
       , `matangr`.`kdper`
       , `matangr`.`nmper`
-      , `angkas`.`nilai`');
+      , `angkas`.`nilai`
+      , `angkas`.`tahun`');
       $this->db->from('angkas');
       $this->db->join('matangr', '`angkas`.`mtgkey` = `matangr`.`mtgkey`');
       $this->db->where('`angkas`.`tahun`', $thn);
@@ -593,26 +596,8 @@ function getdetlistkegiatan_detppk($nip,$kdkegunit){
 
 	}
 
+  function listppk($idunit){
 
-//untuk laporan tcpdf
-   function getnamappk($idtabpptk){
-     $this->db->select('`tab_kak`.*
-                         , `tab_kak`.`id` AS id
-                         , `tab_pptk`.`idpnsppk` AS idppk
-             , `tab_pns`.`nama` AS nama
-                        ');
-      $this->db->from('tab_pptk');
-      $this->db->join('tab_kak', '`tab_pptk`.`id` = `tab_kak`.`idtab_pptk`');
-      $this->db->join('`tab_pns`', '`tab_pptk`.`idpnsppk` = `tab_pns`.`nip`');
-      $this->db->where('`tab_kak`.`idtab_pptk`', $idtabpptk);
-      return $this->db->get()->row();
-    }
-
-//// endddddd
-
-
-
-	function listppk($idunit){
 		/*peran=2 untuk ppk*/
 		$this->db->select('tab_pns.nip,tab_pns.nama');
       	$this->db->from('tab_struktur');
@@ -623,7 +608,11 @@ function getdetlistkegiatan_detppk($nip,$kdkegunit){
 
       	return $this->db->get()->result();
 	}
+
+
+
   function simpanentrikegiatan($master){
+
     $this->db->trans_start();
     $this->db->insert('tab_pptk_master', $master);
     $id_master = $this->db->insert_id();
@@ -649,10 +638,10 @@ function getdetlistkegiatan_detppk($nip,$kdkegunit){
 
     $file = "file_".time(); //nama file saya beri nama langsung dan diikuti fungsi time
     $config['upload_path'] = './assets/dokumen/'; //path folder iko
-    $config['allowed_types'] = 'gif|jpg|png|jpeg|bmp|pdf|doc|docx|xlsx|xls'; //type yang dapat diakses ikobisa anda sesuaikan
+    $config['allowed_types'] = 'pdf|doc|docx|xlsx|xls'; //type yang dapat diakses ikobisa anda sesuaikan
     $config['max_size'] = '3072'; //maksimum besar file 3M
-    $config['max_width']  = '5000'; //lebar maksimum 5000 px
-    $config['max_height']  = '5000'; //tinggi maksimu 5000 px
+    // $config['max_width']  = '5000'; //lebar maksimum 5000 px
+    // $config['max_height']  = '5000'; //tinggi maksimu 5000 px
     $config['file_name'] = $file; //nama yang terupload nantinya smpai iko
     $files = $_FILES;
     $listdokumen=array();
@@ -671,7 +660,7 @@ function getdetlistkegiatan_detppk($nip,$kdkegunit){
               $namo_dokumen = $fileData['file_name'];
           }
           $listdokumen[$i]=array(
-          'id_pptk_master'  => $id_master,
+            'id_pptk_master'  => $id_master,
             'nama_dokumen'    => $nmfile[$i],
             'file_path'    => $namo_dokumen,
           );
@@ -691,6 +680,144 @@ function getdetlistkegiatan_detppk($nip,$kdkegunit){
                 return 1;
         }
   }
+
+  function get_eska_master($opd,$tahun){
+//  = function getppkmaster di Cpanel_model
+    $this->db->select('`daftunit`.`nmunit`
+    , `tab_pptk_master`.`id`
+    , `tab_pptk_master`.`tahun`
+    , `tab_pns`.`nip`
+    , `tab_pns`.`nama`
+    , `tab_pptk_master`.`tgl_entri`
+    , `tab_pptk_master`.`stat`');
+    $this->db->from('tab_pptk_master');
+    $this->db->join('daftunit', '`tab_pptk_master`.`unitkey` = `daftunit`.`unitkey`');
+    $this->db->join('tab_pns', '`tab_pptk_master`.`admin_entri` = `tab_pns`.`nip`');
+    $this->db->where('`tab_pptk_master`.`unitkey`', $opd);
+    $this->db->where('`tab_pptk_master`.`tahun`', $tahun);
+    return $this->db->get();
+
+  }
+  function get_eska_detail($id,$tahun){
+//  = function getppkmaster di Cpanel_model
+
+    $this->datatables->select('`tab_pptk`.`id` as id
+    ,`mkegiatan`.`kdkegunit` as kdkegunit
+    ,`mkegiatan`.`nmkegunit` as nmkegunit
+    , u2.nama as idpnspptk
+    , u1.nama as idpnsppk
+    ,`tab_pptk`.`status` as status ');
+    $this->datatables->from('`tab_pptk`');
+    $this->datatables->join('tab_pns u1', 'tab_pptk.idpnsppk = u1.nip');
+    $this->datatables->join('tab_pns u2', 'tab_pptk.idpnspptk = u2.nip');
+    $this->datatables->join('tab_pptk_master', 'tab_pptk.id_pptk_master = tab_pptk_master.id');
+    $this->datatables->join('mkegiatan', 'tab_pptk.kdkegunit = mkegiatan.kdkegunit');
+    $this->datatables->where('tab_pptk.id_pptk_master', $id);
+    $this->datatables->where('tab_pptk_master.tahun', $tahun);
+    $this->datatables->add_column('action', '<button class="edit-sk btn bg-orange margin">Ubah<div class="ripple-container"></div></button>' );
+    return $this->datatables->generate();
+
+
+    // $this->db->select('`tab_pptk`.`id`
+    // ,`mkegiatan`.`kdkegunit`
+    // ,`mkegiatan`.`nmkegunit`
+    // ,`tab_pptk`.`status`
+    // , u2.nama idpnspptk
+    // , u1.nama idpnsppk');
+    //
+    // $this->db->from('tab_pptk');
+    // $this->db->join('tab_pns u1', 'tab_pptk.idpnsppk = u1.nip');
+    // $this->db->join('tab_pns u2', 'tab_pptk.idpnspptk = u2.nip');
+    // $this->db->join('tab_pptk_master', 'tab_pptk.id_pptk_master = tab_pptk_master.id');
+    // $this->db->join('mkegiatan', 'tab_pptk.kdkegunit = mkegiatan.kdkegunit');
+    // $this->db->where('tab_pptk.id_pptk_master', $id);
+    // $this->db->where('tab_pptk_master.tahun', $tahun);
+    // return $this->db->get()->result_array();
+
+  }
+  function get_eska_detail_keg($id,$tahun,$idkeg){
+
+//  = function getppkmaster di Cpanel_model
+
+    $this->db->select('`tab_pptk`.`id`
+    ,`mkegiatan`.`kdkegunit`
+    ,`mkegiatan`.`nmkegunit`
+    ,`tab_pptk`.`status`
+    , u2.nip nippptk
+    , u2.nama idpnspptk
+    , u1.nip nipppk
+    , u1.nama idpnsppk');
+
+    $this->db->from('tab_pptk');
+    $this->db->join('tab_pns u1', 'tab_pptk.idpnsppk = u1.nip');
+    $this->db->join('tab_pns u2', 'tab_pptk.idpnspptk = u2.nip');
+    $this->db->join('tab_pptk_master', 'tab_pptk.id_pptk_master = tab_pptk_master.id');
+    $this->db->join('mkegiatan', 'tab_pptk.kdkegunit = mkegiatan.kdkegunit');
+    $this->db->where('tab_pptk.id_pptk_master', $id);
+    $this->db->where('tab_pptk_master.tahun', $tahun);
+    $this->db->where('tab_pptk.kdkegunit', $idkeg);
+    return $this->db->get()->row_array();
+
+  }
+  function get_eska_dokumen($id_m){
+    $this->db->where('id_pptk_master', $id_m);
+    $this->db->order_by('id','DESC');
+    $this->db->limit(1);
+    return $this->db->get('tab_upload_sk')->row();
+  }
+
+  function update_eska_kpapptk($id,$data)
+  {
+      $this->db->where('id', $id);
+      $upeska = $this->db->update('tab_pptk', $data);
+      if($upeska)
+        return true;
+      else
+        return false;
+  }
+
+  function update_dokumen_eska($dt,$idm)
+  {
+    $this->db->trans_start();
+    $this->db->insert('tab_upload_sk', $dt);
+    $data=array(
+                'stat_ubah'    => 1
+            );
+    $this->db->where('id', $idm);
+    $upeska = $this->db->update('tab_pptk_master', $data);
+    $this->db->trans_complete();
+    if ($this->db->trans_status() === FALSE){
+      $this->db->trans_rollback();
+      return false;
+    }else{
+      $this->db->trans_commit();
+
+      return true;
+    }
+
+  }
+
+  //end kasubag
+
+
+//untuk laporan tcpdf
+   function getnamappk($idtabpptk){
+     $this->db->select('`tab_kak`.*
+                         , `tab_kak`.`id` AS id
+                         , `tab_pptk`.`idpnsppk` AS idppk
+             , `tab_pns`.`nama` AS nama
+                        ');
+      $this->db->from('tab_pptk');
+      $this->db->join('tab_kak', '`tab_pptk`.`id` = `tab_kak`.`idtab_pptk`');
+      $this->db->join('`tab_pns`', '`tab_pptk`.`idpnsppk` = `tab_pns`.`nip`');
+      $this->db->where('`tab_kak`.`idtab_pptk`', $idtabpptk);
+      return $this->db->get()->row();
+    }
+
+//// endddddd
+
+
+
 
 function simpanentrikak($masterkak){
     $this->db->trans_start();
