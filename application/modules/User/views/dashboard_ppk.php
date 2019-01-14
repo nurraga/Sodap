@@ -21,7 +21,7 @@
 </section>
 <!-- Main content -->
 <section class="content">
-    <div class="callout callout-info">
+    <div class="callout bg-blue">
         <div class="row">
             <div class="col-xs-12 col-md-12 col-md-offset-1">
                 <br>
@@ -48,13 +48,45 @@
             <!-- small box -->
             <div class="small-box bg-green">
                 <div class="inner">
-                    <h3>LIST</h3>
+                    <h3>List</h3>
                     <p>Kegiatan</p>
+                </div>
+                <div class="icon">
+                    <i class="fa ion-android-list"></i>
+                </div>
+                <a class="btn btn-block btn-social btn-success" id="dashkeg">
+                    <i class="fa fa-bars"></i> proses
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-3 col-xs-6">
+            <!-- small box -->
+            <div class="small-box bg-green">
+                <div class="inner">
+                    <h3>Evaluasi</h3>
+                    <p>Realisasi Kegiatan PPTK</p>
                 </div>
                 <div class="icon">
                     <i class="ion ion-stats-bars"></i>
                 </div>
-                <a class="btn btn-block btn-social btn-success" id="dashkeg">
+                <a class="btn btn-block btn-social btn-success" id="dashevalpptk">
+                    <i class="fa fa-bars"></i> proses
+                </a>
+            </div>
+        </div>
+        <!-- ./col -->
+        <!-- ./col -->
+        <div class="col-lg-3 col-xs-6">
+            <!-- small box -->
+            <div class="small-box bg-green">
+                <div class="inner">
+                    <h3>Evaluasi</h3>
+                    <p>Semua Kegiatan</p>
+                </div>
+                <div class="icon">
+                    <i class="ion ion-pie-graph"></i>
+                </div>
+                <a class="btn btn-block btn-social btn-success" id="dashrealopd">
                     <i class="fa fa-bars"></i> proses
                 </a>
             </div>

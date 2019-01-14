@@ -4,10 +4,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class Cpanel extends MX_Controller {
 	public $data;
   public $blnskr;
+	public $tahunskr;
 	public function __construct()
 	{
 		parent::__construct();
 		$this->blnskr =date('n');
+		$this->tahunskr ='2018';
 		// $this->blnskr =1;
 		$this->load->model(array('Cpanel_model'));
 		$this->load->library(array('ion_auth', 'form_validation'));
@@ -375,14 +377,11 @@ class Cpanel extends MX_Controller {
 			$pns = $this->Cpanel_model->getpns($postnip);
 			$username	= $pns->nip;
 			$nama		= $pns->nama;
-      		$email 		= $pns->nip."@mail.com";
-      		$password 	= $pns->nip;
-      		$group_ids 	= $this->input->post('groups');
-      		$additional_data = array(
-	        	'first_name' => $nama,
-
-
-
+      $email 		= $pns->nip."@mail.com";
+      $password 	= $pns->nip;
+      $group_ids 	= $this->input->post('groups');
+      $additional_data = array(
+	       	'first_name' => $nama,
       		);
 
       		$this->ion_auth->register($username, $password, $email, $additional_data, $group_ids);
@@ -393,7 +392,7 @@ class Cpanel extends MX_Controller {
 	}
 
 	function jsonopdentribaru(){
-		$tahun          = date('Y');
+		$tahun          = $this->tahunskr;
     	header('Content-Type: application/json');
     	echo $this->Cpanel_model->opdentri_baru($tahun);
   	}
@@ -401,45 +400,44 @@ class Cpanel extends MX_Controller {
 	function statnol(){
 
 		$opd=$this->input->post('opd');
-		// $opd='80_';
-		$tahun    	= date('Y');
-		$result		=$this->Cpanel_model->getppkmaster($opd,$tahun);
-		$id 		= $result->id;
-		$thn 		= $result->tahun;
-		$unit 		= $result->nmunit;
-		$nip 		= $result->nip;
-		$nama 		= $result->nama;
-	   	$time 		=$result->tgl_entri;
-	  	$stat 		=$result->stat;
+		//$opd='80_';
+		$tahun    	= $this->tahunskr;
+		$result			= $this->Cpanel_model->getppkmaster($opd,$tahun);
+		$id 				= $result->id;
+		$thn 				= $result->tahun;
+		$unit 			= $result->nmunit;
+		$nip 				= $result->nip;
+		$nama 			= $result->nama;
+	  $time		 		= $result->tgl_entri;
+	 	$stat 			= $result->stat;
     	if($result){
     		$det=$this->Cpanel_model->detailstatnol($id);
     		foreach($det as $row){
     			$nipppk = $row->idpnsppk;
     			$nippptk = $row->idpnspptk;
     			$ppk 	= $this->Cpanel_model->getpns($nipppk);
-				$pptk 	= $this->Cpanel_model->getpns($nippptk);
-				$nmppk 	= $ppk->nama;
-				$nmpptk = $pptk->nama;
-				$detail[]= array(
-					'keg'			=>$row->nmkegunit,
-					'nl'			=>$row->nilai,
-					'pptk'			=>$nmpptk,
-					'ppk'			=>$nmppk,
-					'stat'			=>$row->status
+					$pptk 	= $this->Cpanel_model->getpns($nippptk);
+					$nmppk 	= $ppk->nama;
+					$nmpptk = $pptk->nama;
+					$detail[]= array(
+						'keg'			=>$row->nmkegunit,
+						'nl'			=>$row->nilai,
+						'pptk'		=>$nmpptk,
+						'ppk'			=>$nmppk,
+						'stat'		=>$row->status
 				);
 			}
-    		$this->Cpanel_model->baca($opd,$tahun);
+    	$this->Cpanel_model->baca($opd,$tahun);
     		$arr['data'][]= array(
 		        'status' => 'true',
 		        'id' => $id,
 		        'thn' => $thn,
-				'unit' => $unit,
-				'nip' => $nip,
-				'nama' => $nama,
-			   	'time'=>$time,
-			  	'stat'=>$stat,
-			  	'detail'=>$detail
-
+						'unit' => $unit,
+						'nip' => $nip,
+						'nama' => $nama,
+			   		'time'=>$time,
+			  		'stat'=>$stat,
+			  		'detail'=>$detail
         	);
     	}else{
       		$arr['data'][]= array(

@@ -75,7 +75,7 @@
         <!-- ./col -->
         <div class="col-lg-3 col-xs-6">
             <!-- small box -->
-            <div class="small-box bg-yellow">
+            <div class="small-box bg-green">
                 <div class="inner">
                     <h3>Evaluasi</h3>
                     <p>Realisasi Kegiatan PPTK</p>
@@ -83,7 +83,7 @@
                 <div class="icon">
                     <i class="ion ion-stats-bars"></i>
                 </div>
-                <a class="btn btn-block btn-social btn-warning" id="dashevalpptk">
+                <a class="btn btn-block btn-social btn-success" id="dashevalpptk">
                     <i class="fa fa-bars"></i> proses
                 </a>
             </div>
@@ -92,7 +92,7 @@
         <!-- ./col -->
         <div class="col-lg-3 col-xs-6">
             <!-- small box -->
-            <div class="small-box bg-red">
+            <div class="small-box bg-green">
                 <div class="inner">
                     <h3>Evaluasi</h3>
                     <p>Semua Kegiatan</p>
@@ -100,7 +100,7 @@
                 <div class="icon">
                     <i class="ion ion-pie-graph"></i>
                 </div>
-                <a class="btn btn-block btn-social btn-danger" id="dashrealopd">
+                <a class="btn btn-block btn-social btn-success" id="dashrealopd">
                     <i class="fa fa-bars"></i> proses
                 </a>
             </div>
