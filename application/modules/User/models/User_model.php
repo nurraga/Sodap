@@ -1017,8 +1017,11 @@ FROM
     `db_sodap`.`tab_pptk`
     INNER JOIN `db_sodap`.`angkas`
         ON (`tab_pptk`.`kdkegunit` = `angkas`.`kdkegunit`) WHERE `tab_pptk`.`idpnsppk`='.$nipppk.' AND `angkas`.`tahun` = YEAR(NOW()) AND `angkas`.`unitkey`="'.$unitkey.'"';
-
-        return $this->db->query($query)->row()->pagu_tahun;
+        if($this->db->query($query)->row()->pagu_tahun!=NULL) {
+            return $this->db->query($query)->row()->pagu_tahun;
+        }else{
+            return 0;
+        }
     }
     //end query untuk mendapatkan data pagu tahun-->
 

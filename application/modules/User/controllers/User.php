@@ -141,7 +141,11 @@ class User extends MX_Controller
                     $angkasbulanini = $this->User_model->getangkasbulanini($nip,$unitkeyppk) + (($angkas - $this->User_model->getangkasbulanini($nip,$unitkeyppk)) - $totreal - $totrealbmodalhbs);
                     $detangkasbulanini = $this->User_model->getdetangkasbulanini($nip,$unitkeyppk);
                     $realisasibulanini = ($this->User_model->getrealisasibulanini($this->User_model->getidstrukturppk($nip)))+$totrealbmodalbi;
-                    $persenrealisasibulanini = ($realisasibulanini / $angkasbulanini) * 100;
+                    if($angkasbulanini!=0){
+                        $persenrealisasibulanini = round((($realisasibulanini / $angkasbulanini) * 100),2).' %';
+                    }else{
+                        $persenrealisasibulanini = 0;
+                    }
                     $lspptk = $this->User_model->getnipstrukturpptk($this->User_model->getidstrukturppk($nip));
                     //var_dump($detangkasbulanini).exit;
                     //echo $this->template->rupiah($pgthn);
@@ -152,13 +156,13 @@ class User extends MX_Controller
                         'nmopd' => $namaopd,
                         'tahun' => date('Y'),
                         'list' => $lskeg,
-                        'pagu_tahun' => $this->template->rupiah($pgthn),
+                        'pagu_tahun' => $pgthn,
                         'angkas_bulan' => $this->template->rupiah($angkas),
                         'angkas_bulan_ini' => $this->template->rupiah($angkasbulanini),
                         'det_angkas_bulan_ini' => $detangkasbulanini,
                         'det_angkas_satu_tahun' => $this->User_model->getdetangkassatutahun($nip,$unitkeyppk),
                         'realisasi_bulan_ini' => $this->template->rupiah($realisasibulanini),
-                        'persen_realisasi' => round($persenrealisasibulanini, 2) . ' %',
+                        'persen_realisasi' => $persenrealisasibulanini,
                         'lspptk' => $lspptk,
                         'kegiatan' => $this->User_model->getkegiatan($nip),
                         'data_realisasi' => $this->User_model->getdatarealisasi($nip), //data realisasi bulan ini
@@ -247,6 +251,133 @@ class User extends MX_Controller
 
         }
     }
+
+    function realppk(){
+        if (!$this->ion_auth->logged_in()){
+            redirect('Home/login', 'refresh');
+        }elseif ($this->ion_auth->is_admin()){
+            redirect('Cpanel', 'refresh');
+        }elseif ($this->ion_auth->is_kasubag()){
+            redirect('User/admingeneral', 'refresh');
+        }else{
+            /*Dari function ini akan di cek ke tabel struktur apakah user tersebut KADIS/PPK/PPTK */
+            $nip=$this->ion_auth->user()->row()->username;
+            //echo $nip;
+            $struktur = $this->User_model->cekstrukturpns($nip);
+            $getopd = $this->User_model->getnamaopd($nip);
+            $idopd =$getopd->unitkey;
+            $namaopd=$getopd->nmunit;
+            if($struktur ){
+                $peran=$struktur->peran;
+                // echo $peran;exit;
+                if($peran=='1'){
+                    redirect('User', 'refresh');
+                }elseif($peran=='2'){
+                    /*jika peran 2 maka PPK*/
+                    $lskeg = $this->User_model->getdetlistkegiatan_ppk($nip);
+                    $unitkeyppk = $this->User_model->getunitkeyppk($nip);
+                    $data = $this->User_model->getdatappk($unitkeyppk, $nip);
+                    $pgthn = $this->User_model->getpagutahun($nip,$unitkeyppk);
+                    $angkas = $this->User_model->getangkashinggabulanini($nip,$unitkeyppk);
+                    $totreal = $this->User_model->gettotalrealisasi($nip); //total realisasi hingga bulan sebelumnya
+                    $totrealbmodalhbs = $this->User_model->gettotalrealbmodalhbs($this->User_model->getidstrukturppk($nip)); //total realisasi belanja modal hingga bulan sebelumnya
+                    $totrealbmodalbi = $this->User_model->gettotalrealbmodalbi($this->User_model->getidstrukturppk($nip)); //total realisasi belanja modal bulan ini
+                    $angkasbulanini = $this->User_model->getangkasbulanini($nip,$unitkeyppk) + (($angkas - $this->User_model->getangkasbulanini($nip,$unitkeyppk)) - $totreal - $totrealbmodalhbs);
+                    $detangkasbulanini = $this->User_model->getdetangkasbulanini($nip,$unitkeyppk);
+                    $realisasibulanini = ($this->User_model->getrealisasibulanini($this->User_model->getidstrukturppk($nip)))+$totrealbmodalbi;
+                    if($angkasbulanini!=0){
+                        $persenrealisasibulanini = round((($realisasibulanini / $angkasbulanini) * 100),2).' %';
+                    }else{
+                        $persenrealisasibulanini = 0;
+                    }
+                    $lspptk = $this->User_model->getnipstrukturpptk($this->User_model->getidstrukturppk($nip));
+                    //var_dump($detangkasbulanini).exit;
+                    //echo $this->template->rupiah($pgthn);
+                    // var_dump($this->User_model->getdetrealbmodalbi($this->User_model->getidstrukturppk($nip),$unitkeyppk)).exit;
+                    //echo json_encode($this->User_model->getdataschedule($nip));
+                    $this->data = array(
+                        'idopd' => $idopd,
+                        'nmopd' => $namaopd,
+                        'tahun' => date('Y'),
+                        'list' => $lskeg,
+                        'pagu_tahun' => $pgthn,
+                        'angkas_bulan' => $this->template->rupiah($angkas),
+                        'angkas_bulan_ini' => $this->template->rupiah($angkasbulanini),
+                        'det_angkas_bulan_ini' => $detangkasbulanini,
+                        'det_angkas_satu_tahun' => $this->User_model->getdetangkassatutahun($nip,$unitkeyppk),
+                        'realisasi_bulan_ini' => $this->template->rupiah($realisasibulanini),
+                        'persen_realisasi' => $persenrealisasibulanini,
+                        'lspptk' => $lspptk,
+                        'kegiatan' => $this->User_model->getkegiatan($nip),
+                        'data_realisasi' => $this->User_model->getdatarealisasi($nip), //data realisasi bulan ini
+                        'data_realisasi_hbs' => $this->User_model->getdatarealisasihbs($nip), //data realisasi hingga bulan sebelumnya
+                        'data_angkas_hbs' => $this->User_model->getdetangkashbs($nip,$unitkeyppk), //data angkas hingga bulan sebelumnya
+                        'data_schedule' => $this->User_model->getdataschedule($nip), //data schedule satu tahun
+                        'data_real_fisik' => $this->User_model->getrealfisik($nip), //data realisasi fisik bulan ini
+                        'det_real_bmodalbi' => $this->User_model->getdetrealbmodalbi($this->User_model->getidstrukturppk($nip),$unitkeyppk), //detail realisasi belanja modal bulan ini
+                    );
+                    $this->template->load('templatenew', 'v_dafreal_ppk', $this->data);
+
+                }
+                // elseif($peran=='6'){
+                //     /*jika peran 6 maka Sekretaris*/
+                //
+                //     $lskeg = $this->User_model->getdetlistkegiatan_ppk($nip);
+                //     $unitkeyppk = $this->User_model->getunitkeyppk($nip);
+                //     // $data = $this->User_model->getdatappk($unitkeyppk, $nip);
+                //     $pgthn = $this->User_model->getpagutahun($nip,$unitkeyppk);
+                //     $angkas = $this->User_model->getangkashinggabulanini($nip,$unitkeyppk);
+                //     $totreal = $this->User_model->gettotalrealisasi($nip); //total realisasi hingga bulan sebelumnya
+                //     $angkasbulanini = $this->User_model->getangkasbulanini($nip,$unitkeyppk) + (($angkas - $this->User_model->getangkasbulanini($nip,$unitkeyppk)) - $totreal);
+                //     $detangkasbulanini = $this->User_model->getdetangkasbulanini($nip,$unitkeyppk);
+                //     $realisasibulanini = $this->User_model->getrealisasibulanini($this->User_model->getidstrukturppk($nip));
+                //
+                //     $persenrealisasibulanini = ($realisasibulanini / $angkasbulanini) * 100;
+                //     $lspptk = $this->User_model->getnipstrukturpptk($this->User_model->getidstrukturppk($nip));
+                //
+                //     //var_dump($detangkasbulanini).exit;
+                //     //echo $this->template->rupiah($pgthn);
+                //     //var_dump($this->User_model->getdetangkashbs($nip)).exit;
+                //     //echo json_encode($this->User_model->getdataschedule($nip));
+                //     $this->data = array(
+                //         'idopd' => $idopd,
+                //         'nmopd' => $namaopd,
+                //         'tahun' => date('Y'),
+                //         'list' => $lskeg,
+                //         'pagu_tahun' => $this->template->rupiah($pgthn),
+                //         'angkas_bulan' => $this->template->rupiah($angkas),
+                //         'angkas_bulan_ini' => $this->template->rupiah($angkasbulanini),
+                //         'det_angkas_bulan_ini' => $detangkasbulanini,
+                //         'det_angkas_satu_tahun' => $this->User_model->getdetangkassatutahun($nip,$unitkeyppk),
+                //         'realisasi_bulan_ini' => $this->template->rupiah($realisasibulanini),
+                //         'persen_realisasi' => round($persenrealisasibulanini, 2) . ' %',
+                //         'lspptk' => $lspptk,
+                //         'kegiatan' => $this->User_model->getkegiatan($nip),
+                //         'data_realisasi' => $this->User_model->getdatarealisasi($nip), //data realisasi bulan ini
+                //         'data_realisasi_hbs' => $this->User_model->getdatarealisasihbs($nip), //data realisasi hingga bulan sebelumnya
+                //         'data_angkas_hbs' => $this->User_model->getdetangkashbs($nip,$unitkeyppk), //data angkas hingga bulan sebelumnya
+                //         'data_schedule' => $this->User_model->getdataschedule($nip), //data schedule satu tahun
+                //         'data_real_fisik' => $this->User_model->getrealfisik($nip), //data realisasi fisik bulan ini
+                //         'det_real_bmodalbi' => $this->User_model->getdetrealbmodalbi($this->User_model->getidstrukturppk($nip),$unitkeyppk), //detail realisasi belanja modal bulan ini
+                //
+                //     );
+                //     $this->template->load('templatenew', 'dashboard_sekretaris', $this->data);
+                //
+                // }
+                elseif($peran=='6'){
+                    redirect('User', 'refresh');
+                }
+                elseif($peran=='3'){
+                    redirect('User', 'refresh');
+                }else{
+                    redirect('User', 'refresh');
+                }
+            }else{
+                redirect('User', 'refresh');
+            }
+        }
+    }
+
 //ini untuk struktur OPD / Unit
     function struktur(){
         if (!$this->ion_auth->is_kasubag()){
